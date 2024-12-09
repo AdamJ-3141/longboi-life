@@ -242,6 +242,12 @@ public class GameScreen implements Screen {
 
             return null;
         });
+
+        eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
+            game.switchScreen(Main.ScreenType.LEADERBOARD);
+
+            return null;
+        });
     }
 
     /**

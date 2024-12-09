@@ -1,49 +1,47 @@
-package com.spacecomplexity.longboilife.menu;
+package com.spacecomplexity.longboilife.leaderboards;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 
-/**
- * Main class to control the menu screen.
- */
-public class MenuScreen implements Screen {
+public class LeaderboardScreen implements Screen {
     private final Main game;
 
     private Viewport viewport;
 
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
-
     private Stage stage;
     private Skin skin;
 
-    public MenuScreen(Main game) {
+    private LeaderboardElement[] leaderboard;
+
+    public LeaderboardScreen(Main game) {
         this.game = game;
 
         // Initialise viewport and drawing elements
         viewport = new FitViewport(640, 480);
         stage = new Stage(viewport);
-        batch = new SpriteBatch();
 
         // Load background texture
-        backgroundTexture = new Texture(Gdx.files.internal("menu/background.png"));
+//        backgroundTexture = new Texture(Gdx.files.internal("menu/background.png"));
 
-        // Load UI skin for buttons
         skin = new Skin(Gdx.files.internal("ui/skin/uiskin.json"));
+
+        leaderboard = LeaderboardUtils.loadScore();
     }
 
     @Override
@@ -53,43 +51,44 @@ public class MenuScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        // Initialise play button
-        TextButton playButton = new TextButton("Play", skin, "round");
-        playButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Switch to game screen
-                game.switchScreen(Main.ScreenType.GAME);
-            }
-        });
+        String leaderboardName = "Name:\r\n\n";
+        for (LeaderboardElement element : leaderboard) {
+            leaderboardName += element.getName() + "\r\n\n";
+        }
 
-        // Initialise leaderboard button
-        TextButton leaderboardButton = new TextButton("Leaderboard", skin, "round");
-        leaderboardButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Switch to game screen
-                game.switchScreen(Main.ScreenType.LEADERBOARD);
-            }
-        });
+        // Initialise label
+        Label labelName = new Label(leaderboardName, skin);
+        labelName.setAlignment(Align.center);
+        labelName.setFontScale(1.4f);
+        labelName.setColor(Color.WHITE);
+
+        String leaderboardScore = "Score:\r\n\n";
+        for (LeaderboardElement leaderboardElement : leaderboard) {
+            leaderboardScore += leaderboardElement.getScore() + "\r\n\n";
+        }
+
+        Label labelScore = new Label(leaderboardScore, skin);
+        labelScore.setAlignment(Align.center);
+        labelScore.setFontScale(1.4f);
+        labelScore.setColor(Color.WHITE);
 
         // Initialise exit button
-        TextButton exitButton = new TextButton("Exit", skin, "round");
-        exitButton.addListener(new ClickListener() {
+        TextButton backButton = new TextButton("Menu", skin, "round");
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Exit the application
-                Gdx.app.exit();
+                game.switchScreen(Main.ScreenType.MENU);
             }
         });
 
-        // Add buttons to table
-        table.pad(100).right().bottom();
-        table.add(playButton);
+        // Place label onto table
+        table.add(labelName).align(Align.center).size(50);
+        table.add().pad(50);
+        table.add(labelScore).align(Align.center).size(50);
         table.row();
-        table.add(leaderboardButton).padTop(10);
-        table.row();
-        table.add(exitButton).padTop(10);
+        table.add();
+        table.add(backButton).padTop(20).align(Align.center).padLeft(10);
 
         // Allows UI to capture touch events
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager(), stage);
@@ -100,11 +99,6 @@ public class MenuScreen implements Screen {
     public void render(float delta) {
         // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1f);
-
-        // Draw background image
-        batch.begin();
-        batch.draw(backgroundTexture, (640 - 480) / 2f, 0, 480, 480);
-        batch.end();
 
         // Draw and apply ui
         stage.act(delta);
@@ -135,7 +129,5 @@ public class MenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
         skin.dispose();
-        backgroundTexture.dispose();
-        batch.dispose();
     }
 }

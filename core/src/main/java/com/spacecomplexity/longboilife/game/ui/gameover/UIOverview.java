@@ -2,16 +2,17 @@ package com.spacecomplexity.longboilife.game.ui.gameover;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.leaderboards.LeaderboardElement;
+import com.spacecomplexity.longboilife.leaderboards.LeaderboardUtils;
+
+import java.util.Objects;
 
 /**
  * Class to represent the Overview UI after the game is completed.
@@ -35,9 +36,15 @@ public class UIOverview extends UIElement {
         label.setFontScale(1.2f);
         label.setColor(Color.WHITE);
 
+        // Create a TextField
+        TextField textField = new TextField("", skin);
+        textField.setMessageText("Enter name to save score");
+        textField.setPosition(100, 200);
+        textField.setSize(200, 30);
+
         // Initialise button
-        TextButton button = new TextButton("Menu", skin);
-        button.addListener(new ClickListener() {
+        TextButton menuButton = new TextButton("Menu", skin);
+        menuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Call the events to return to the menu
@@ -45,10 +52,29 @@ public class UIOverview extends UIElement {
             }
         });
 
+        // Initialise button
+        TextButton saveButton = new TextButton("Save", skin);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Call the events to return to the menu
+                String name = textField.getText();
+                if (Objects.equals(name, "")){
+                    name = "player";
+                }
+                LeaderboardUtils.addScore(new LeaderboardElement(name, 1));
+                EventHandler.getEventHandler().callEvent(EventHandler.Event.LEADERBOARD);
+            }
+        });
+
         // Place label onto table
         table.add(label).align(Align.center);
         table.row();
-        table.add(button).padTop(5).align(Align.center);
+        table.add(menuButton).padTop(5).align(Align.center);
+        table.row();
+        table.add(textField).align(Align.center);
+        table.add(saveButton).align(Align.center);
+        table.row();
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
