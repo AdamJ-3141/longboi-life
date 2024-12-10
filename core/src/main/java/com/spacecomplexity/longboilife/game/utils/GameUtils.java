@@ -10,10 +10,7 @@ import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.world.World;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * A class used for game utilities.
@@ -66,6 +63,7 @@ public class GameUtils {
      * @param world the world reference for buildings.
      */
     public static void updateSatisfactionScore(World world) {
+
         Vector<Building> buildings = world.getBuildings();
 
         // Map containing buildings split into categories
@@ -153,14 +151,45 @@ public class GameUtils {
         gameState.satisfactionScore = newSatisfactionScore;
     }
 
-    public GraphNode generateGraph(World world) {
-        Vector2Int startnode;
+    public static GraphNode generateGraph(World world) {
+        Vector2Int startnodePos = null;
         for (int i = 0; i < world.getWidth(); i++) {
+            if (startnodePos != null) {
+                break;
+            }
             for (int j = 0; j < world.getHeight(); j++) {
-                if (!(world.getPathwayPosition(new Vector2Int(i, j))==null)) {
-                    startnode = new Vector2Int(i, j);
+                if (world.getPathwayPosition(new Vector2Int(i, j))!=null) {
+                    startnodePos = new Vector2Int(i, j);
+                    break;
                 }
             }
         }
+        if (startnodePos == null) {return null;}
+        int currentX = startnodePos.x;
+        int currentY = startnodePos.y;
+        GraphNode startNode = new GraphNode(currentX, currentY);
+        ArrayList<Vector2Int> visited = new ArrayList<>();
+        return generateGraph(startNode, world, visited);
+    }
+
+    public static GraphNode generateGraph(GraphNode initial, World world, ArrayList<Vector2Int> visited) {
+        Vector2Int currentPos = initial.position;
+        visited.add(currentPos);
+        Vector2Int[] posToCheck = {
+            currentPos.add(Vector2Int.UP),
+            currentPos.add(Vector2Int.DOWN),
+            currentPos.add(Vector2Int.LEFT),
+            currentPos.add(Vector2Int.RIGHT)};
+        for (Vector2Int pos : posToCheck) {
+            try {
+                if (world.getPathwayPosition(pos) != null && !visited.contains(pos)) {
+                    GraphNode adjNode = new GraphNode(pos.x, pos.y);
+                    adjNode.connectNode(initial);
+                    return generateGraph(adjNode, world, visited);
+                }
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+            }
+        }
+        return initial;
     }
 }
