@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,6 +17,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 
+/**
+ * Class that controls the leaderboard screen
+ */
 public class LeaderboardScreen implements Screen {
     private final Main game;
 
@@ -36,37 +37,39 @@ public class LeaderboardScreen implements Screen {
         viewport = new FitViewport(640, 480);
         stage = new Stage(viewport);
 
-        // Load background texture
-//        backgroundTexture = new Texture(Gdx.files.internal("menu/background.png"));
-
+        // Load UI skin for buttons
         skin = new Skin(Gdx.files.internal("ui/skin/uiskin.json"));
 
+        // Loads the leaderboard
         leaderboard = LeaderboardUtils.loadScore();
     }
 
     @Override
     public void show() {
-        // Table layout for menu alignment
+        // Table layout
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
+        // puts names from leaderboard into a column
         String leaderboardName = "Name:\r\n\n";
         for (LeaderboardElement element : leaderboard) {
             leaderboardName += element.getName() + "\r\n\n";
         }
 
-        // Initialise label
+        // Initialise names label
         Label labelName = new Label(leaderboardName, skin);
         labelName.setAlignment(Align.center);
         labelName.setFontScale(1.4f);
         labelName.setColor(Color.WHITE);
 
+        // Puts scores from leaderboard into a column
         String leaderboardScore = "Score:\r\n\n";
         for (LeaderboardElement leaderboardElement : leaderboard) {
             leaderboardScore += leaderboardElement.getScore() + "\r\n\n";
         }
 
+        // Initialises scores label
         Label labelScore = new Label(leaderboardScore, skin);
         labelScore.setAlignment(Align.center);
         labelScore.setFontScale(1.4f);
@@ -77,12 +80,12 @@ public class LeaderboardScreen implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Exit the application
+                // Switch to Menu screen
                 game.switchScreen(Main.ScreenType.MENU);
             }
         });
 
-        // Place label onto table
+        // Place labels and button onto table
         table.add(labelName).align(Align.center).size(50);
         table.add().pad(50);
         table.add(labelScore).align(Align.center).size(50);

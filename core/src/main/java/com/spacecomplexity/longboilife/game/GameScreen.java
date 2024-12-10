@@ -243,6 +243,7 @@ public class GameScreen implements Screen {
             return null;
         });
 
+        // Event to change screen to the Leaderboard
         eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
             game.switchScreen(Main.ScreenType.LEADERBOARD);
 

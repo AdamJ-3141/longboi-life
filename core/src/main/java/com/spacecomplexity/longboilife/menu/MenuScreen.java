@@ -68,7 +68,7 @@ public class MenuScreen implements Screen {
         leaderboardButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Switch to game screen
+                // Switch to leaderboard screen
                 game.switchScreen(Main.ScreenType.LEADERBOARD);
             }
         });

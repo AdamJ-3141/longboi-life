@@ -52,22 +52,26 @@ public class UIOverview extends UIElement {
             }
         });
 
-        // Initialise button
+        // Initialise button to save score
         TextButton saveButton = new TextButton("Save", skin);
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Call the events to return to the menu
+                // value is obtained from text box
                 String name = textField.getText();
                 if (Objects.equals(name, "")){
-                    name = "player";
+                    name = "Player";
                 }
+
+                // add score to the leaderboard
                 LeaderboardUtils.addScore(new LeaderboardElement(name, 1));
+
+                // Call the event to change screen to leaderboard
                 EventHandler.getEventHandler().callEvent(EventHandler.Event.LEADERBOARD);
             }
         });
 
-        // Place label onto table
+        // Adds label, buttons and text box onto table
         table.add(label).align(Align.center);
         table.row();
         table.add(menuButton).padTop(5).align(Align.center);
