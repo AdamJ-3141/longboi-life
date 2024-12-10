@@ -1,13 +1,14 @@
 package com.spacecomplexity.longboilife.game.utils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GraphNode {
-    private HashMap<GraphNode,Integer>  connectedNodes;
+    private HashSet<GraphNode>  connectedNodes;
     private final String nodeType;
 
     public GraphNode(String nodeType) {
-        connectedNodes = new HashMap<GraphNode,Integer>();
+        connectedNodes = new HashSet<>();
         this.nodeType = nodeType;
     }
 
@@ -15,18 +16,12 @@ public class GraphNode {
         return nodeType;
     }
 
-    public void connectNode(GraphNode node, Integer distance) {
-        if (connectedNodes.containsKey(node)) {
-            if (connectedNodes.get(node) > distance) {
-                connectedNodes.put(node, distance);
-            }
-        } else {
-            connectedNodes.put(node, distance);
-            node.connectNode(this, distance);
-        }
+    public void connectNode(GraphNode node) {
+        connectedNodes.add(node);
+        node.connectNode(this);
     }
 
-    public HashMap<GraphNode,Integer> getConnectedNodes() {
+    public HashSet<GraphNode> getConnectedNodes() {
         return connectedNodes;
     }
 }

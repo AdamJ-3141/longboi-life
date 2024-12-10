@@ -7,6 +7,7 @@ import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
+import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public class GameUtils {
         }
 
         GameState gameState = GameState.getState();
-        
+
         // Update whether the last satisfaction modifier was positive
         boolean newSatisfactionModifierPositive = satisfactionModifier >= 0;
         if (newSatisfactionModifierPositive != gameState.satisfactionModifierPositive) {
@@ -150,5 +151,16 @@ public class GameUtils {
         // Limit satisfaction score between 0% and 10% * number of accommodation buildings
         newSatisfactionScore = Math.max(0, Math.min(newSatisfactionScore, Math.min(categorisedBuildings.get(BuildingCategory.ACCOMMODATION).size() * 0.1f, 1f)));
         gameState.satisfactionScore = newSatisfactionScore;
+    }
+
+    public GraphNode generateGraph(World world) {
+        Vector2Int startnode;
+        for (int i = 0; i < world.getWidth(); i++) {
+            for (int j = 0; j < world.getHeight(); j++) {
+                if (!(world.getPathwayPosition(new Vector2Int(i, j))==null)) {
+                    startnode = new Vector2Int(i, j);
+                }
+            }
+        }
     }
 }
