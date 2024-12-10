@@ -182,10 +182,7 @@ public class GameScreen implements Screen {
             // Open the selected building menu
             eventHandler.callEvent(EventHandler.Event.OPEN_SELECTED_MENU);
 
-            GraphNode graph = GameUtils.generateGraph(world);
-            assert graph != null;
-            System.out.println(graph.toString());
-            graph.printFullGraph();
+            GraphNode[] nodes = GameUtils.generateGraph(world);
 
             return null;
         });

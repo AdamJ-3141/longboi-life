@@ -13,10 +13,7 @@ import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Represents the game world containing the base tiles and buildings.
@@ -357,7 +354,7 @@ public class World {
      *
      * @param from coordinates of the location to search from.
      * @param to   coordinates of the location to search for.
-     * @return the distance in tiles to travel, -1 if there is no path.
+     * @return the distance in tiles to travel, MAX_VALUE if there is no path.
      */
     public int getPathDistance(Vector2Int from, Vector2Int to) {
         if (pathways[from.x][from.y] == null) {
@@ -422,11 +419,45 @@ public class World {
             distance++;
         }
 
-        // Return -1 if there is no path
-        return -1;
+        // Return MAX_VALUE if there is no path
+        return Integer.MAX_VALUE;
     }
 
     public Vector<Building> getBuildings() {
         return buildings;
+    }
+
+    private ArrayList<Vector2Int> getBuildingPathways(Building building) {
+        Vector2Int buildingPos = building.getPosition();
+        Vector2Int buildingSize = building.getType().getSize();
+        Vector2Int[] buildingOuterEdge = new Vector2Int[2 * buildingSize.x + 2 * buildingSize.y];
+        int index = 0;
+        for (int xi = 0; xi < buildingSize.x; xi++) {
+            buildingOuterEdge[index++] = new Vector2Int(buildingPos.x + xi, buildingPos.y - 1);
+            buildingOuterEdge[index++] = new Vector2Int(buildingPos.x + xi, buildingPos.y + buildingSize.y);
+        }
+        for (int yi = 0; yi < buildingSize.y; yi++) {
+            buildingOuterEdge[index++] = new Vector2Int(buildingPos.x - 1, buildingPos.y + yi);
+            buildingOuterEdge[index++] = new Vector2Int(buildingPos.x + buildingSize.x, buildingPos.y + yi);
+        }
+        ArrayList<Vector2Int> buildingPathways = new ArrayList<>();
+        for (Vector2Int pos : buildingOuterEdge) {
+            if (isInWorld(pos) && getPathwayPosition(pos) != null) {
+                buildingPathways.add(pos);
+            }
+        }
+        return buildingPathways;
+    }
+
+    public int getBuildingDistance(Building from, Building to) {
+        ArrayList<Vector2Int> fromPathways = getBuildingPathways(from);
+        ArrayList<Vector2Int> toPathways = getBuildingPathways(to);
+        int minDistance = Integer.MAX_VALUE;
+        for (Vector2Int fromPathway : fromPathways) {
+            for (Vector2Int toPathway : toPathways) {
+                minDistance = Math.min(minDistance, getPathDistance(fromPathway, toPathway));
+            }
+        }
+        return minDistance;
     }
 }

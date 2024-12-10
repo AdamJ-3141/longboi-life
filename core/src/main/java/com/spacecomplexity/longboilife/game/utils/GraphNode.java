@@ -1,55 +1,48 @@
 package com.spacecomplexity.longboilife.game.utils;
 
+import com.spacecomplexity.longboilife.game.building.Building;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class GraphNode {
-    private HashSet<GraphNode>  connectedNodes;
-    public final Vector2Int position;
-    private final String nodeType;
+    private HashMap<GraphNode, Integer>  connectedNodes;
+    private final Building buildingRef;
 
-    public GraphNode(int x, int y) {
-        connectedNodes = new HashSet<>();
-        this.position = new Vector2Int(x, y);
-        this.nodeType = "Pathway";
+    public GraphNode(Building buildingRef) {
+        connectedNodes = new HashMap<>();
+        this.buildingRef = buildingRef;
     }
 
-    public GraphNode(int x, int y, String nodeType) {
-        connectedNodes = new HashSet<>();
-        this.position = new Vector2Int(x, y);
-        this.nodeType = nodeType;
+    public Building getBuildingRef() {
+        return buildingRef;
     }
 
-    public String getNodeType() {
-        return nodeType;
+    public void connectNode(GraphNode node, int distance) {
+        connectedNodes.putIfAbsent(node, distance);
+        if (!node.getConnectedNodes().containsKey(this)) {
+            node.connectNode(this, distance);
+        }
     }
 
-    public void connectNode(GraphNode node) {
-        boolean unique = connectedNodes.add(node);
-        if (unique) {node.connectNode(this);}
-    }
-
-    public HashSet<GraphNode> getConnectedNodes() {
+    public HashMap<GraphNode, Integer> getConnectedNodes() {
         return connectedNodes;
     }
-    public String toString() {
-        return nodeType + " at " + position.toString();
-    }
 
-    public void printFullGraph() {
-        printFullGraph(new ArrayList<>());
-    }
-
-    public void printFullGraph(ArrayList<GraphNode> nodes) {
-        System.out.println(this);
-        System.out.println("{");
-        for (GraphNode node : connectedNodes) {
-            if (!nodes.contains(node)) {
-                nodes.add(node);
-                node.printFullGraph(nodes);
-            }
-        }
-        System.out.println("}");
-    }
+//    public void printFullGraph() {
+//        printFullGraph(new ArrayList<>());
+//    }
+//
+//    public void printFullGraph(ArrayList<GraphNode> nodes) {
+//        System.out.println(this);
+//        System.out.println("{");
+//        for (GraphNode node : connectedNodes) {
+//            if (!nodes.contains(node)) {
+//                nodes.add(node);
+//                node.printFullGraph(nodes);
+//            }
+//        }
+//        System.out.println("}");
+//    }
 }
