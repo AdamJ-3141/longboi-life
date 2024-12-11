@@ -294,6 +294,10 @@ public class GameScreen implements Screen {
             RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
         }
 
+        // calls the achievement handler to check for achievements and to ensure the popup is removed
+        AchievementHandler.checkAchievements();
+        AchievementHandler.updateAchievements();
+
         // Render the UI
         ui.render();
 
