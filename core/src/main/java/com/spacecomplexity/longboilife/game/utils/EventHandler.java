@@ -19,8 +19,8 @@ public class EventHandler {
         CLOSE_BUILD_MENU,
         GAME_END,
         RETURN_MENU,
-        LEADERBOARD
-        ;
+        LEADERBOARD,
+        CLOSE_GAMEEVENT_POPUP;
 
         private Function<Object[], Object> callback;
 
@@ -50,7 +50,8 @@ public class EventHandler {
      *
      * @param event  the enum of the event defined.
      * @param params the parameter to pass to the event.
-     * @return what the original event would return, this will need to be cast as we cannot know the type here.
+     * @return what the original event would return, this will need to be cast as we
+     *         cannot know the type here.
      * @throws IllegalArgumentException if the event has not been defined.
      */
     public Object callEvent(Event event, Object... params) throws IllegalArgumentException {
