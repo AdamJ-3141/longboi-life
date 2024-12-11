@@ -6,11 +6,12 @@ import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import java.util.stream.Stream;
 
 /**
- * Contains a list of all buildings, including there default data.
+ * Contains a list of all buildings, including their default data.
  */
 public enum BuildingType {
     GREGGS("Greggs", new Texture("buildings/greggs.png"), new Vector2Int(2, 2), BuildingCategory.FOOD, 5000),
-    LIBRARY("Library", new Texture("buildings/library.png"), new Vector2Int(4, 4), BuildingCategory.EDUCATIONAL, 200000),
+    LIBRARY("Library", new Texture("buildings/library.png"), new Vector2Int(4, 4), BuildingCategory.EDUCATIONAL,
+            200000),
     GYM("Gym", new Texture("buildings/gym.png"), new Vector2Int(4, 3), BuildingCategory.RECREATIONAL, 80000),
     HALLS("Halls", new Texture("buildings/halls.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 12000),
     ROAD("Road", new Texture("buildings/roads/straight.png"), new Vector2Int(1, 1), BuildingCategory.PATHWAY, 100),
@@ -39,7 +40,6 @@ public enum BuildingType {
         this.cost = cost;
     }
 
-
     public Texture getTexture() {
         return texture;
     }
@@ -62,15 +62,16 @@ public enum BuildingType {
 
     public static BuildingType[] getBuildingsOfType(BuildingCategory category) {
         return Stream.of(BuildingType.values())
-            .filter(buildingType -> buildingType.getCategory().equals(category))
-            .toArray(BuildingType[]::new);
+                .filter(buildingType -> buildingType.getCategory().equals(category))
+                .toArray(BuildingType[]::new);
 
     }
 
     /**
      * Will dispose of the all loaded assets (like textures).
      * <p>
-     * <strong>Warning:</strong> Once disposed of no attributes will be able to be reloaded, which could lead to undefined behaviour.
+     * <strong>Warning:</strong> Once disposed of no attributes will be able to be
+     * reloaded, which could lead to undefined behaviour.
      */
     public void dispose() {
         texture.dispose();
