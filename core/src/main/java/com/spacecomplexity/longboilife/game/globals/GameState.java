@@ -1,5 +1,6 @@
 package com.spacecomplexity.longboilife.game.globals;
 
+import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 
@@ -98,6 +99,18 @@ public class GameState {
     }
 
     /**
+     * @return the total number of building in the game not including roads
+     */
+    public Integer getBuildingCount() {
+        int count = 0;
+        for (BuildingType buildingType : BuildingType.values()) {
+            if (buildingType != BuildingType.ROAD)
+                count += getBuildingCount(buildingType);
+        }
+        return count;
+    }
+
+    /**
      * Helper function to change the number of a specified building.
      *
      * @param buildingType the building type to change.
@@ -137,6 +150,11 @@ public class GameState {
     }
 
     /**
+     * Keep track of the currently rendered achievement null if no achievement
+     */
+    public AchievementType currentAchievement = null;
+
+    /**
      * Reset all values to default.
      */
     public void reset() {
@@ -156,5 +174,6 @@ public class GameState {
         satisfactionScoreVelocity = 0;
         satisfactionModifierPositive = false;
         gameOver = false;
+        currentAchievement = null;
     }
 }

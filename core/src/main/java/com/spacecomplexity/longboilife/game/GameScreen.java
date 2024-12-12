@@ -250,6 +250,18 @@ public class GameScreen implements Screen {
 
             return null;
         });
+
+        // Returns if there is a buildable tile
+        eventHandler.createEvent(EventHandler.Event.ISBUILDABLE, (params) -> {
+            for (int x = 0; x < world.getWidth(); x++) {
+                for (int y = 0; y < world.getHeight(); y++) {
+                    if (world.canBuild(BuildingType.ROAD, new Vector2Int(x, y))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     /**
@@ -296,6 +308,10 @@ public class GameScreen implements Screen {
         if (gameState.movingBuilding != null) {
             RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
         }
+
+        // calls the achievement handler to check for achievements and to ensure the popup is removed
+        AchievementHandler.checkAchievements();
+        AchievementHandler.updateAchievements();
 
         // Render the UI
         ui.render();

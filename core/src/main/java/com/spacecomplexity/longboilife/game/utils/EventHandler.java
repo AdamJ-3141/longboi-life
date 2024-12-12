@@ -20,6 +20,7 @@ public class EventHandler {
         GAME_END,
         RETURN_MENU,
         LEADERBOARD,
+        ISBUILDABLE,
         OPEN_GAMEEVENT_POPUP,
         CLOSE_GAMEEVENT_POPUP;
 
