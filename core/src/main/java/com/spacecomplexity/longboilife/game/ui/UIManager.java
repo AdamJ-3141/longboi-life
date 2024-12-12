@@ -74,6 +74,7 @@ public class UIManager {
             new UISatisfactionMenu(viewport, table, skin),
             new UIMoneyMenu(viewport, table, skin),
             new UIBuildingCounter(viewport, table, skin),
+            new UIAchievementPopup(viewport, table, skin),
         };
 
         // Hide game UI and show end UI
