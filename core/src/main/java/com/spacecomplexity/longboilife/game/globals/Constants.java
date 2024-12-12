@@ -60,7 +60,7 @@ public class Constants {
     /**
      * The minimum time between game events occurring in milliseconds
      */
-    public static long MIN_GAME_EVENT_INTERVAL = 3 * 1000;
+    public static long MIN_GAME_EVENT_INTERVAL = 30 * 1000; // 30 seconds
 
     /**
      * Which category of buildings will not be deselected when built.
