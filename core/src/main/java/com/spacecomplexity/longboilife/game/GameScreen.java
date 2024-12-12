@@ -249,6 +249,18 @@ public class GameScreen implements Screen {
 
             return null;
         });
+
+        // Returns if there is a buildable tile
+        eventHandler.createEvent(EventHandler.Event.ISBUILDABLE, (params) -> {
+            for (int x = 0; x < world.getWidth(); x++) {
+                for (int y = 0; y < world.getHeight(); y++) {
+                    if (world.canBuild(BuildingType.ROAD, new Vector2Int(x, y))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     /**

@@ -14,6 +14,7 @@ import com.spacecomplexity.longboilife.game.ui.UIElement;
  */
 public class UIAchievementPopup extends UIElement {
     private Label achievementLabel;
+    private Label scoreLabel;
 
     /**
      * Initialise Achievement popup elements.
@@ -35,16 +36,23 @@ public class UIAchievementPopup extends UIElement {
         achievementLabel.setFontScale(1f);
         achievementLabel.setColor(Color.WHITE);
 
+        // Initialise score label
+        scoreLabel = new Label(null, skin);
+        scoreLabel.setFontScale(1f);
+        scoreLabel.setColor(Color.WHITE);
+
         // Place elements onto table
         Table labelTable = new Table(skin);
         labelTable.add(label);
         labelTable.row();
         labelTable.add(achievementLabel);
+        labelTable.row();
+        labelTable.add(scoreLabel).padTop(10);
         table.add(labelTable);
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
-        table.setSize(185, 80);
+        table.setSize(185, 100);
         placeTable();
     }
 
@@ -54,8 +62,13 @@ public class UIAchievementPopup extends UIElement {
     public void render() {
         if (GameState.getState().currentAchievement != null) {
             AchievementType currentAchievement = GameState.getState().currentAchievement;
-            String achievementText = currentAchievement.displayName;
-            achievementLabel.setText(achievementText);
+            achievementLabel.setText(currentAchievement.displayName);
+            String scoreChange = "";
+            if (currentAchievement.scoreChange>0) {
+                scoreChange += "+";
+            }
+            scoreChange += Integer.toString(currentAchievement.scoreChange);
+            scoreLabel.setText(scoreChange);
         }
         placeTable();
     }

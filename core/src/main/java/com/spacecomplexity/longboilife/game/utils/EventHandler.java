@@ -19,7 +19,8 @@ public class EventHandler {
         CLOSE_BUILD_MENU,
         GAME_END,
         RETURN_MENU,
-        LEADERBOARD
+        LEADERBOARD,
+        ISBUILDABLE
         ;
 
         private Function<Object[], Object> callback;
