@@ -9,6 +9,12 @@ import java.util.TreeMap;
  * Class contain the constants used throughout the game.
  */
 public class Constants {
+
+    /**
+     * The duration of the game
+     */
+    public static final long GAME_DURATION = 5 * 60 * 1000;
+
     /**
      * The size of tiles (in px).
      */
@@ -22,12 +28,14 @@ public class Constants {
     /**
      * Map of the UI scaling at the specified window height.
      */
-    public static final TreeMap<Integer, Float> UI_SCALING_MAP = new TreeMap<>() {{
-        put(0, 1f);
-        put(720, 1.5f);
-        put(1440, 2f);
-        put(2160, 2.5f);
-    }};
+    public static final TreeMap<Integer, Float> UI_SCALING_MAP = new TreeMap<>() {
+        {
+            put(0, 1f);
+            put(720, 1.5f);
+            put(1440, 2f);
+            put(2160, 2.5f);
+        }
+    };
 
     /**
      * Minimum camera zoom level.
@@ -50,20 +58,28 @@ public class Constants {
     public static float moveCostRecovery = 0.25f;
 
     /**
+     * The minimum time between game events occurring in milliseconds
+     */
+    public static long MIN_GAME_EVENT_INTERVAL = 3 * 1000;
+
+    /**
      * Which category of buildings will not be deselected when built.
      */
-    public static BuildingCategory[] dontRemoveSelection = new BuildingCategory[]{
-        BuildingCategory.PATHWAY
+    public static BuildingCategory[] dontRemoveSelection = new BuildingCategory[] {
+            BuildingCategory.PATHWAY
     };
 
     /**
-     * The satisfactory distances from accommodation to a specific category of building
+     * The satisfactory distances from accommodation to a specific category of
+     * building
      * <p>
      * Used for calculating satisfaction score
      */
-    public static HashMap<BuildingCategory, Float> satisfactoryDistance = new HashMap<BuildingCategory, Float>() {{
-        put(BuildingCategory.FOOD, 5f);
-        put(BuildingCategory.RECREATIONAL, 5f);
-        put(BuildingCategory.EDUCATIONAL, 10f);
-    }};
+    public static HashMap<BuildingCategory, Float> satisfactoryDistance = new HashMap<BuildingCategory, Float>() {
+        {
+            put(BuildingCategory.FOOD, 5f);
+            put(BuildingCategory.RECREATIONAL, 5f);
+            put(BuildingCategory.EDUCATIONAL, 10f);
+        }
+    };
 }
