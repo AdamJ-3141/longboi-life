@@ -15,6 +15,7 @@ import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
+import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
@@ -26,7 +27,6 @@ import com.spacecomplexity.longboilife.game.world.World;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-
 
 /**
  * Main class to control the game logic.
@@ -44,6 +44,7 @@ public class GameScreen implements Screen {
     private World world;
 
     private final GameState gameState = GameState.getState();
+    private final GameEventManager gameEventManager = GameEventManager.getGameEventManager();
 
     public GameScreen(Main game) {
         this.game = game;
@@ -69,7 +70,7 @@ public class GameScreen implements Screen {
         }
 
         // Create a new timer for 5 minutes
-        MainTimer.getTimerManager().getTimer().setTimer(5 * 60 * 1000);
+        MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
         MainTimer.getTimerManager().getTimer().setEvent(() -> {
             EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
         });
@@ -92,10 +93,9 @@ public class GameScreen implements Screen {
 
         // Position camera in the center of the world map
         MainCamera.camera().position.set(new Vector3(
-            world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-            world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-            0
-        ));
+                world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+                world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+                0));
 
         // Set up an InputManager to handle user inputs
         inputManager = new InputManager(inputMultiplexer);
@@ -140,7 +140,8 @@ public class GameScreen implements Screen {
                 gameState.money -= cost;
 
                 // Remove the selected building if it is wanted to do so
-                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
+                if (Arrays.stream(Constants.dontRemoveSelection)
+                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -279,9 +280,11 @@ public class GameScreen implements Screen {
         RenderUtils.drawBuildings(batch, world, worldTint);
         // If there is a building to be placed draw it as a ghost building
         if (gameState.placingBuilding != null) {
-            RenderUtils.drawPlacingBuilding(batch, world, gameState.placingBuilding, new Color(1f, 1f, 1f, 0.75f), new Color(1f, 0f, 0f, 0.75f));
+            RenderUtils.drawPlacingBuilding(batch, world, gameState.placingBuilding, new Color(1f, 1f, 1f, 0.75f),
+                    new Color(1f, 0f, 0f, 0.75f));
         }
-        // If we are placing a building or there is a building selected then draw gridlines
+        // If we are placing a building or there is a building selected then draw
+        // gridlines
         if (gameState.placingBuilding != null || gameState.selectedBuilding != null) {
             RenderUtils.drawWorldGridlines(shapeRenderer, world, Color.BLACK);
         }
@@ -302,6 +305,7 @@ public class GameScreen implements Screen {
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
             GameUtils.updateSatisfactionScore(world);
+            gameEventManager.tryForGameEvent();
         }
     }
 
