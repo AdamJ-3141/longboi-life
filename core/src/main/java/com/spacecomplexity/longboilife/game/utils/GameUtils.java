@@ -97,18 +97,23 @@ public class GameUtils {
         if (!accomSatisfactionScore.isEmpty()) {
             float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();
             GameState gameState = GameState.getState();
-
-            float currentSatisfactionScore = gameState.satisfactionScore;
-            gameState.satisfactionChangePositive = Math.signum(newSatisfactionScore - currentSatisfactionScore) >= 0;
-            float satisfactionVel = (newSatisfactionScore - currentSatisfactionScore) / 500f;
-            gameState.satisfactionScoreDelta = (Math.abs(satisfactionVel) < 0.001) ? Math.signum(newSatisfactionScore - currentSatisfactionScore) * 0.001f : satisfactionVel;
-            if (gameState.satisfactionChangePositive) {
-                gameState.satisfactionScore = Math.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
-            } else {
-                gameState.satisfactionScore = Math.clamp(Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
-            }
+            gameState.targetSatisfaction = newSatisfactionScore;
         }
         return newSatisfactionSum;
+    }
+
+    public static void updateVisibleSatisfactionScore() {
+        GameState gameState = GameState.getState();
+        float currentSatisfactionScore = gameState.satisfactionScore;
+        float newSatisfactionScore = gameState.targetSatisfaction;
+        gameState.satisfactionChangePositive = Math.signum(newSatisfactionScore - currentSatisfactionScore) >= 0;
+        float satisfactionVel = (newSatisfactionScore - currentSatisfactionScore) / 500f;
+        gameState.satisfactionScoreDelta = (Math.abs(satisfactionVel) < 0.001) ? Math.signum(newSatisfactionScore - currentSatisfactionScore) * 0.001f : satisfactionVel;
+        if (gameState.satisfactionChangePositive) {
+            gameState.satisfactionScore = Math.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
+        } else {
+            gameState.satisfactionScore = Math.clamp(Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
+        }
     }
 
     public static GraphNode[] generateGraph(World world) {
