@@ -1,8 +1,9 @@
 package com.spacecomplexity.longboilife.game.globals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import com.spacecomplexity.longboilife.game.gameevent.GameEvent;
 import com.spacecomplexity.longboilife.game.gameevent.GameEventType;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
 
@@ -13,16 +14,16 @@ public class GameEventManager {
     private static final GameEventManager gameEventManager = new GameEventManager();
 
     Random random;
-    GameEventType[] eventTypes;
-    GameEvent currentGameEvent;
+    GameEventType currentGameEvent;
     private long lastGameEventTime;
     private int gameEventChance;
+    ArrayList<GameEventType> gameEventBag;
 
     private GameEventManager() {
         super();
         this.random = new Random();
-        this.eventTypes = GameEventType.values();
         lastGameEventTime = Constants.GAME_DURATION;
+        gameEventBag = new ArrayList<>(List.of(GameEventType.values()));
     }
 
     /**
@@ -33,7 +34,7 @@ public class GameEventManager {
         return gameEventManager;
     }
 
-    public GameEvent getCurrentGameEvent() {
+    public GameEventType getCurrentGameEvent() {
         return currentGameEvent;
     }
 
@@ -68,8 +69,16 @@ public class GameEventManager {
     /**
      * Rolls and returns a random event
      */
-    public GameEvent rollGameEvent() {
+    public GameEventType rollGameEvent() {
         // TODO: Make events weighted? Chosen in a more interesting manner?
-        return new GameEvent(eventTypes[random.nextInt(eventTypes.length)]);
+
+        /*
+         * A bag shuffle is used to make it so that events aren't repeated until all
+         * events have been seen
+         */
+        if (gameEventBag.size() == 0) {
+            gameEventBag.addAll(List.of(GameEventType.values()));
+        }
+        return gameEventBag.remove(random.nextInt(gameEventBag.size()));
     }
 }
