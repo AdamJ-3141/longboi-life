@@ -26,6 +26,7 @@ import com.spacecomplexity.longboilife.game.world.World;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +45,8 @@ public class GameScreen implements Screen {
     private World world;
 
     private final GameState gameState = GameState.getState();
+
+    private float timeSinceScoreUpdate = 0f;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -181,7 +184,6 @@ public class GameScreen implements Screen {
 
             // Open the selected building menu
             eventHandler.callEvent(EventHandler.Event.OPEN_SELECTED_MENU);
-
             return null;
         });
 
@@ -317,7 +319,13 @@ public class GameScreen implements Screen {
         // Do not update satisfaction score if the game is paused or has ended
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
-            GameUtils.updateSatisfactionScore(world);
+            float satisfactionSum = GameUtils.updateSatisfactionScore(world);
+            timeSinceScoreUpdate += delta;
+            if (timeSinceScoreUpdate >= 10) {
+                gameState.totalScore += Math.round(satisfactionSum * 100);
+                System.out.println(gameState.totalScore);
+                timeSinceScoreUpdate = 0;
+            }
         }
     }
 

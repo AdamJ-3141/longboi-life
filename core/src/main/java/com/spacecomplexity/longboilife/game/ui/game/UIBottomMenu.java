@@ -15,7 +15,9 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.game.utils.GameUtils;
 import com.spacecomplexity.longboilife.game.utils.UIUtils;
+import com.spacecomplexity.longboilife.game.world.World;
 
 /**
  * Class to represent the Bottom Menu UI.
@@ -107,7 +109,6 @@ public class UIBottomMenu extends UIElement {
             // Change background to ▶
             pauseButton.getStyle().up = playDrawable;
             pauseButton.getStyle().down = playDrawable;
-
             return null;
         });
         eventHandler.createEvent(EventHandler.Event.RESUME_GAME, (params) -> {
