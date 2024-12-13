@@ -93,6 +93,7 @@ public class GameUtils {
                 accomSatisfactionScore.put(node.getBuildingRef(), categoryScore.values().stream().reduce(0f, Float::sum)/ categoryScore.size());
             }
         }
+        System.out.println(accomSatisfactionScore.values());
         float newSatisfactionSum = accomSatisfactionScore.values().stream().reduce(0f, Float::sum);
         if (!accomSatisfactionScore.isEmpty()) {
             float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();
@@ -100,7 +101,8 @@ public class GameUtils {
 
             float currentSatisfactionScore = gameState.satisfactionScore;
             gameState.satisfactionChangePositive = Math.signum(newSatisfactionScore - currentSatisfactionScore) >= 0;
-            gameState.satisfactionScoreDelta = Math.max((newSatisfactionScore - currentSatisfactionScore) / 500f, 0.0001f);
+            float satisfactionVel = (newSatisfactionScore - currentSatisfactionScore) / 500f;
+            gameState.satisfactionScoreDelta = (Math.abs(satisfactionVel) < 0.001) ? Math.signum(newSatisfactionScore - currentSatisfactionScore) * 0.001f : satisfactionVel;
             if (gameState.satisfactionChangePositive) {
                 gameState.satisfactionScore = Math.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
             } else {
