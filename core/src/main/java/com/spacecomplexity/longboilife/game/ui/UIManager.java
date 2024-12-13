@@ -73,6 +73,7 @@ public class UIManager {
             new UIClockMenu(viewport, table, skin),
             new UISatisfactionMenu(viewport, table, skin),
             new UIMoneyMenu(viewport, table, skin),
+            new UIScoreMenu(viewport, table, skin),
             new UIBuildingCounter(viewport, table, skin),
             new UIAchievementPopup(viewport, table, skin),
         };
