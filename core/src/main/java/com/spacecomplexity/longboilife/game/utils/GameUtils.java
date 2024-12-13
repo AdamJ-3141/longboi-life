@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
+import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
@@ -11,6 +12,7 @@ import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A class used for game utilities.
@@ -64,67 +66,94 @@ public class GameUtils {
      */
     public static void updateSatisfactionScore(World world) {
 
-        Vector<Building> buildings = world.getBuildings();
+//        Vector<Building> buildings = world.getBuildings();
+//
+//        // Map containing buildings split into categories
+//        HashMap<BuildingCategory, Vector<Building>> categorisedBuildings = new HashMap<>();
+//
+//        // Get categories of buildings which will affect satisfaction score
+//        Set<BuildingCategory> searchBuildingCategories = new HashSet<>(Constants.satisfactoryDistance.keySet());
+//        // Temporarily add accommodation category so that accommodation buildings will be split out of the main building array
+//        searchBuildingCategories.add(BuildingCategory.ACCOMMODATION);
+//        // Initialise empty vectors
+//        for (BuildingCategory category : searchBuildingCategories) {
+//            categorisedBuildings.put(category, new Vector<>());
+//        }
+//        // Split buildings into categories
+//        for (Building building : buildings) {
+//            BuildingCategory category = building.getType().getCategory();
+//            if (searchBuildingCategories.contains(category)) {
+//                categorisedBuildings.get(category).add(building);
+//            }
+//        }
+//        // Remove the accommodation category
+//        searchBuildingCategories.remove(BuildingCategory.ACCOMMODATION);
+//
+//        // Check if any categories are empty, hence missing required buildings
+//        boolean emptyCategory = false;
+//        for (BuildingCategory category : searchBuildingCategories) {
+//            if (categorisedBuildings.get(category).isEmpty()) {
+//                emptyCategory = true;
+//            }
+//        }
+//
+//        // If there is are not required buildings this will be the default satisfaction modifier
+//        float satisfactionModifier = -2000f;
+//
+//        if (!emptyCategory) {
+//            // Get the maximum distance if items were placed on other sides of the map
+//            float mapMax = new Vector2Int(world.getWidth(), world.getHeight()).mag();
+//            satisfactionModifier = Float.MAX_VALUE;
+//
+//            // For every accommodation building
+//            for (Building accomidationBuilding : categorisedBuildings.get(BuildingCategory.ACCOMMODATION)) {
+//                float modifier = 0;
+//
+//                // Go through each other category of building
+//                for (BuildingCategory category : searchBuildingCategories) {
+//                    float closest = mapMax;
+//                    // Find the closest of this category of building
+//                    for (Building building : categorisedBuildings.get(category)) {
+//                        float distance = (accomidationBuilding.getPosition().subtract(building.getPosition())).mag();
+//                        if (distance < closest) {
+//                            closest = distance;
+//                        }
+//                    }
+//
+//                    // Update the modifier by the constants defined with the satisfactory distance from the category
+//                    modifier += Constants.satisfactoryDistance.get(category) - closest;
+//
+//                }
+//
+//                // Set the overall satisfaction modifier to the worst modifier from all accommodations
+//                satisfactionModifier = Math.min(satisfactionModifier, modifier);
+//            }
+//        }
 
-        // Map containing buildings split into categories
-        HashMap<BuildingCategory, Vector<Building>> categorisedBuildings = new HashMap<>();
-
-        // Get categories of buildings which will affect satisfaction score
-        Set<BuildingCategory> searchBuildingCategories = new HashSet<>(Constants.satisfactoryDistance.keySet());
-        // Temporarily add accommodation category so that accommodation buildings will be split out of the main building array
-        searchBuildingCategories.add(BuildingCategory.ACCOMMODATION);
-        // Initialise empty vectors
-        for (BuildingCategory category : searchBuildingCategories) {
-            categorisedBuildings.put(category, new Vector<>());
-        }
-        // Split buildings into categories
-        for (Building building : buildings) {
-            BuildingCategory category = building.getType().getCategory();
-            if (searchBuildingCategories.contains(category)) {
-                categorisedBuildings.get(category).add(building);
-            }
-        }
-        // Remove the accommodation category
-        searchBuildingCategories.remove(BuildingCategory.ACCOMMODATION);
-
-        // Check if any categories are empty, hence missing required buildings
-        boolean emptyCategory = false;
-        for (BuildingCategory category : searchBuildingCategories) {
-            if (categorisedBuildings.get(category).isEmpty()) {
-                emptyCategory = true;
-            }
-        }
-
-        // If there is are not required buildings this will be the default satisfaction modifier
-        float satisfactionModifier = -2000f;
-
-        if (!emptyCategory) {
-            // Get the maximum distance if items were placed on other sides of the map
-            float mapMax = new Vector2Int(world.getWidth(), world.getHeight()).mag();
-            satisfactionModifier = Float.MAX_VALUE;
-
-            // For every accommodation building
-            for (Building accomidationBuilding : categorisedBuildings.get(BuildingCategory.ACCOMMODATION)) {
-                float modifier = 0;
-
-                // Go through each other category of building
-                for (BuildingCategory category : searchBuildingCategories) {
-                    float closest = mapMax;
-                    // Find the closest of this category of building
-                    for (Building building : categorisedBuildings.get(category)) {
-                        float distance = (accomidationBuilding.getPosition().subtract(building.getPosition())).mag();
-                        if (distance < closest) {
-                            closest = distance;
-                        }
-                    }
-
-                    // Update the modifier by the constants defined with the satisfactory distance from the category
-                    modifier += Constants.satisfactoryDistance.get(category) - closest;
-
+        GraphNode[] buildingGraph = generateGraph(world);
+        HashMap<Building, Float> accomSatisfactionScore = new HashMap<>();
+        for (GraphNode node : buildingGraph) {
+            if (node.getBuildingRef().getType().getCategory() == BuildingCategory.ACCOMMODATION) {
+                float nodeSatisfactionScore = 0f;
+                HashMap<BuildingCategory, Float> categoryScore = new HashMap<>();
+                for (BuildingCategory cat : BuildingCategory.values()) {
+                    categoryScore.put(cat, 0f);
                 }
+                for (GraphNode connected : node.getConnectedNodes().keySet()) {
+                    if (connected.getBuildingRef().getType().getCategory() != BuildingCategory.ACCOMMODATION) {
+                        int dist = node.getConnectedNodes().get(connected);
+                        BuildingType type = connected.getBuildingRef().getType();
+                        BuildingCategory category = type.getCategory();
+                        float goodDist = Constants.satisfactoryDistance.get(category);
+                        float badDist = Constants.ignoreDistance.get(category);
+                        float distSatisfaction = (float) Math.exp(goodDist * (goodDist - dist)/badDist);
+                        float maxCost = Stream.of(BuildingType.getBuildingsOfType(category)).map(t -> t.getCost()).max(Float::compare).get();
+                        float qualitySatisfaction = type.getCost() / maxCost;
+                        float buildingSatisfaction = qualitySatisfaction * distSatisfaction;
+                        categoryScore.compute(category, (k, v) -> v + buildingSatisfaction);
 
-                // Set the overall satisfaction modifier to the worst modifier from all accommodations
-                satisfactionModifier = Math.min(satisfactionModifier, modifier);
+                    }
+                }
             }
         }
 
@@ -152,14 +181,17 @@ public class GameUtils {
     }
 
     public static GraphNode[] generateGraph(World world) {
-        Vector<Building> buildings = world.getBuildings();
+        Vector<Building> buildings = new Vector<>(world.getBuildings());
+        buildings.removeIf(b -> b.getType() == BuildingType.ROAD);
         GraphNode[] nodes = new GraphNode[buildings.size()];
         for (int i = 0; i < buildings.size(); i++) {
             Building b = buildings.get(i);
             nodes[i] = new GraphNode(b);
         }
-        for (GraphNode startNode : nodes) {
-            for (GraphNode endNode : nodes) {
+        for (int i = 0; i < nodes.length; i++) {
+            GraphNode startNode = nodes[i];
+            for (int j = i + 1; j < nodes.length; j++) {
+                GraphNode endNode = nodes[j];
                 int dist = world.getBuildingDistance(startNode.getBuildingRef(), endNode.getBuildingRef());
                 if (dist != Integer.MAX_VALUE) {
                     startNode.connectNode(endNode, dist);

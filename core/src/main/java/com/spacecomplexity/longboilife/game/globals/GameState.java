@@ -46,6 +46,8 @@ public class GameState {
      */
     public float satisfactionScore;
 
+    public int totalScore;
+
     /**
      * The building selected to be placed.
      * <p>

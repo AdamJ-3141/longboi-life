@@ -26,6 +26,7 @@ import com.spacecomplexity.longboilife.game.world.World;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 /**
@@ -181,9 +182,6 @@ public class GameScreen implements Screen {
 
             // Open the selected building menu
             eventHandler.callEvent(EventHandler.Event.OPEN_SELECTED_MENU);
-
-            GraphNode[] nodes = GameUtils.generateGraph(world);
-
             return null;
         });
 
