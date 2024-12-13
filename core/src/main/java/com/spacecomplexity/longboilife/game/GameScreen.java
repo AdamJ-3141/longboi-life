@@ -164,7 +164,7 @@ public class GameScreen implements Screen {
                 gameState.movingBuilding = null;
                 gameState.placingBuilding = null;
             }
-
+            GameUtils.updateSatisfactionScore(world);
             return null;
         });
 
@@ -213,7 +213,7 @@ public class GameScreen implements Screen {
             gameState.money += gameState.selectedBuilding.getType().getCost() * Constants.sellCostRecovery;
             // Deselect the removed building
             gameState.selectedBuilding = null;
-
+            GameUtils.updateSatisfactionScore(world);
             return null;
         });
 
@@ -235,7 +235,7 @@ public class GameScreen implements Screen {
 
             // Close the menu
             eventHandler.callEvent(EventHandler.Event.CLOSE_SELECTED_MENU);
-
+            GameUtils.updateSatisfactionScore(world);
             return null;
         });
 
@@ -323,11 +323,11 @@ public class GameScreen implements Screen {
         // Do not update satisfaction score if the game is paused or has ended
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
-            float satisfactionSum = GameUtils.updateSatisfactionScore(world);
+            GameUtils.updateVisibleSatisfactionScore();
             timeSinceScoreUpdate += delta;
             if (timeSinceScoreUpdate >= 10) {
+                float satisfactionSum = GameUtils.updateSatisfactionScore(world);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
-                System.out.println(gameState.totalScore);
                 timeSinceScoreUpdate = 0;
             }
             gameEventManager.tryForGameEvent();

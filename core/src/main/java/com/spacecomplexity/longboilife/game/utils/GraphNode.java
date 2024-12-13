@@ -30,19 +30,4 @@ public class GraphNode {
         return connectedNodes;
     }
 
-//    public void printFullGraph() {
-//        printFullGraph(new ArrayList<>());
-//    }
-//
-//    public void printFullGraph(ArrayList<GraphNode> nodes) {
-//        System.out.println(this);
-//        System.out.println("{");
-//        for (GraphNode node : connectedNodes) {
-//            if (!nodes.contains(node)) {
-//                nodes.add(node);
-//                node.printFullGraph(nodes);
-//            }
-//        }
-//        System.out.println("}");
-//    }
 }
