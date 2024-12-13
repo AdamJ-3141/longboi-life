@@ -47,6 +47,8 @@ public class GameState {
      */
     public float satisfactionScore;
 
+    public float targetSatisfaction;
+
     public int totalScore;
 
     /**
@@ -166,8 +168,9 @@ public class GameState {
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
 //        fullscreen = false;
-        money = 800000;
+        money = 50000;
         satisfactionScore = 0f;
+        targetSatisfaction = 0f;
         placingBuilding = null;
         selectedBuilding = null;
         movingBuilding = null;

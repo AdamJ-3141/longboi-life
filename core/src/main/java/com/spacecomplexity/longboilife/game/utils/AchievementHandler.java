@@ -23,6 +23,7 @@ public class AchievementHandler {
             boolean achieved = currentAchievement.isAchieved();
             if (achieved) {
                 //implement score changes
+                GameState.getState().totalScore += currentAchievement.scoreChange;
 
                 // updates the gamestate to have the current achievement
                 GameState.getState().currentAchievement = currentAchievement;
