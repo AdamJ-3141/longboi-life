@@ -46,6 +46,8 @@ public class GameScreen implements Screen {
 
     private final GameState gameState = GameState.getState();
 
+    private float timeSinceScoreUpdate = 0f;
+
     public GameScreen(Main game) {
         this.game = game;
 
@@ -294,7 +296,13 @@ public class GameScreen implements Screen {
         // Do not update satisfaction score if the game is paused or has ended
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
-            GameUtils.updateSatisfactionScore(world);
+            float satisfactionSum = GameUtils.updateSatisfactionScore(world);
+            timeSinceScoreUpdate += delta;
+            if (timeSinceScoreUpdate >= 10) {
+                gameState.totalScore += Math.round(satisfactionSum * 100);
+                System.out.println(gameState.totalScore);
+                timeSinceScoreUpdate = 0;
+            }
         }
     }
 

@@ -62,72 +62,10 @@ public class GameUtils {
      * chosen to act as the satisfaction modifier, this then updates the satisfaction velocity.
      *
      * @param world the world reference for buildings.
+     *
+     * @return the sum of the satisfactions of each accommodation building.
      */
-    public static void updateSatisfactionScore(World world) {
-
-//        Vector<Building> buildings = world.getBuildings();
-//
-//        // Map containing buildings split into categories
-//        HashMap<BuildingCategory, Vector<Building>> categorisedBuildings = new HashMap<>();
-//
-//        // Get categories of buildings which will affect satisfaction score
-//        Set<BuildingCategory> searchBuildingCategories = new HashSet<>(Constants.satisfactoryDistance.keySet());
-//        // Temporarily add accommodation category so that accommodation buildings will be split out of the main building array
-//        searchBuildingCategories.add(BuildingCategory.ACCOMMODATION);
-//        // Initialise empty vectors
-//        for (BuildingCategory category : searchBuildingCategories) {
-//            categorisedBuildings.put(category, new Vector<>());
-//        }
-//        // Split buildings into categories
-//        for (Building building : buildings) {
-//            BuildingCategory category = building.getType().getCategory();
-//            if (searchBuildingCategories.contains(category)) {
-//                categorisedBuildings.get(category).add(building);
-//            }
-//        }
-//        // Remove the accommodation category
-//        searchBuildingCategories.remove(BuildingCategory.ACCOMMODATION);
-//
-//        // Check if any categories are empty, hence missing required buildings
-//        boolean emptyCategory = false;
-//        for (BuildingCategory category : searchBuildingCategories) {
-//            if (categorisedBuildings.get(category).isEmpty()) {
-//                emptyCategory = true;
-//            }
-//        }
-//
-//        // If there is are not required buildings this will be the default satisfaction modifier
-//        float satisfactionModifier = -2000f;
-//
-//        if (!emptyCategory) {
-//            // Get the maximum distance if items were placed on other sides of the map
-//            float mapMax = new Vector2Int(world.getWidth(), world.getHeight()).mag();
-//            satisfactionModifier = Float.MAX_VALUE;
-//
-//            // For every accommodation building
-//            for (Building accomidationBuilding : categorisedBuildings.get(BuildingCategory.ACCOMMODATION)) {
-//                float modifier = 0;
-//
-//                // Go through each other category of building
-//                for (BuildingCategory category : searchBuildingCategories) {
-//                    float closest = mapMax;
-//                    // Find the closest of this category of building
-//                    for (Building building : categorisedBuildings.get(category)) {
-//                        float distance = (accomidationBuilding.getPosition().subtract(building.getPosition())).mag();
-//                        if (distance < closest) {
-//                            closest = distance;
-//                        }
-//                    }
-//
-//                    // Update the modifier by the constants defined with the satisfactory distance from the category
-//                    modifier += Constants.satisfactoryDistance.get(category) - closest;
-//
-//                }
-//
-//                // Set the overall satisfaction modifier to the worst modifier from all accommodations
-//                satisfactionModifier = Math.min(satisfactionModifier, modifier);
-//            }
-//        }
+    public static float updateSatisfactionScore(World world) {
 
         GraphNode[] buildingGraph = generateGraph(world);
         HashMap<Building, Float> accomSatisfactionScore = new HashMap<>();
@@ -164,11 +102,12 @@ public class GameUtils {
             gameState.satisfactionChangePositive = Math.signum(newSatisfactionScore - currentSatisfactionScore) >= 0;
             gameState.satisfactionScoreDelta = Math.max((newSatisfactionScore - currentSatisfactionScore) / 500f, 0.0001f);
             if (gameState.satisfactionChangePositive) {
-                gameState.satisfactionScore = Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta);
+                gameState.satisfactionScore = Math.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
             } else {
-                gameState.satisfactionScore = Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta);
+                gameState.satisfactionScore = Math.clamp(Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
             }
         }
+        return newSatisfactionSum;
     }
 
     public static GraphNode[] generateGraph(World world) {
