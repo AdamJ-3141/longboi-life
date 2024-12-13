@@ -54,7 +54,7 @@ public class UISatisfactionMenu extends UIElement {
 
     public void render() {
         scoreLabel.setText(String.format("%.2f%%", GameState.getState().satisfactionScore * 100));
-        scoreLabel.setColor(GameState.getState().satisfactionModifierPositive ? Color.GREEN : Color.RED);
+        scoreLabel.setColor(GameState.getState().satisfactionChangePositive ? Color.GREEN : Color.RED);
         satisfactionBar.setValue(GameState.getState().satisfactionScore);
     }
 

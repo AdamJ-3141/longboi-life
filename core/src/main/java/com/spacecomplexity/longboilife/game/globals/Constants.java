@@ -78,8 +78,16 @@ public class Constants {
     public static HashMap<BuildingCategory, Float> satisfactoryDistance = new HashMap<BuildingCategory, Float>() {
         {
             put(BuildingCategory.FOOD, 5f);
-            put(BuildingCategory.RECREATIONAL, 5f);
-            put(BuildingCategory.EDUCATIONAL, 10f);
+            put(BuildingCategory.RECREATIONAL, 10f);
+            put(BuildingCategory.EDUCATIONAL, 5f);
+        }
+    };
+
+    public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<BuildingCategory, Float>() {
+        {
+            put(BuildingCategory.FOOD, 25f);
+            put(BuildingCategory.RECREATIONAL, 30f);
+            put(BuildingCategory.EDUCATIONAL, 30f);
         }
     };
 }

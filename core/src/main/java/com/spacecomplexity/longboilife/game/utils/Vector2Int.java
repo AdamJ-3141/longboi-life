@@ -6,7 +6,10 @@ package com.spacecomplexity.longboilife.game.utils;
 public class Vector2Int {
     public int x;
     public int y;
-
+    public static Vector2Int UP = new Vector2Int(0, 1);
+    public static Vector2Int DOWN = new Vector2Int(0, -1);
+    public static Vector2Int LEFT = new Vector2Int(-1, 0);
+    public static Vector2Int RIGHT = new Vector2Int(1, 0);
     /**
      * Initialise a blank Vector, (0, 0).
      */
@@ -81,5 +84,9 @@ public class Vector2Int {
      */
     public float mag() {
         return (float) Math.sqrt(mag2());
+    }
+
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 }
