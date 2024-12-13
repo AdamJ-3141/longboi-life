@@ -1,8 +1,11 @@
 package com.spacecomplexity.longboilife.game.achievement;
 
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+
+import java.util.ArrayList;
 
 public enum AchievementType {
     FIRSTBUILDING("First building", 100) {
@@ -23,7 +26,7 @@ public enum AchievementType {
             return GameState.getState().getBuildingCount() >= 10;
         }
     },
-    FULLMAP("Fill the map up", 1000000) {
+    FULLMAP("Fill the map up", 20000) {
         /**
          * checks if there are any buildable tiles on the map
          * @return  true if so
@@ -41,7 +44,7 @@ public enum AchievementType {
             return GameState.getState().getBuildingCount(BuildingType.GREGGS) >=5;
         }
     },
-    TWOHUNDREDROAD("Highway to Hell", 100000) {
+    THREEHUNDREDROAD("Highway to Hell", 50000) {
         /**
          * checks if 300 roads have been built
          * @return  true if so
@@ -50,28 +53,36 @@ public enum AchievementType {
             return GameState.getState().getBuildingCount(BuildingType.ROAD) >=300;
         }
     },
-    ONEOFEACH("One of each building", 1000) {
+    ONEOFEACH("One of each building", 2000) {
         /**
          * checks if 1 of each building is built
          * @return  true if so
          */
         public boolean isAchieved() {
-            return GameState.getState().getBuildingCount(BuildingType.GREGGS) >=1 &&
-                    GameState.getState().getBuildingCount(BuildingType.GYM) >=1 &&
-                    GameState.getState().getBuildingCount(BuildingType.HALLS) >=1 &&
-                    GameState.getState().getBuildingCount(BuildingType.LIBRARY) >=1;
+            BuildingType[] buildingTypes = BuildingType.values();
+            ArrayList<Boolean> placedMoreThanOne = new ArrayList<>();
+            for (BuildingType buildingType : buildingTypes) {
+                if (buildingType.getCategory() != BuildingCategory.PATHWAY) {
+                    placedMoreThanOne.add(GameState.getState().getBuildingCount(buildingType) >= 1);
+                }
+            }
+            return !placedMoreThanOne.contains(false);
         }
     },
-    FIVEOFEACH("Five of each building", 100000) {
+    FIVEOFEACH("Five of each building", 10000) {
         /**
          * checks if 5 of each building is built
          * @return  true if so
          */
         public boolean isAchieved() {
-            return GameState.getState().getBuildingCount(BuildingType.GREGGS) >=5 &&
-                    GameState.getState().getBuildingCount(BuildingType.GYM) >=5 &&
-                    GameState.getState().getBuildingCount(BuildingType.HALLS) >=5 &&
-                    GameState.getState().getBuildingCount(BuildingType.LIBRARY) >=5;
+            BuildingType[] buildingTypes = BuildingType.values();
+            ArrayList<Boolean> placedMoreThanFive = new ArrayList<>();
+            for (BuildingType buildingType : buildingTypes) {
+                if (buildingType.getCategory() != BuildingCategory.PATHWAY) {
+                    placedMoreThanFive.add(GameState.getState().getBuildingCount(buildingType) >=5);
+                }
+            }
+            return !placedMoreThanFive.contains(false);
         }
     },
 

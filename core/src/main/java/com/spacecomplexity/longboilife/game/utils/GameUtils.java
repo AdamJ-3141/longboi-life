@@ -93,7 +93,6 @@ public class GameUtils {
                 accomSatisfactionScore.put(node.getBuildingRef(), categoryScore.values().stream().reduce(0f, Float::sum)/ categoryScore.size());
             }
         }
-        System.out.println(accomSatisfactionScore.values());
         float newSatisfactionSum = accomSatisfactionScore.values().stream().reduce(0f, Float::sum);
         if (!accomSatisfactionScore.isEmpty()) {
             float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();

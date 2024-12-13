@@ -323,7 +323,6 @@ public class GameScreen implements Screen {
             timeSinceScoreUpdate += delta;
             if (timeSinceScoreUpdate >= 10) {
                 gameState.totalScore += Math.round(satisfactionSum * 100);
-                System.out.println(gameState.totalScore);
                 timeSinceScoreUpdate = 0;
             }
         }
