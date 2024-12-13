@@ -8,7 +8,6 @@ import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
-import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.*;
@@ -134,9 +133,8 @@ public class GameUtils {
         HashMap<Building, Float> accomSatisfactionScore = new HashMap<>();
         for (GraphNode node : buildingGraph) {
             if (node.getBuildingRef().getType().getCategory() == BuildingCategory.ACCOMMODATION) {
-                float nodeSatisfactionScore = 0f;
                 HashMap<BuildingCategory, Float> categoryScore = new HashMap<>();
-                for (BuildingCategory cat : BuildingCategory.values()) {
+                for (BuildingCategory cat : Constants.satisfactoryDistance.keySet()) {
                     categoryScore.put(cat, 0f);
                 }
                 for (GraphNode connected : node.getConnectedNodes().keySet()) {
@@ -146,38 +144,31 @@ public class GameUtils {
                         BuildingCategory category = type.getCategory();
                         float goodDist = Constants.satisfactoryDistance.get(category);
                         float badDist = Constants.ignoreDistance.get(category);
-                        float distSatisfaction = (float) Math.exp(goodDist * (goodDist - dist)/badDist);
-                        float maxCost = Stream.of(BuildingType.getBuildingsOfType(category)).map(t -> t.getCost()).max(Float::compare).get();
+                        float distSatisfaction = (float) Math.min(1, Math.exp(goodDist * (goodDist - dist)/badDist));
+                        Optional<Float> max = Stream.of(BuildingType.getBuildingsOfType(category)).map(BuildingType::getCost).max(Float::compare);
+                        float maxCost = max.orElse(1f);
                         float qualitySatisfaction = type.getCost() / maxCost;
                         float buildingSatisfaction = qualitySatisfaction * distSatisfaction;
-                        categoryScore.compute(category, (k, v) -> v + buildingSatisfaction);
-
+                        categoryScore.compute(category, (k, v) -> Math.clamp(v + buildingSatisfaction, 0, 1));
                     }
                 }
+                accomSatisfactionScore.put(node.getBuildingRef(), categoryScore.values().stream().reduce(0f, Float::sum)/ categoryScore.size());
             }
         }
+        float newSatisfactionSum = accomSatisfactionScore.values().stream().reduce(0f, Float::sum);
+        if (!accomSatisfactionScore.isEmpty()) {
+            float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();
+            GameState gameState = GameState.getState();
 
-        GameState gameState = GameState.getState();
-
-        // Update whether the last satisfaction modifier was positive
-        boolean newSatisfactionModifierPositive = satisfactionModifier >= 0;
-        if (newSatisfactionModifierPositive != gameState.satisfactionModifierPositive) {
-            // Reset satisfaction velocity direction flips
-            gameState.satisfactionScoreVelocity = 0;
+            float currentSatisfactionScore = gameState.satisfactionScore;
+            gameState.satisfactionChangePositive = Math.signum(newSatisfactionScore - currentSatisfactionScore) >= 0;
+            gameState.satisfactionScoreDelta = Math.max((newSatisfactionScore - currentSatisfactionScore) / 500f, 0.0001f);
+            if (gameState.satisfactionChangePositive) {
+                gameState.satisfactionScore = Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta);
+            } else {
+                gameState.satisfactionScore = Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta);
+            }
         }
-        gameState.satisfactionModifierPositive = newSatisfactionModifierPositive;
-
-        // Increase satisfaction velocity based on the satisfaction modifier
-        float newSatisfactionVelocity = gameState.satisfactionScoreVelocity + (satisfactionModifier / 1000000f);
-        // Limit satisfaction velocity to -1% to 1%
-        newSatisfactionVelocity = Math.max(-0.01f, Math.min(newSatisfactionVelocity, 0.01f));
-        gameState.satisfactionScoreVelocity = newSatisfactionVelocity;
-
-        // Update satisfaction score with velocity
-        float newSatisfactionScore = gameState.satisfactionScore + gameState.satisfactionScoreVelocity * Gdx.graphics.getDeltaTime();
-        // Limit satisfaction score between 0% and 10% * number of accommodation buildings
-        newSatisfactionScore = Math.max(0, Math.min(newSatisfactionScore, Math.min(categorisedBuildings.get(BuildingCategory.ACCOMMODATION).size() * 0.1f, 1f)));
-        gameState.satisfactionScore = newSatisfactionScore;
     }
 
     public static GraphNode[] generateGraph(World world) {

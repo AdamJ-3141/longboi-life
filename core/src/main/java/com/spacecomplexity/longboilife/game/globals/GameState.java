@@ -113,12 +113,12 @@ public class GameState {
     /**
      * The value that the satisfaction score changes by each second.
      */
-    public float satisfactionScoreVelocity = 0;
+    public float satisfactionScoreDelta = 0;
 
     /**
      * If the last satisfaction modifier calculated was positive.
      */
-    public boolean satisfactionModifierPositive = false;
+    public boolean satisfactionChangePositive = false;
 
     /**
      * If the game has ended
@@ -155,8 +155,8 @@ public class GameState {
         movingBuilding = null;
         paused = false;
         buildingsCount = new HashMap<>();
-        satisfactionScoreVelocity = 0;
-        satisfactionModifierPositive = false;
+        satisfactionScoreDelta = 0;
+        satisfactionChangePositive = false;
         gameOver = false;
     }
 }
