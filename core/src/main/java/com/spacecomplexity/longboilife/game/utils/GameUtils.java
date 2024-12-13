@@ -1,6 +1,7 @@
 package com.spacecomplexity.longboilife.game.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
@@ -87,7 +88,7 @@ public class GameUtils {
                         float maxCost = max.orElse(1f);
                         float qualitySatisfaction = type.getCost() / maxCost;
                         float buildingSatisfaction = qualitySatisfaction * distSatisfaction;
-                        categoryScore.compute(category, (k, v) -> Math.clamp(v + buildingSatisfaction, 0, 1));
+                        categoryScore.compute(category, (k, v) -> MathUtils.clamp(v + buildingSatisfaction, 0, 1));
                     }
                 }
                 accomSatisfactionScore.put(node.getBuildingRef(), categoryScore.values().stream().reduce(0f, Float::sum)/ categoryScore.size());
@@ -110,9 +111,9 @@ public class GameUtils {
         float satisfactionVel = (newSatisfactionScore - currentSatisfactionScore) / 500f;
         gameState.satisfactionScoreDelta = (Math.abs(satisfactionVel) < 0.001) ? Math.signum(newSatisfactionScore - currentSatisfactionScore) * 0.001f : satisfactionVel;
         if (gameState.satisfactionChangePositive) {
-            gameState.satisfactionScore = Math.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
+            gameState.satisfactionScore = MathUtils.clamp(Math.min(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
         } else {
-            gameState.satisfactionScore = Math.clamp(Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
+            gameState.satisfactionScore = MathUtils.clamp(Math.max(newSatisfactionScore, currentSatisfactionScore + gameState.satisfactionScoreDelta), 0f, 1f);
         }
     }
 
