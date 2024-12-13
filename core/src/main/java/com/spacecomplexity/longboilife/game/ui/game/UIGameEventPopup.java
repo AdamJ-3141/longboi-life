@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.spacecomplexity.longboilife.game.gameevent.GameEvent;
+import com.spacecomplexity.longboilife.game.gameevent.GameEventType;
 import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
@@ -34,7 +34,7 @@ public class UIGameEventPopup extends UIElement {
         // Initialise title label
         title = new Label(null, skin);
         title.setFontScale(1.5f);
-        title.setColor(Color.GREEN);
+        title.setColor(Color.WHITE);
 
         description = new Label(null, skin);
         description.setFontScale(1f);
@@ -64,9 +64,14 @@ public class UIGameEventPopup extends UIElement {
     public void render() {
     }
 
-    public void showPopup(GameEvent gameEvent) {
-        title.setText(gameEvent.getType().getDisplayName());
-        description.setText(gameEvent.getType().getEventMessage());
+    public void showPopup(GameEventType gameEvent) {
+        title.setText(gameEvent.getDisplayName());
+        if (gameEvent.getScoreEffect() > 0) {
+            title.setColor(Color.GREEN);
+        } else {
+            title.setColor(Color.RED);
+        }
+        description.setText(gameEvent.getEventMessage());
         table.setVisible(true);
     }
 
