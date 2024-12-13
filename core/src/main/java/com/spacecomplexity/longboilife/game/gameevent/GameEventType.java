@@ -2,7 +2,8 @@ package com.spacecomplexity.longboilife.game.gameevent;
 
 public enum GameEventType {
     GRADUATION("Graduation", 20, "It's graduation day"),
-    CELEBRITY("Celebrity visit", 5, "A celebrity is visiting the university");
+    CELEBRITY("Celebrity visit", 5, "A celebrity is visiting the university"),
+    PLAGUE("Fresher's Flu", -30, "Fresher's flu is running rampant!");
 
     private final String displayName;
     private final float scoreEffect;
