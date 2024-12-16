@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.building.Building;
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
@@ -47,6 +48,7 @@ public class GameScreen implements Screen {
     private final GameState gameState = GameState.getState();
 
     private float timeSinceScoreUpdate = 0f;
+    private float timeSinceMoneyAdded = 0f;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -321,10 +323,15 @@ public class GameScreen implements Screen {
             // Update the satisfaction score
             GameUtils.updateVisibleSatisfactionScore();
             timeSinceScoreUpdate += delta;
+            timeSinceMoneyAdded += delta;
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
+            }
+            if (timeSinceMoneyAdded >= 5) {
+                timeSinceMoneyAdded = 0;
+                gameState.money += 10000 * world.buildings.stream().filter(building -> building.getType().getCategory() == BuildingCategory.ACCOMMODATION).count();
             }
         }
     }
