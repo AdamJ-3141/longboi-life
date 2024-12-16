@@ -9,14 +9,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 /**
- * Class to represent the Money UI.
+ * Class to represent the Score UI.
  */
 public class UIScoreMenu extends UIElement {
-    private Label label;
+    private final Label label;
 
     /**
      * Initialise score menu elements.
