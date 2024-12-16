@@ -5,7 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 
@@ -15,7 +17,7 @@ import java.util.Arrays;
  * Class to represent the UI building counter.
  */
 public class UIBuildingCounter extends UIElement {
-    private Label counterLabel;
+    private final Label[] counterLabels;
 
     /**
      * Initialise clock menu elements.
@@ -27,41 +29,52 @@ public class UIBuildingCounter extends UIElement {
     public UIBuildingCounter(Viewport uiViewport, Table parentTable, Skin skin) {
         super(uiViewport, parentTable, skin);
 
-        // Initialise building label
-        String buildingList = String.join(
-            "\r\n",
-            Arrays.stream(BuildingType.values())
-                .map(BuildingType::getDisplayName)
-                .toArray(String[]::new)
-        );
-        Label buildingLabel = new Label(buildingList, skin);
-        buildingLabel.setFontScale(1f);
-        buildingLabel.setColor(Color.WHITE);
+        String[] buildingList = new String[BuildingCategory.values().length];
+        Label[] buildingLabels = new Label[buildingList.length];
+        counterLabels = new Label[buildingList.length];
+        for (int i = 0; i < BuildingCategory.values().length; i++) {
+            BuildingCategory category = BuildingCategory.values()[i];
+            buildingList[i] = String.join(
+                "\r\n",
+                Arrays.stream(BuildingType.values())
+                    .filter(type -> type.getCategory().equals(category))
+                    .map(BuildingType::getDisplayName)
+                    .toArray(String[]::new)
+            );
 
-        // Initialise counter label
-        counterLabel = new Label(null, skin);
-        counterLabel.setFontScale(1f);
-        counterLabel.setColor(Color.WHITE);
+            buildingLabels[i] = new Label(buildingList[i], skin);
+            buildingLabels[i].setColor(Constants.categoryColours.get(category));
+            buildingLabels[i].setFontScale(1f);
 
-        // Place labels onto table
-        table.left().padLeft(15).add(buildingLabel);
-        table.add(counterLabel).padLeft(5);
+            counterLabels[i] = new Label(null, skin);
+            counterLabels[i].setFontScale(1f);
+            counterLabels[i].setColor(Color.WHITE);
+
+            table.left().padLeft(15).add(buildingLabels[i]).fillX();
+            table.add(counterLabels[i]).padLeft(5);
+            table.row();
+        }
+
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
-        table.setSize(100, 110);
+        table.setSize(150, 310);
         placeTable();
     }
 
     public void render() {
         // Get the count of all buildings and display them
-        String buildingCount = String.join(
-            "\r\n",
-            Arrays.stream(BuildingType.values())
-                .map((buildingType -> GameState.getState().getBuildingCount(buildingType).toString()))
-                .toArray(String[]::new)
-        );
-        counterLabel.setText(buildingCount);
+        for (int i = 0; i < BuildingCategory.values().length; i++) {
+            int finalI = i;
+            String buildingCount = String.join(
+                "\r\n",
+                Arrays.stream(BuildingType.values())
+                    .filter(type -> type.getCategory() == BuildingCategory.values()[finalI])
+                    .map((buildingType -> GameState.getState().getBuildingCount(buildingType).toString()))
+                    .toArray(String[]::new)
+            );
+            counterLabels[i].setText(buildingCount);
+        }
     }
 
     @Override
