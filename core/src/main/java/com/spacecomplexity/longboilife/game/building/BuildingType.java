@@ -28,9 +28,9 @@ public enum BuildingType {
     FOOTBALLFIELD("Football Field", new Texture("buildings/football_field.png"), new Vector2Int(2, 4), BuildingCategory.RECREATIONAL, 80000),
     BIKESTORE("Bike Storage", new Texture("buildings/bike_storage.png"), new Vector2Int(1, 1), BuildingCategory.RECREATIONAL, 5000),
 
-    HALLS("Halls", new Texture("buildings/halls.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 12000),
-    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 8000),
-    LUXURYFLATS("Luxury Flats", new Texture("buildings/luxury_flats.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 20000),
+    HALLS("Halls", new Texture("buildings/halls.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 15000),
+    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 4000),
+    LUXURYFLATS("Luxury Flats", new Texture("buildings/luxury_flats.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 30000),
 
     ROAD("Road", new Texture("buildings/roads/straight.png"), new Vector2Int(1, 1), BuildingCategory.PATHWAY, 100),
     ;

@@ -27,8 +27,6 @@ import com.spacecomplexity.longboilife.game.world.World;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.HashMap;
-
 
 /**
  * Main class to control the game logic.
@@ -36,8 +34,8 @@ import java.util.HashMap;
 public class GameScreen implements Screen {
     private final Main game;
 
-    private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
     private UIManager ui;
     private InputManager inputManager;
 
@@ -75,9 +73,7 @@ public class GameScreen implements Screen {
 
         // Create a new timer for 5 minutes
         MainTimer.getTimerManager().getTimer().setTimer(5 * 60 * 1000);
-        MainTimer.getTimerManager().getTimer().setEvent(() -> {
-            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
-        });
+        MainTimer.getTimerManager().getTimer().setEvent(() -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -93,7 +89,7 @@ public class GameScreen implements Screen {
         GameUtils.calculateScaling();
 
         // Initialise UI elements with UIManager
-        ui = new UIManager(inputMultiplexer);
+        ui = new UIManager(inputMultiplexer, world);
 
         // Position camera in the center of the world map
         MainCamera.camera().position.set(new Vector3(
@@ -331,7 +327,11 @@ public class GameScreen implements Screen {
             }
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
-                gameState.money += 10000 * world.buildings.stream().filter(building -> building.getType().getCategory() == BuildingCategory.ACCOMMODATION).count();
+                gameState.money += (world.buildings.stream()
+                                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                                    .reduce(0f, Float::sum)
+                                    * 100);
             }
         }
     }

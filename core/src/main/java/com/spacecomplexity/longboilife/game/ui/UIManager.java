@@ -16,14 +16,15 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.game.*;
 import com.spacecomplexity.longboilife.game.ui.gameover.UIOverview;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.game.world.World;
 
 /**
  * Class to manage the UI in the game.
  */
 public class UIManager {
-    private Viewport viewport;
+    private final Viewport viewport;
 
-    private Stage stage;
+    private final Stage stage;
     private final Skin skin;
 
     private UIElement[] uiElements;
@@ -33,7 +34,7 @@ public class UIManager {
      *
      * @param inputMultiplexer to add the UI events to the input processing
      */
-    public UIManager(InputMultiplexer inputMultiplexer) {
+    public UIManager(InputMultiplexer inputMultiplexer, World world) {
         // Initialise viewport for rescaling
         viewport = new ScalingViewport(Scaling.fit, 640, 480);
 
@@ -65,6 +66,7 @@ public class UIManager {
         skin.get("default", Label.LabelStyle.class).font = ourFont12;
         skin.get("default", TextButton.TextButtonStyle.class).font = ourFont16;
 
+
         // Create our UI elements
         // Note: The order of these is the order that they will be rendered
         uiElements = new UIElement[]{
@@ -76,6 +78,7 @@ public class UIManager {
             new UIScoreMenu(viewport, table, skin),
             new UIBuildingCounter(viewport, table, skin),
             new UIAchievementPopup(viewport, table, skin),
+            new UIAccomSatisfactionTooltip(viewport, table, skin, world),
         };
 
         // Hide game UI and show end UI

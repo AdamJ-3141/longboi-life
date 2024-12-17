@@ -1,10 +1,14 @@
 package com.spacecomplexity.longboilife.game.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
  * Class for utils relating to UI.
@@ -97,4 +101,11 @@ public class UIUtils {
         // Add tint to show it is disabled
         actor.setColor(Color.LIGHT_GRAY);
     }
+
+    public static Vector2 getMousePositionInViewport(Viewport viewport) {
+        Vector3 mouse = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        viewport.unproject(mouse);
+        return new Vector2(mouse.x, mouse.y);
+    }
+
 }

@@ -2,7 +2,6 @@ package com.spacecomplexity.longboilife.game.globals;
 
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
-import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 
 import java.util.HashMap;
@@ -49,6 +48,8 @@ public class GameState {
     public float satisfactionScore;
 
     public float targetSatisfaction;
+
+    public HashMap<Building, Float> accomSatisfaction;
 
     public int totalScore;
 
@@ -172,6 +173,7 @@ public class GameState {
         money = 50000;
         satisfactionScore = 0f;
         targetSatisfaction = 0f;
+        accomSatisfaction = new HashMap<>();
         placingBuilding = null;
         selectedBuilding = null;
         movingBuilding = null;

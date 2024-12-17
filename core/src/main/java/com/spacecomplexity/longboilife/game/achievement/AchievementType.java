@@ -26,7 +26,7 @@ public enum AchievementType {
             return GameState.getState().getBuildingCount() >= 10;
         }
     },
-    FULLMAP("Fill the map up", 20000) {
+    FULLMAP("Fill the map up", 10000) {
         /**
          * checks if there are any buildable tiles on the map
          * @return  true if so
@@ -35,7 +35,7 @@ public enum AchievementType {
             return !(boolean) EventHandler.getEventHandler().callEvent(EventHandler.Event.ISBUILDABLE);
         }
     },
-    FIVEGREGGS("Build 5 Greggs", 10000) {
+    FIVEGREGGS("Build 5 Greggs", 1000) {
         /**
          * checks if there are any buildable tiles on the map
          * @return  true if so
@@ -44,7 +44,7 @@ public enum AchievementType {
             return GameState.getState().getBuildingCount(BuildingType.GREGGS) >=5;
         }
     },
-    THREEHUNDREDROAD("Highway to Hell", 50000) {
+    THREEHUNDREDROAD("Highway to Hell", 3000) {
         /**
          * checks if 300 roads have been built
          * @return  true if so
@@ -69,7 +69,7 @@ public enum AchievementType {
             return !placedMoreThanOne.contains(false);
         }
     },
-    FIVEOFEACH("Five of each building", 10000) {
+    FIVEOFEACH("Five of each building", 2000) {
         /**
          * checks if 5 of each building is built
          * @return  true if so
