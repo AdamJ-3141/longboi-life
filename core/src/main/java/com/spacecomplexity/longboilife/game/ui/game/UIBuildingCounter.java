@@ -20,7 +20,11 @@ public class UIBuildingCounter extends UIElement {
     private final Label[] counterLabels;
 
     /**
-     * Initialise clock menu elements.
+     * Initialise building counter menu elements.
+     * <p>
+     * Creates two labels per {@link BuildingCategory}, the list of building types,
+     * and the list of building counters. The list of building types will be a
+     * different colour based on the category.
      *
      * @param uiViewport  the viewport used to render UI.
      * @param parentTable the table to render this element onto.
@@ -29,10 +33,15 @@ public class UIBuildingCounter extends UIElement {
     public UIBuildingCounter(Viewport uiViewport, Table parentTable, Skin skin) {
         super(uiViewport, parentTable, skin);
 
+        // Initialise the lists of building category labels.
         String[] buildingList = new String[BuildingCategory.values().length];
         Label[] buildingLabels = new Label[buildingList.length];
         counterLabels = new Label[buildingList.length];
+
+        // For each category, create one of each kind of label.
         for (int i = 0; i < BuildingCategory.values().length; i++) {
+
+            // Get a list of all the BuildingType display names of the category.
             BuildingCategory category = BuildingCategory.values()[i];
             buildingList[i] = String.join(
                 "\r\n",
@@ -42,6 +51,7 @@ public class UIBuildingCounter extends UIElement {
                     .toArray(String[]::new)
             );
 
+            // Add the new building type and counter labels to the table.
             buildingLabels[i] = new Label(buildingList[i], skin);
             buildingLabels[i].setColor(Constants.categoryColours.get(category));
             buildingLabels[i].setFontScale(1f);
@@ -73,6 +83,7 @@ public class UIBuildingCounter extends UIElement {
                     .map((buildingType -> GameState.getState().getBuildingCount(buildingType).toString()))
                     .toArray(String[]::new)
             );
+            // Update each category's building count label.
             counterLabels[i].setText(buildingCount);
         }
     }

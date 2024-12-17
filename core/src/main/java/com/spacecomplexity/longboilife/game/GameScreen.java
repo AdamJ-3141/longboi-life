@@ -67,6 +67,7 @@ public class GameScreen implements Screen {
         // Creates a new World object from "map.json" file
         try {
             world = new World(Gdx.files.internal("map.json"));
+            gameState.gameWorld = world;
         } catch (FileNotFoundException | InvalidSaveMapException e) {
             throw new RuntimeException(e);
         }
@@ -89,7 +90,7 @@ public class GameScreen implements Screen {
         GameUtils.calculateScaling();
 
         // Initialise UI elements with UIManager
-        ui = new UIManager(inputMultiplexer, world);
+        ui = new UIManager(inputMultiplexer);
 
         // Position camera in the center of the world map
         MainCamera.camera().position.set(new Vector3(
@@ -141,7 +142,7 @@ public class GameScreen implements Screen {
                 gameState.money -= cost;
 
                 // Remove the selected building if it is wanted to do so
-                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
+                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category) && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -318,13 +319,19 @@ public class GameScreen implements Screen {
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
             GameUtils.updateVisibleSatisfactionScore();
+
+            // Increase the time in seconds since money and score have been added.
             timeSinceScoreUpdate += delta;
             timeSinceMoneyAdded += delta;
+
+            // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
             }
+
+            // Add money equal to the sum of the square roots of the costs of accommodations * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
                 gameState.money += (world.buildings.stream()
