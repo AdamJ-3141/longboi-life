@@ -84,14 +84,26 @@ public class GameUtils {
                         float goodDist = Constants.satisfactoryDistance.get(category);
                         float badDist = Constants.ignoreDistance.get(category);
                         float distSatisfaction = (float) Math.min(1, Math.exp(goodDist * (goodDist - dist)/badDist));
-                        Optional<Float> max = Stream.of(BuildingType.getBuildingsOfType(category)).map(BuildingType::getCost).max(Float::compare);
+                        Optional<Float> max = Stream.of(BuildingType.getBuildingsOfType(category))
+                                                    .map(BuildingType::getCost)
+                                                    .max(Float::compare);
                         float maxCost = max.orElse(1f);
                         float qualitySatisfaction = type.getCost() / maxCost;
                         float buildingSatisfaction = qualitySatisfaction * distSatisfaction;
-                        categoryScore.compute(category, (k, v) -> MathUtils.clamp(v + buildingSatisfaction, 0, 1));
+                        categoryScore.compute(category,
+                            (k, v) -> MathUtils.clamp(v + buildingSatisfaction, 0, 1));
                     }
                 }
-                accomSatisfactionScore.put(node.getBuildingRef(), categoryScore.values().stream().reduce(0f, Float::sum)/ categoryScore.size());
+                float accomPrice = node.getBuildingRef().getType().getCost();
+                float avgAccomPrice = Stream.of(BuildingType.getBuildingsOfType(BuildingCategory.ACCOMMODATION))
+                                            .map(BuildingType::getCost)
+                                            .reduce(0f, Float::sum)
+                                            / BuildingType.getBuildingsOfType(BuildingCategory.ACCOMMODATION).length;
+                float accomSatisfactionMult = (float) (2 * Math.atan(accomPrice / avgAccomPrice) / Math.PI) + 0.5f;
+                accomSatisfactionScore.put(node.getBuildingRef(),
+                    Math.min(1f, (categoryScore.values()
+                        .stream().reduce(0f, Float::sum) / categoryScore.size())
+                        * accomSatisfactionMult));
             }
         }
         float newSatisfactionSum = accomSatisfactionScore.values().stream().reduce(0f, Float::sum);
@@ -99,6 +111,7 @@ public class GameUtils {
             float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();
             GameState gameState = GameState.getState();
             gameState.targetSatisfaction = newSatisfactionScore;
+            gameState.accomSatisfaction = accomSatisfactionScore;
         }
         return newSatisfactionSum;
     }
