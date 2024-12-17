@@ -102,6 +102,11 @@ public class UIUtils {
         actor.setColor(Color.LIGHT_GRAY);
     }
 
+    /**
+     * Gets the mouse's current position within the viewport frame specified.
+     * @param viewport  the viewport to be used.
+     * @return          the mouse's current position.
+     */
     public static Vector2 getMousePositionInViewport(Viewport viewport) {
         Vector3 mouse = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         viewport.unproject(mouse);

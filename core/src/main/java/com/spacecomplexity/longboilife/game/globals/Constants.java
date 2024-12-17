@@ -58,6 +58,9 @@ public class Constants {
         BuildingCategory.PATHWAY
     };
 
+    /**
+     * Which colour each building category will be displayed as on the sidebar.
+     */
     public static HashMap<BuildingCategory, Color> categoryColours = new HashMap<>() {{
         put(BuildingCategory.PATHWAY, Color.WHITE);
         put(BuildingCategory.FOOD, Color.YELLOW);
@@ -77,6 +80,12 @@ public class Constants {
         put(BuildingCategory.EDUCATIONAL, 5f);
     }};
 
+    /**
+     * The distances from accommodation to a specific category of building
+     * where the accommodation will ignore the building in satisfaction calculations.
+     * <p>
+     * Used for calculating satisfaction score
+     */
     public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<>() {{
         put(BuildingCategory.FOOD, 25f);
         put(BuildingCategory.RECREATIONAL, 30f);

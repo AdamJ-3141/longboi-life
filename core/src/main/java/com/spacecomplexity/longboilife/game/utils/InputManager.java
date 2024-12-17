@@ -50,6 +50,8 @@ public class InputManager {
         if (Gdx.input.isKeyPressed(Keybindings.CAMERA_ZOOM_OUT.getKey())) {
             MainCamera.camera().zoom -= cameraZoomSpeed;
         }
+
+        GameState.getState().continuousPlacingBuilding = Gdx.input.isKeyPressed(Keybindings.KEEP_PLACING.getKey());
     }
 
     /**

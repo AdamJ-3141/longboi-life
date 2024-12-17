@@ -16,7 +16,6 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.game.*;
 import com.spacecomplexity.longboilife.game.ui.gameover.UIOverview;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.game.world.World;
 
 /**
  * Class to manage the UI in the game.
@@ -34,7 +33,7 @@ public class UIManager {
      *
      * @param inputMultiplexer to add the UI events to the input processing
      */
-    public UIManager(InputMultiplexer inputMultiplexer, World world) {
+    public UIManager(InputMultiplexer inputMultiplexer) {
         // Initialise viewport for rescaling
         viewport = new ScalingViewport(Scaling.fit, 640, 480);
 
@@ -78,7 +77,7 @@ public class UIManager {
             new UIScoreMenu(viewport, table, skin),
             new UIBuildingCounter(viewport, table, skin),
             new UIAchievementPopup(viewport, table, skin),
-            new UIAccomSatisfactionTooltip(viewport, table, skin, world),
+            new UIAccomSatisfactionTooltip(viewport, table, skin),
         };
 
         // Hide game UI and show end UI
