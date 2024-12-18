@@ -24,6 +24,7 @@ import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.ui.UIManager;
 import com.spacecomplexity.longboilife.game.utils.*;
 import com.spacecomplexity.longboilife.game.world.World;
+import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -246,7 +247,8 @@ public class GameScreen implements Screen {
 
         // Event to change screen to the Leaderboard
         eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
-            game.switchScreen(Main.ScreenType.LEADERBOARD);
+            MenuState.leaderboard = true;
+            game.switchScreen(Main.ScreenType.MENU);
 
             return null;
         });
