@@ -1,4 +1,4 @@
-package com.spacecomplexity.longboilife.leaderboards;
+package com.spacecomplexity.longboilife.menu.leaderboard;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;

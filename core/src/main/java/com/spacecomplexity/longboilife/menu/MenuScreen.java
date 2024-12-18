@@ -17,8 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
-import com.spacecomplexity.longboilife.game.ui.game.UIBuildingSelectedMenu;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardUI;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUI;
 
 /**
  * Main class to control the menu screen.

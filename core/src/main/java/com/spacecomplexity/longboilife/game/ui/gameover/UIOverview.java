@@ -9,8 +9,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardElement;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardUtils;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
 
 import java.util.Objects;
 

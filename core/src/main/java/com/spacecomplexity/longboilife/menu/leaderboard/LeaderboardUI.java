@@ -1,4 +1,4 @@
-package com.spacecomplexity.longboilife.leaderboards;
+package com.spacecomplexity.longboilife.menu.leaderboard;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,7 +18,6 @@ import com.spacecomplexity.longboilife.menu.MenuState;
 public class LeaderboardUI extends UIElement {
     private Label nameLabel;
     private Label scoreLabel;
-    private LeaderboardElement[] leaderboard;
 
     /**
      * Initialise Leaderboard window.
@@ -74,7 +73,7 @@ public class LeaderboardUI extends UIElement {
     public void render() {
         if (MenuState.leaderboard) {
             // Loads the leaderboard
-            leaderboard = LeaderboardUtils.loadScore();
+            LeaderboardElement[] leaderboard = LeaderboardUtils.loadScore();
 
             // puts the names in a column
             String leaderboardName = "Name:\r\n\n";
