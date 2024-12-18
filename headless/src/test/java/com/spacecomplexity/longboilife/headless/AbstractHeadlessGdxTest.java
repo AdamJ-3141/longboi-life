@@ -10,7 +10,7 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 
 public abstract class AbstractHeadlessGdxTest {
 
-    public GameState gameState;
+    public GameState gameState = GameState.getState();
 
     @BeforeEach
     public void setup() {
