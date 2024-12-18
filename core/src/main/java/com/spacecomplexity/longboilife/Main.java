@@ -2,7 +2,6 @@ package com.spacecomplexity.longboilife;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardScreen;
 import com.spacecomplexity.longboilife.game.GameScreen;
 import com.spacecomplexity.longboilife.menu.MenuScreen;
 
@@ -28,7 +27,6 @@ public class Main extends Game {
     public enum ScreenType {
         MENU(MenuScreen.class),
         GAME(GameScreen.class),
-        LEADERBOARD(LeaderboardScreen.class)
         ;
 
         private final Class<? extends Screen> screenClass;

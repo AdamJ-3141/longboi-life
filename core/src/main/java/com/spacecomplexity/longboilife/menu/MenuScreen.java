@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
+import com.spacecomplexity.longboilife.game.ui.UIElement;
+import com.spacecomplexity.longboilife.game.ui.game.UIBuildingSelectedMenu;
+import com.spacecomplexity.longboilife.leaderboards.LeaderboardUI;
 
 /**
  * Main class to control the menu screen.
@@ -31,6 +34,8 @@ public class MenuScreen implements Screen {
     private Stage stage;
     private Skin skin;
 
+    private UIElement leaderboardUI;
+
     public MenuScreen(Main game) {
         this.game = game;
 
@@ -44,6 +49,9 @@ public class MenuScreen implements Screen {
 
         // Load UI skin for buttons
         skin = new Skin(Gdx.files.internal("ui/skin/uiskin.json"));
+
+        //sets the size of the window
+        Gdx.graphics.setWindowedMode(740, 555);
     }
 
     @Override
@@ -69,7 +77,8 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Switch to leaderboard screen
-                game.switchScreen(Main.ScreenType.LEADERBOARD);
+//                game.switchScreen(Main.ScreenType.LEADERBOARD);
+                MenuState.leaderboard = true;
             }
         });
 
@@ -94,6 +103,8 @@ public class MenuScreen implements Screen {
         // Allows UI to capture touch events
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager(), stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        leaderboardUI = new LeaderboardUI(viewport, table, skin);
     }
 
     @Override
@@ -109,6 +120,8 @@ public class MenuScreen implements Screen {
         // Draw and apply ui
         stage.act(delta);
         stage.draw();
+
+        leaderboardUI.render();
     }
 
     @Override

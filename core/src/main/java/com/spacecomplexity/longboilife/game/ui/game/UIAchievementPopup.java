@@ -13,8 +13,8 @@ import com.spacecomplexity.longboilife.game.ui.UIElement;
  * Class that renders the achievement popup
  */
 public class UIAchievementPopup extends UIElement {
-    private Label achievementLabel;
-    private Label scoreLabel;
+    private Label titleLabel;
+    private Label descriptionLabel;
 
     /**
      * Initialise Achievement popup elements.
@@ -31,23 +31,23 @@ public class UIAchievementPopup extends UIElement {
         label.setFontScale(1f);
         label.setColor(Color.WHITE);
 
-        // Initialise achievement label
-        achievementLabel = new Label(null, skin);
-        achievementLabel.setFontScale(1f);
-        achievementLabel.setColor(Color.WHITE);
+        // Initialise achievement title label
+        titleLabel = new Label(null, skin);
+        titleLabel.setFontScale(1f);
+        titleLabel.setColor(Color.WHITE);
 
-        // Initialise score label
-        scoreLabel = new Label(null, skin);
-        scoreLabel.setFontScale(1f);
-        scoreLabel.setColor(Color.WHITE);
+        // Initialise description label
+        descriptionLabel = new Label(null, skin);
+        descriptionLabel.setFontScale(0.9f);
+        descriptionLabel.setColor(Color.WHITE);
 
         // Place elements onto table
         Table labelTable = new Table(skin);
         labelTable.add(label);
         labelTable.row();
-        labelTable.add(achievementLabel);
+        labelTable.add(titleLabel);
         labelTable.row();
-        labelTable.add(scoreLabel).padTop(10);
+        labelTable.add(descriptionLabel).padTop(5);
         table.add(labelTable);
 
         // Style and place the table
@@ -62,13 +62,8 @@ public class UIAchievementPopup extends UIElement {
     public void render() {
         if (GameState.getState().currentAchievement != null) {
             AchievementType currentAchievement = GameState.getState().currentAchievement;
-            achievementLabel.setText(currentAchievement.displayName);
-            String scoreChange = "";
-            if (currentAchievement.scoreChange>0) {
-                scoreChange += "+";
-            }
-            scoreChange += Integer.toString(currentAchievement.scoreChange);
-            scoreLabel.setText(scoreChange);
+            titleLabel.setText(currentAchievement.title);
+            descriptionLabel.setText(currentAchievement.description);
         }
         placeTable();
     }
