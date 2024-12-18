@@ -103,6 +103,15 @@ public enum AchievementType {
             return GameState.getState().money >= 1000000;
         }
     },
+    PERFECTION("Perfection","Reach 100% satisfaction", 5000) {
+        /**
+         * checks the player has reached 100% satisfaction
+         * @return  true if so
+         */
+        public boolean isAchieved() {
+            return GameState.getState().targetSatisfaction == 100;
+        }
+    },
 
     ;
 

@@ -5,4 +5,5 @@ package com.spacecomplexity.longboilife.menu;
  */
 public class MenuState {
     public static boolean leaderboard = false;
+    public static boolean achievement = false;
 }

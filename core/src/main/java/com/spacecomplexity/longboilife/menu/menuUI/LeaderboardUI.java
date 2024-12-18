@@ -1,4 +1,4 @@
-package com.spacecomplexity.longboilife.menu.leaderboard;
+package com.spacecomplexity.longboilife.menu.menuUI;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.menu.MenuState;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
 
 /**
  * Class that uses UIElement abstract class to create a display for the leaderboard
@@ -98,7 +100,7 @@ public class LeaderboardUI extends UIElement {
     @Override
     protected void placeTable() {
         if (MenuState.leaderboard) {
-            table.setPosition(170, 90);
+            table.setPosition(145, 80);
         }
         else {
             table.setPosition(uiViewport.getWorldWidth(), uiViewport.getWorldHeight());
