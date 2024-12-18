@@ -1,18 +1,25 @@
 package com.spacecomplexity.longboilife.headless;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.spacecomplexity.longboilife.Main;
 
 /** Launches the headless application. Can be converted into a utilities project or a server application. */
 public class HeadlessLauncher {
-    public static void main(String[] args) {
-        createApplication();
+
+    public static void main (String[] arg) {
+        initialize();
     }
 
-    private static Application createApplication() {
-        return new HeadlessApplication(new Main(), getDefaultConfiguration());
+    private static Main main;
+    private static HeadlessApplication application;
+
+    public static Main initialize() {
+        if (application == null) {
+            main = new Main();
+            application = new HeadlessApplication(main, getDefaultConfiguration());
+        }
+        return main;
     }
 
     private static HeadlessApplicationConfiguration getDefaultConfiguration() {

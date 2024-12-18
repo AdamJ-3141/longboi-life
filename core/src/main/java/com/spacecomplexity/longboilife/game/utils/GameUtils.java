@@ -99,7 +99,7 @@ public class GameUtils {
 
                         // Some maths to work out the "Distance Satisfaction" (closer = higher)
                         float distSatisfaction = (float) Math.min(1, Math.exp(goodDist * (goodDist - dist)/badDist));
-                        if (dist > badDist) {
+                        if (dist >= badDist) {
                             distSatisfaction = 0f;
                         }
 

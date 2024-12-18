@@ -476,6 +476,6 @@ public class World {
                 minDistance = Math.min(minDistance, getPathDistance(fromPathway, toPathway));
             }
         }
-        return minDistance;
+        return minDistance + 1;
     }
 }
