@@ -33,7 +33,7 @@ public enum BuildingType {
     GYM("Gym", new Texture("buildings/gym.png"), new Vector2Int(4, 3), BuildingCategory.RECREATIONAL, 100000),
 
     // Accommodation Buildings
-    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 4000),
+    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 5000),
     HALLS("Halls", new Texture("buildings/halls.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 15000),
     LUXURYFLATS("Luxury Flats", new Texture("buildings/luxury_flats.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 30000),
 
