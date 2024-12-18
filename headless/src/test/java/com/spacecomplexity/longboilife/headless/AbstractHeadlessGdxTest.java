@@ -20,5 +20,10 @@ public abstract class AbstractHeadlessGdxTest {
         Gdx.gl = Gdx.gl20 = mock(GL20.class);
         Gdx.graphics = new MockGraphics();
         game = HeadlessLauncher.initialize();
+
+        // Manually trigger `show()` if not automatically called
+        if (game.getScreen() instanceof HeadlessGameScreen) {
+            game.getScreen().show();
+        }
     }
 }

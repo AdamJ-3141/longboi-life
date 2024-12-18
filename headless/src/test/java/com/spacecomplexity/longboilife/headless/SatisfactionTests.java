@@ -275,8 +275,22 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
             "Target Satisfaction should be the average of accommodations.");
     }
 
-//    @Test
-//    public void satisfactionAddScore() {
-//
-//    }
+    @Test
+    public void satisfactionAddScore() {
+        gameState.gameWorld.build(BuildingType.HALLS, new Vector2Int(0, 0));
+        gameState.gameWorld.build(BuildingType.LIBRARY, new Vector2Int(4, 0));
+        gameState.gameWorld.build(BuildingType.ROAD, new Vector2Int(3, 0));
+        satisfactionSum = GameUtils.updateSatisfactionScore(gameState.gameWorld);
+        System.out.println(satisfactionSum);
+        float totalTime = 0f;
+        float waitTime = 10f; // Wait for 10 seconds
+        float deltaTime = 1 / 60f; // Assume 60 FPS for each frame
+        while (totalTime < waitTime) {
+            // Simulate the passage of time by updating the game loop
+            game.getScreen().render(deltaTime); // This triggers the render() method
+            totalTime += deltaTime; // Increment the total time by delta
+        }
+        System.out.println(gameState.totalScore);
+        assertEquals(100 + satisfactionSum, gameState.totalScore);
+    }
 }
