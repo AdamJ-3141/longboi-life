@@ -285,6 +285,7 @@ public class HeadlessGameScreen implements Screen {
             // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
+                System.out.println(satisfactionSum);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
             }
