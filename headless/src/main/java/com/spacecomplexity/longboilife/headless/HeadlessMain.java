@@ -13,7 +13,6 @@ public class HeadlessMain extends Main {
     }
 
     public enum ScreenType {
-        MENU(HeadlessMenuScreen.class),
         GAME(HeadlessGameScreen.class),
         LEADERBOARD(LeaderboardScreen.class)
         ;
@@ -34,7 +33,7 @@ public class HeadlessMain extends Main {
     @Override
     public void create() {
         // Initially load the menu screen
-        switchScreen(ScreenType.MENU);
+        switchScreen(ScreenType.GAME);
     }
 
     public void switchScreen(ScreenType screen) {
