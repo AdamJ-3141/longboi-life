@@ -3,7 +3,6 @@ package com.spacecomplexity.longboilife.headless;
 import com.badlogic.gdx.Gdx;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
-import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
     @BeforeEach
     public void loadWorld() {
         try {
-            gameState = GameState.getState();
             gameState.reset();
             empty_world = new World(Gdx.files.internal("test_maps/map_allGrass.json"));
             System.out.println("Loaded empty world");
@@ -70,7 +68,7 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
         // No Recreation / Food
         // (0.966 + 0 + 0) / 3 = 0.322
         satisfactionSum = GameUtils.updateSatisfactionScore(empty_world);
-        assertClose(0.322f, satisfactionSum, 0.001f,"Library should generate 0.3 satisfaction");
-        assertClose(0.322f, gameState.targetSatisfaction, 0.001f,"Library should generate 0.3 satisfaction");
+        assertClose(0.322f, satisfactionSum, 0.001f,"Library should generate 0.322 satisfaction");
+        assertClose(0.322f, gameState.targetSatisfaction, 0.001f,"Library should generate 0.322 satisfaction");
     }
 }
