@@ -44,9 +44,7 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
     @BeforeEach
     public void loadWorld() {
         try {
-            gameState.reset();
             empty_world = new World(Gdx.files.internal("test_maps/map_allGrass.json"));
-            System.out.println("Loaded empty world");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -291,6 +289,6 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
             totalTime += deltaTime; // Increment the total time by delta
         }
         System.out.println(gameState.totalScore);
-        assertEquals(100 + satisfactionSum, gameState.totalScore);
+        assertEquals(100 + Math.round(satisfactionSum * 100), gameState.totalScore);
     }
 }
