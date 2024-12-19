@@ -74,7 +74,7 @@ public class GameUtils {
     public static float updateSatisfactionScore(World world) {
 
         GraphNode[] buildingGraph = generateGraph(world);
-        HashMap<Building, Float> accomSatisfactionScore = new HashMap<>();
+        HashMap<Building, AccomSatisfactionDetail> accomSatisfactionDetails = new HashMap<>();
         for (GraphNode node : buildingGraph) {
             // For each accommodation building node
             if (node.getBuildingRef().getType().getCategory() == BuildingCategory.ACCOMMODATION) {
@@ -128,22 +128,26 @@ public class GameUtils {
                 // Multiplier is normalized to be closer to 1 for balancing.
                 float accomSatisfactionMult = (float) (2 * Math.atan(accomPrice / avgAccomPrice) / Math.PI) + 0.5f;
 
+                float totalAccomSatisfaction = Math.min(1f, (categoryScore.values()
+                    .stream().reduce(0f, Float::sum) / categoryScore.size())
+                    * accomSatisfactionMult);
+                AccomSatisfactionDetail details = new AccomSatisfactionDetail(accomSatisfactionMult, categoryScore, totalAccomSatisfaction);
+
                 // The accommodation's satisfaction score is the average of the category scores, multiplied by the multiplier.
-                accomSatisfactionScore.put(node.getBuildingRef(),
-                    Math.min(1f, (categoryScore.values()
-                        .stream().reduce(0f, Float::sum) / categoryScore.size())
-                        * accomSatisfactionMult));
+                accomSatisfactionDetails.put(node.getBuildingRef(), details);
             }
         }
         // Calculate the sum of all the accommodations' satisfactions.
-        float newSatisfactionSum = accomSatisfactionScore.values().stream().reduce(0f, Float::sum);
+        float newSatisfactionSum = accomSatisfactionDetails.values().stream()
+            .map(d->d.totalSatisfaction)
+            .reduce(0f, Float::sum);
 
         // Checks whether there are accommodation buildings placed.
-        if (!accomSatisfactionScore.isEmpty()) {
-            float newSatisfactionScore = newSatisfactionSum / accomSatisfactionScore.size();
+        if (!accomSatisfactionDetails.isEmpty()) {
+            float newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
             GameState gameState = GameState.getState();
             gameState.targetSatisfaction = newSatisfactionScore;
-            gameState.accomSatisfaction = accomSatisfactionScore;
+            gameState.accomSatisfaction = accomSatisfactionDetails;
         }
 
         // To be used to add onto the score.
