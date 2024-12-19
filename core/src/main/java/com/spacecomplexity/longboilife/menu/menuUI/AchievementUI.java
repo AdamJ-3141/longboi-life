@@ -26,40 +26,18 @@ public class AchievementUI extends UIElement {
      */
     public AchievementUI(Viewport uiViewport, Table parentTable, Skin skin) {
         super(uiViewport, parentTable, skin);
-
-        String leftAchievementString = "";
-        String rightAchievementString = "";
-        int value = 0;
+        table.debug();
+        Table[] achievementTables = new Table[AchievementType.values().length];
         for (AchievementType type : AchievementType.values()) {
-            String achievementString = "";
-            achievementString += type.title + "\n\r" + type.description + "\n\r";
-            if (type.scoreChange >= 0) {
-                achievementString += "+";
-            } else {
-                achievementString += "-";
+            // Construct a new table for each achievement type.
+            achievementTables[type.ordinal()] = constructTable(type, skin);
+            // Add the new table to the main table.
+            table.add(achievementTables[type.ordinal()]);
+            // New row after every second table.
+            if (type.ordinal() % 2 == 1) {
+                table.row();
             }
-            achievementString += type.scoreChange + " score \n\r";
-            achievementString += "\n";
-            if (value%2 == 0) {
-                leftAchievementString += achievementString;
-                System.out.println("left");
-            } else {
-                rightAchievementString += achievementString;
-                System.out.println("right");
-            }
-            value++;
         }
-
-        // Initialise names label
-        Label leftAchievementLabel = new Label(leftAchievementString, skin);
-        leftAchievementLabel.setAlignment(Align.center);
-        leftAchievementLabel.setFontScale(1f);
-        leftAchievementLabel.setColor(Color.WHITE);
-
-        Label rightAchievementLabel = new Label(rightAchievementString, skin);
-        rightAchievementLabel.setAlignment(Align.center);
-        rightAchievementLabel.setFontScale(1f);
-        rightAchievementLabel.setColor(Color.WHITE);
 
         // Initialise exit button
         TextButton exitButton = new TextButton("Back", skin, "round");
@@ -71,20 +49,27 @@ public class AchievementUI extends UIElement {
             }
         });
 
-        // Place elements onto table
-        Table labelTable = new Table(skin);
-        labelTable.add(leftAchievementString).align(Align.center).size(50);
-        labelTable.add().pad(100).padTop(150).padBottom(150);
-        labelTable.add(rightAchievementLabel).align(Align.center).size(50);
-        labelTable.row();
-        labelTable.add();
-        labelTable.add(exitButton).align(Align.center);
-        table.add(labelTable);
+        table.row();
+        table.add(exitButton).colspan(2).align(Align.center);
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
         table.setSize(420, 380);
         placeTable();
+    }
+
+    private static Table constructTable(AchievementType type, Skin skin) {
+        Table currentTable = new Table();
+        currentTable.debug();
+        Label tempTitleLabel = new Label(type.title, skin);
+        Label tempDescriptionLabel = new Label(type.description, skin);
+        Label tempScoreChangeLabel = new Label((type.scoreChange >= 0 ? "+" : "-") + type.scoreChange, skin);
+        currentTable.add(tempTitleLabel);
+        currentTable.row();
+        currentTable.add(tempDescriptionLabel);
+        currentTable.row();
+        currentTable.add(tempScoreChangeLabel);
+        return currentTable;
     }
 
     /**
