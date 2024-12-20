@@ -1,6 +1,7 @@
 package com.spacecomplexity.longboilife.game.ui.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -14,7 +15,6 @@ import com.spacecomplexity.longboilife.game.globals.Keybindings;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 
 import com.spacecomplexity.longboilife.game.globals.GameState;
-import com.spacecomplexity.longboilife.game.utils.InputManager;
 import com.spacecomplexity.longboilife.game.utils.UIUtils;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import com.spacecomplexity.longboilife.game.world.World;
@@ -29,9 +29,11 @@ public class UIAccomSatisfactionTooltip extends UIElement {
 
     private Boolean hovering = false;
     private final Label satisfactionLabel;
-    private final Table highDetail;
-    private final Table lowDetail;
-    HashMap<BuildingCategory, Label> categoryBreakdown = new HashMap<>();
+    private final Label hintLabel;
+    private final Label multLabel;
+    private final Label multTitle;
+    HashMap<BuildingCategory, Label> categorySatisfaction = new HashMap<>();
+    HashMap<BuildingCategory, Label> categoryTitles = new HashMap<>();
 
     /**
      * Initialise the tooltip elements.
@@ -42,29 +44,33 @@ public class UIAccomSatisfactionTooltip extends UIElement {
      */
     public UIAccomSatisfactionTooltip(Viewport uiViewport, Table parentTable, Skin skin) {
         super(uiViewport, parentTable, skin);
-        lowDetail = new Table();
-        highDetail = new Table();
 
         // Low Detail
         satisfactionLabel = new Label(null, skin);
         Label titleLabel = new Label("Satisfaction:", skin);
+        String keyName = Input.Keys.toString(Keybindings.SHOW_DETAIL.getKey());
+        hintLabel = new Label(String.format("Hold %s for more.", keyName), skin);
+        hintLabel.setFontScale(0.8f);
+        hintLabel.setColor(Color.GRAY);
         titleLabel.setFontScale(1f);
 
         satisfactionLabel.setFontScale(1f);
-        lowDetail.add(titleLabel);
-        lowDetail.add(satisfactionLabel);
+        table.add(titleLabel).pad(5);
+        table.add(satisfactionLabel).pad(5);
+        table.row();
+        table.add(hintLabel).colspan(2);
 
         // High Detail
 
         for (BuildingCategory category : Constants.satisfactoryDistance.keySet()) {
-            categoryBreakdown.put(category, new Label(null, skin));
-            highDetail.add(new Label(category.getDisplayName(), skin)).right();
-            highDetail.add(categoryBreakdown.get(category));
-            highDetail.row();
+            categorySatisfaction.put(category, new Label(null, skin));
+            categoryTitles.put(category, new Label(category.getDisplayName(), skin));
         }
+
+        multTitle = new Label("Quality: ", skin);
+        multLabel = new Label(null, skin);
+
         // setup
-        table.add(lowDetail);
-        table.row();
         table.setBackground(skin.getDrawable("panel1"));
         table.setSize(150, 50);
     }
@@ -74,7 +80,12 @@ public class UIAccomSatisfactionTooltip extends UIElement {
      */
     @Override
     public void render() {
-        table.removeActor(highDetail);
+        for (BuildingCategory category : Constants.satisfactoryDistance.keySet()) {
+            table.removeActor(categoryTitles.get(category));
+            table.removeActor(categorySatisfaction.get(category));
+        }
+        table.removeActor(multTitle);
+        table.removeActor(multLabel);
         table.setSize(150, 50);
         // Fetches the current game state.
         GameState gameState = GameState.getState();
@@ -91,17 +102,23 @@ public class UIAccomSatisfactionTooltip extends UIElement {
             satisfactionLabel.setText(String.format("%.2f%%", satisfaction * 100));
             colourLabel(satisfactionLabel, satisfaction);
             if (Gdx.input.isKeyPressed(Keybindings.SHOW_DETAIL.getKey())) {
-
-                for (BuildingCategory cat : categoryBreakdown.keySet()) {
-                    Label catLabel = categoryBreakdown.get(cat);
-                    catLabel.setText(String.format("%.2f%%",
+                table.removeActor(hintLabel);
+                table.setSize(150, 100);
+                for (BuildingCategory cat : categorySatisfaction.keySet()) {
+                    table.row();
+                    Label catSat = categorySatisfaction.get(cat);
+                    Label catTitle = categoryTitles.get(cat);
+                    catSat.setText(String.format("%.2f%%",
                         gameState.accomSatisfaction.get(building).CategoryScores.get(cat) * 100));
-                    colourLabel(catLabel, gameState.accomSatisfaction.get(building).CategoryScores.get(cat));
+                    colourLabel(catSat, gameState.accomSatisfaction.get(building).CategoryScores.get(cat));
+                    table.add(catTitle);
+                    table.add(catSat);
                 }
-
-                table.setSize(150, 150);
                 table.row();
-                table.add(highDetail).padTop(20);
+                table.add(multTitle);
+                multLabel.setText(String.format("%.2fx",
+                    gameState.accomSatisfaction.get(building).qualityMultiplier));
+                table.add(multLabel);
             }
         } else {
             // If the mouse is not currently over an accommodation building.
