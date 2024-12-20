@@ -16,6 +16,7 @@ import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
+import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
@@ -45,6 +46,7 @@ public class GameScreen implements Screen {
     private World world;
 
     private final GameState gameState = GameState.getState();
+    private final GameEventManager gameEventManager = GameEventManager.getGameEventManager();
 
     private float timeSinceScoreUpdate = 0f;
     private float timeSinceMoneyAdded = 0f;
@@ -74,8 +76,10 @@ public class GameScreen implements Screen {
         }
 
         // Create a new timer for 5 minutes
-        MainTimer.getTimerManager().getTimer().setTimer(5 * 60 * 1000);
-        MainTimer.getTimerManager().getTimer().setEvent(() -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
+        MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
+        MainTimer.getTimerManager().getTimer().setEvent(() -> {
+            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
+        });
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -95,10 +99,9 @@ public class GameScreen implements Screen {
 
         // Position camera in the center of the world map
         MainCamera.camera().position.set(new Vector3(
-            world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-            world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-            0
-        ));
+                world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+                world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+                0));
 
         // Set up an InputManager to handle user inputs
         inputManager = new InputManager(inputMultiplexer);
@@ -143,7 +146,8 @@ public class GameScreen implements Screen {
                 gameState.money -= cost;
 
                 // Remove the selected building if it is wanted to do so
-                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category) && !gameState.continuousPlacingBuilding) {
+                if (Arrays.stream(Constants.dontRemoveSelection)
+                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -294,9 +298,11 @@ public class GameScreen implements Screen {
         RenderUtils.drawBuildings(batch, world, worldTint);
         // If there is a building to be placed draw it as a ghost building
         if (gameState.placingBuilding != null) {
-            RenderUtils.drawPlacingBuilding(batch, world, gameState.placingBuilding, new Color(1f, 1f, 1f, 0.75f), new Color(1f, 0f, 0f, 0.75f));
+            RenderUtils.drawPlacingBuilding(batch, world, gameState.placingBuilding, new Color(1f, 1f, 1f, 0.75f),
+                    new Color(1f, 0f, 0f, 0.75f));
         }
-        // If we are placing a building or there is a building selected then draw gridlines
+        // If we are placing a building or there is a building selected then draw
+        // gridlines
         if (gameState.placingBuilding != null || gameState.selectedBuilding != null) {
             RenderUtils.drawWorldGridlines(shapeRenderer, world, Color.BLACK);
         }
@@ -309,7 +315,8 @@ public class GameScreen implements Screen {
             RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
         }
 
-        // calls the achievement handler to check for achievements and to ensure the popup is removed
+        // calls the achievement handler to check for achievements and to ensure the
+        // popup is removed
         AchievementHandler.checkAchievements();
         AchievementHandler.updateAchievements();
 
@@ -333,15 +340,17 @@ public class GameScreen implements Screen {
                 timeSinceScoreUpdate = 0;
             }
 
-            // Add money equal to the sum of the square roots of the costs of accommodations * 100.
+            // Add money equal to the sum of the square roots of the costs of accommodations
+            // * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
                 gameState.money += (world.buildings.stream()
-                                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                                    .reduce(0f, Float::sum)
-                                    * 100);
+                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                        .reduce(0f, Float::sum)
+                        * 100);
             }
+            gameEventManager.tryForGameEvent();
         }
     }
 

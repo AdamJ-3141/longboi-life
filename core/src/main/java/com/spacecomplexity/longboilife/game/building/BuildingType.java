@@ -6,36 +6,49 @@ import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import java.util.stream.Stream;
 
 /**
- * Contains a list of all buildings, including there default data.
+ * Contains a list of all buildings, including their default data.
  */
 public enum BuildingType {
 
     // Food Buildings
     KEBABVAN("Kebab Van", new Texture("buildings/kebab_van.png"), new Vector2Int(1, 1), BuildingCategory.FOOD, 5000),
-    DININGHALL("Dining Hall", new Texture("buildings/dining_hall.png"), new Vector2Int(3, 3), BuildingCategory.FOOD, 10000),
+    DININGHALL("Dining Hall", new Texture("buildings/dining_hall.png"), new Vector2Int(3, 3), BuildingCategory.FOOD,
+            10000),
     GREGGS("Greggs", new Texture("buildings/greggs.png"), new Vector2Int(2, 2), BuildingCategory.FOOD, 40000),
-    SUPERMARKET("Supermarket", new Texture("buildings/supermarket.png"), new Vector2Int(4, 2), BuildingCategory.FOOD, 60000),
+    SUPERMARKET("Supermarket", new Texture("buildings/supermarket.png"), new Vector2Int(4, 2), BuildingCategory.FOOD,
+            60000),
     NANDOS("Nandos", new Texture("buildings/nandos.png"), new Vector2Int(3, 2), BuildingCategory.FOOD, 100000),
 
     // Education Buildings
-    CLASSROOMS("Classrooms", new Texture("buildings/classrooms.png"), new Vector2Int(3, 2), BuildingCategory.EDUCATIONAL, 20000),
-    RESEARCHCENTRE("Research Centre", new Texture("buildings/research_centre.png"), new Vector2Int(2, 2), BuildingCategory.EDUCATIONAL, 50000),
-    LECTURETHEATRE("Lecture Theatre", new Texture("buildings/lecture_theatre.png"), new Vector2Int(3, 3), BuildingCategory.EDUCATIONAL, 80000),
-    LIBRARY("Library", new Texture("buildings/library.png"), new Vector2Int(4, 4), BuildingCategory.EDUCATIONAL, 100000),
+    CLASSROOMS("Classrooms", new Texture("buildings/classrooms.png"), new Vector2Int(3, 2),
+            BuildingCategory.EDUCATIONAL, 20000),
+    RESEARCHCENTRE("Research Centre", new Texture("buildings/research_centre.png"), new Vector2Int(2, 2),
+            BuildingCategory.EDUCATIONAL, 50000),
+    LECTURETHEATRE("Lecture Theatre", new Texture("buildings/lecture_theatre.png"), new Vector2Int(3, 3),
+            BuildingCategory.EDUCATIONAL, 80000),
+    LIBRARY("Library", new Texture("buildings/library.png"), new Vector2Int(4, 4), BuildingCategory.EDUCATIONAL,
+            100000),
 
     // Recreation Buildings
-    BIKESTORE("Bike Storage", new Texture("buildings/bike_storage.png"), new Vector2Int(1, 1), BuildingCategory.RECREATIONAL, 5000),
+    BIKESTORE("Bike Storage", new Texture("buildings/bike_storage.png"), new Vector2Int(1, 1),
+            BuildingCategory.RECREATIONAL, 5000),
     PARK("Park", new Texture("buildings/park.png"), new Vector2Int(5, 5), BuildingCategory.RECREATIONAL, 10000),
-    SPORTSBAR("Sports Bar", new Texture("buildings/sports_bar.png"), new Vector2Int(2, 2), BuildingCategory.RECREATIONAL, 30000),
-    STUDENTUNION("Student Union", new Texture("buildings/student_union.png"), new Vector2Int(3, 2), BuildingCategory.RECREATIONAL, 40000),
-    POOL("Swimming Pool", new Texture("buildings/swimming_pool.png"), new Vector2Int(3, 2), BuildingCategory.RECREATIONAL, 50000),
-    FOOTBALLFIELD("Football Field", new Texture("buildings/football_field.png"), new Vector2Int(2, 4), BuildingCategory.RECREATIONAL, 80000),
+    SPORTSBAR("Sports Bar", new Texture("buildings/sports_bar.png"), new Vector2Int(2, 2),
+            BuildingCategory.RECREATIONAL, 30000),
+    STUDENTUNION("Student Union", new Texture("buildings/student_union.png"), new Vector2Int(3, 2),
+            BuildingCategory.RECREATIONAL, 40000),
+    POOL("Swimming Pool", new Texture("buildings/swimming_pool.png"), new Vector2Int(3, 2),
+            BuildingCategory.RECREATIONAL, 50000),
+    FOOTBALLFIELD("Football Field", new Texture("buildings/football_field.png"), new Vector2Int(2, 4),
+            BuildingCategory.RECREATIONAL, 80000),
     GYM("Gym", new Texture("buildings/gym.png"), new Vector2Int(4, 3), BuildingCategory.RECREATIONAL, 100000),
 
     // Accommodation Buildings
-    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 5000),
+    SHAREDDORM("Shared Dorm", new Texture("buildings/shared_dorm.png"), new Vector2Int(3, 3),
+            BuildingCategory.ACCOMMODATION, 5000),
     HALLS("Halls", new Texture("buildings/halls.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 15000),
-    LUXURYFLATS("Luxury Flats", new Texture("buildings/luxury_flats.png"), new Vector2Int(3, 3), BuildingCategory.ACCOMMODATION, 30000),
+    LUXURYFLATS("Luxury Flats", new Texture("buildings/luxury_flats.png"), new Vector2Int(3, 3),
+            BuildingCategory.ACCOMMODATION, 30000),
 
     // Pathways
     ROAD("Road", new Texture("buildings/roads/straight.png"), new Vector2Int(1, 1), BuildingCategory.PATHWAY, 100),
@@ -64,7 +77,6 @@ public enum BuildingType {
         this.cost = cost;
     }
 
-
     public Texture getTexture() {
         return texture;
     }
@@ -87,15 +99,16 @@ public enum BuildingType {
 
     public static BuildingType[] getBuildingsOfType(BuildingCategory category) {
         return Stream.of(BuildingType.values())
-            .filter(buildingType -> buildingType.getCategory().equals(category))
-            .toArray(BuildingType[]::new);
+                .filter(buildingType -> buildingType.getCategory().equals(category))
+                .toArray(BuildingType[]::new);
 
     }
 
     /**
      * Will dispose of the all loaded assets (like textures).
      * <p>
-     * <strong>Warning:</strong> Once disposed of no attributes will be able to be reloaded, which could lead to undefined behaviour.
+     * <strong>Warning:</strong> Once disposed of no attributes will be able to be
+     * reloaded, which could lead to undefined behaviour.
      */
     public void dispose() {
         texture.dispose();

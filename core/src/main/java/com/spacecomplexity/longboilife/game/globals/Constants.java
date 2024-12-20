@@ -11,6 +11,12 @@ import com.badlogic.gdx.graphics.Color;
  * Class contain the constants used throughout the game.
  */
 public class Constants {
+
+    /**
+     * The duration of the game
+     */
+    public static final long GAME_DURATION = 5 * 60 * 1000;
+
     /**
      * The size of tiles (in px).
      */
@@ -24,12 +30,14 @@ public class Constants {
     /**
      * Map of the UI scaling at the specified window height.
      */
-    public static final TreeMap<Integer, Float> UI_SCALING_MAP = new TreeMap<>() {{
-        put(0, 1f);
-        put(720, 1.5f);
-        put(1440, 2f);
-        put(2160, 2.5f);
-    }};
+    public static final TreeMap<Integer, Float> UI_SCALING_MAP = new TreeMap<>() {
+        {
+            put(0, 1f);
+            put(720, 1.5f);
+            put(1440, 2f);
+            put(2160, 2.5f);
+        }
+    };
 
     /**
      * Minimum camera zoom level.
@@ -52,43 +60,56 @@ public class Constants {
     public static float moveCostRecovery = 0.25f;
 
     /**
+     * The minimum time between game events occurring in milliseconds
+     */
+    public static long MIN_GAME_EVENT_INTERVAL = 30 * 1000; // 30 seconds
+
+    /**
      * Which category of buildings will not be deselected when built.
      */
-    public static BuildingCategory[] dontRemoveSelection = new BuildingCategory[]{
-        BuildingCategory.PATHWAY
+    public static BuildingCategory[] dontRemoveSelection = new BuildingCategory[] {
+            BuildingCategory.PATHWAY
     };
 
     /**
      * Which colour each building category will be displayed as on the sidebar.
      */
-    public static HashMap<BuildingCategory, Color> categoryColours = new HashMap<>() {{
-        put(BuildingCategory.PATHWAY, Color.WHITE);
-        put(BuildingCategory.FOOD, Color.YELLOW);
-        put(BuildingCategory.ACCOMMODATION, Color.RED);
-        put(BuildingCategory.EDUCATIONAL, Color.CYAN);
-        put(BuildingCategory.RECREATIONAL, Color.GREEN);
-    }};
+    public static HashMap<BuildingCategory, Color> categoryColours = new HashMap<>() {
+        {
+            put(BuildingCategory.PATHWAY, Color.WHITE);
+            put(BuildingCategory.FOOD, Color.YELLOW);
+            put(BuildingCategory.ACCOMMODATION, Color.RED);
+            put(BuildingCategory.EDUCATIONAL, Color.CYAN);
+            put(BuildingCategory.RECREATIONAL, Color.GREEN);
+        }
+    };
 
     /**
-     * The satisfactory distances from accommodation to a specific category of building
+     * The satisfactory distances from accommodation to a specific category of
+     * building
      * <p>
      * Used for calculating satisfaction score
      */
-    public static HashMap<BuildingCategory, Float> satisfactoryDistance = new HashMap<>() {{
-        put(BuildingCategory.FOOD, 5f);
-        put(BuildingCategory.RECREATIONAL, 10f);
-        put(BuildingCategory.EDUCATIONAL, 5f);
-    }};
+    public static HashMap<BuildingCategory, Float> satisfactoryDistance = new HashMap<BuildingCategory, Float>() {
+        {
+            put(BuildingCategory.FOOD, 5f);
+            put(BuildingCategory.RECREATIONAL, 10f);
+            put(BuildingCategory.EDUCATIONAL, 5f);
+        }
+    };
 
     /**
      * The distances from accommodation to a specific category of building
-     * where the accommodation will ignore the building in satisfaction calculations.
+     * where the accommodation will ignore the building in satisfaction
+     * calculations.
      * <p>
      * Used for calculating satisfaction score
      */
-    public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<>() {{
-        put(BuildingCategory.FOOD, 25f);
-        put(BuildingCategory.RECREATIONAL, 30f);
-        put(BuildingCategory.EDUCATIONAL, 30f);
-    }};
+    public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<>() {
+        {
+            put(BuildingCategory.FOOD, 25f);
+            put(BuildingCategory.RECREATIONAL, 30f);
+            put(BuildingCategory.EDUCATIONAL, 30f);
+        }
+    };
 }
