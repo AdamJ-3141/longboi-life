@@ -3,6 +3,7 @@ package com.spacecomplexity.longboilife.game.globals;
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
 import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class GameState {
     /**
      * A map from each accommodation building to its satisfaction rating.
      */
-    public HashMap<Building, Float> accomSatisfaction;
+    public HashMap<Building, AccomSatisfactionDetail> accomSatisfaction;
 
     /**
      * The main total score of the current game.

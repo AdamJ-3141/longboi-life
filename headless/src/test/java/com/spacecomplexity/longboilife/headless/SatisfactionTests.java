@@ -3,6 +3,7 @@ package com.spacecomplexity.longboilife.headless;
 import com.badlogic.gdx.Gdx;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
 
     private World empty_world;
     private float satisfactionSum;
-    private HashMap<Building, Float> accomSatisfactions;
+    private HashMap<Building, AccomSatisfactionDetail> accomSatisfactions;
 
     public static void assertClose(float expected, float actual, float delta, String message) {
         assertTrue(actual < expected + delta && actual > expected - delta, message);
@@ -232,9 +233,10 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
 
         // Each satisfaction should be 0.322
         satisfactionSum = GameUtils.updateSatisfactionScore(empty_world);
+        HashSet<Float> accomSatisfactions = new HashSet<>(gameState.accomSatisfaction.values().stream().map(i -> i.totalSatisfaction).toList());
         assertEquals(2, gameState.accomSatisfaction.size(), "Verify 2 accommodations.");
         assertClose(0.644f, satisfactionSum, 0.001f, "Sum should be close to 0.644");
-        assertTrue(gameState.accomSatisfaction.values().stream()
+        assertTrue(accomSatisfactions.stream()
             .allMatch(i -> i < 0.322 + 0.001 && i > 0.322 - 0.001),
             "Both accommodation satisfaction should be close to 0.322");
         assertClose(0.322f, gameState.targetSatisfaction, 0.001f,
@@ -267,7 +269,9 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
         System.out.println(satisfactionSum);
         assertEquals(2, gameState.accomSatisfaction.size(), "Verify 2 accommodations.");
         assertClose(0.407f, satisfactionSum, 0.001f, "Sum should be close to 0.441");
-        assertClose(expected, new HashSet<>(gameState.accomSatisfaction.values()), 0.001f,
+        assertClose(expected, new HashSet<>(gameState.accomSatisfaction.values().stream()
+                        .map(i -> i.totalSatisfaction).toList()),
+                0.001f,
             "Verify the distance impact on the two accommodations.");
         assertClose(0.204f, gameState.targetSatisfaction, 0.001f,
             "Target Satisfaction should be the average of accommodations.");
