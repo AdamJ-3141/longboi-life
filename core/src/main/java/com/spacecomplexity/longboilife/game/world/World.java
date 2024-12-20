@@ -19,9 +19,9 @@ import java.util.*;
  * Represents the game world containing the base tiles and buildings.
  */
 public class World {
-    private Tile[][] world;
+    private final Tile[][] world;
     public Vector<Building> buildings;
-    private PathwayPositions[][] pathways;
+    private final PathwayPositions[][] pathways;
 
     /**
      * Creates a new world loaded from a map JSON file.
@@ -381,6 +381,7 @@ public class World {
                 Vector2Int current = queue.poll();
 
                 // If we reached the target position return this distance
+                assert current != null;
                 if (current.equals(to)) {
                     return distance;
                 }
@@ -427,9 +428,16 @@ public class World {
         return buildings;
     }
 
+    /**
+     * Generate an {@link ArrayList} of world positions of any pathways around a building (not including corners).
+     * @param building  the building we are finding pathways around.
+     * @return          the list described above.
+     */
     private ArrayList<Vector2Int> getBuildingPathways(Building building) {
         Vector2Int buildingPos = building.getPosition();
         Vector2Int buildingSize = building.getType().getSize();
+
+        // Coordinate positions of the outer edge of the building.
         Vector2Int[] buildingOuterEdge = new Vector2Int[2 * buildingSize.x + 2 * buildingSize.y];
         int index = 0;
         for (int xi = 0; xi < buildingSize.x; xi++) {
@@ -440,6 +448,8 @@ public class World {
             buildingOuterEdge[index++] = new Vector2Int(buildingPos.x - 1, buildingPos.y + yi);
             buildingOuterEdge[index++] = new Vector2Int(buildingPos.x + buildingSize.x, buildingPos.y + yi);
         }
+
+        // Checks all the outer edge coordinates and add any pathways to buildingPathways.
         ArrayList<Vector2Int> buildingPathways = new ArrayList<>();
         for (Vector2Int pos : buildingOuterEdge) {
             if (isInWorld(pos) && getPathwayPosition(pos) != null) {
@@ -449,15 +459,23 @@ public class World {
         return buildingPathways;
     }
 
+    /**
+     * Gets the distance along pathways between two buildings.
+     * @param from  the building we are calculating from.
+     * @param to    the building we are calculating to.
+     * @return      the path distance between the buildings.
+     */
     public int getBuildingDistance(Building from, Building to) {
         ArrayList<Vector2Int> fromPathways = getBuildingPathways(from);
         ArrayList<Vector2Int> toPathways = getBuildingPathways(to);
         int minDistance = Integer.MAX_VALUE;
+
+        // Finds the minimum distance between all outer pathways from and to.
         for (Vector2Int fromPathway : fromPathways) {
             for (Vector2Int toPathway : toPathways) {
                 minDistance = Math.min(minDistance, getPathDistance(fromPathway, toPathway));
             }
         }
-        return minDistance;
+        return minDistance + 1;
     }
 }

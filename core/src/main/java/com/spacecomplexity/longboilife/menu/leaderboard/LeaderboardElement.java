@@ -1,4 +1,4 @@
-package com.spacecomplexity.longboilife.leaderboards;
+package com.spacecomplexity.longboilife.menu.leaderboard;
 
 /**
  * Class that represents the rows of the leaderboard

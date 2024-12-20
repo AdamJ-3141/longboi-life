@@ -9,8 +9,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardElement;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardUtils;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
+import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
 
 import java.util.Objects;
 
@@ -28,29 +28,17 @@ public class UIOverview extends UIElement {
     public UIOverview(Viewport uiViewport, Table parentTable, Skin skin) {
         super(uiViewport, parentTable, skin);
 
-        String overview = String.format("Game Over\r\nSatisfaction Score: %.2f%%", GameState.getState().satisfactionScore * 100);
+        String overview = String.format("Game Over\r\nTotal Score: %,d", GameState.getState().totalScore);
 
         // Initialise label
         Label label = new Label(overview, skin);
         label.setAlignment(Align.center);
-        label.setFontScale(1.2f);
+        label.setFontScale(1.3f);
         label.setColor(Color.WHITE);
 
         // Create a TextField
         TextField textField = new TextField("", skin);
-        textField.setMessageText("Enter name to save score");
-        textField.setPosition(100, 200);
-        textField.setSize(200, 30);
-
-        // Initialise button
-        TextButton menuButton = new TextButton("Menu", skin);
-        menuButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Call the events to return to the menu
-                EventHandler.getEventHandler().callEvent(EventHandler.Event.RETURN_MENU);
-            }
-        });
+        textField.setMessageText("Enter name to save");
 
         // Initialise button to save score
         TextButton saveButton = new TextButton("Save", skin);
@@ -74,15 +62,14 @@ public class UIOverview extends UIElement {
         // Adds label, buttons and text box onto table
         table.add(label).align(Align.center);
         table.row();
-        table.add(menuButton).padTop(5).align(Align.center);
+        table.add(textField).padTop(10).align(Align.center);
         table.row();
-        table.add(textField).align(Align.center);
-        table.add(saveButton).align(Align.center);
+        table.add(saveButton).padTop(5).align(Align.center);
         table.row();
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
-        table.setSize(220, 100);
+        table.setSize(300, 130);
         placeTable();
     }
 

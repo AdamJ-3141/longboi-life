@@ -1,4 +1,4 @@
-package com.spacecomplexity.longboilife.leaderboards;
+package com.spacecomplexity.longboilife.menu.leaderboard;
 
 /**
  * An exception for if there is an issue loading the leaderboard

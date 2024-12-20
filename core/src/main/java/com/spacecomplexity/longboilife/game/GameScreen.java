@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.building.Building;
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameEventManager;
@@ -24,10 +25,10 @@ import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.ui.UIManager;
 import com.spacecomplexity.longboilife.game.utils.*;
 import com.spacecomplexity.longboilife.game.world.World;
+import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Main class to control the game logic.
@@ -35,8 +36,8 @@ import java.util.HashMap;
 public class GameScreen implements Screen {
     private final Main game;
 
-    private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
     private UIManager ui;
     private InputManager inputManager;
 
@@ -48,6 +49,7 @@ public class GameScreen implements Screen {
     private final GameEventManager gameEventManager = GameEventManager.getGameEventManager();
 
     private float timeSinceScoreUpdate = 0f;
+    private float timeSinceMoneyAdded = 0f;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -68,6 +70,7 @@ public class GameScreen implements Screen {
         // Creates a new World object from "map.json" file
         try {
             world = new World(Gdx.files.internal("map.json"));
+            gameState.gameWorld = world;
         } catch (FileNotFoundException | InvalidSaveMapException e) {
             throw new RuntimeException(e);
         }
@@ -248,7 +251,8 @@ public class GameScreen implements Screen {
 
         // Event to change screen to the Leaderboard
         eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
-            game.switchScreen(Main.ScreenType.LEADERBOARD);
+            MenuState.leaderboard = true;
+            game.switchScreen(Main.ScreenType.MENU);
 
             return null;
         });
@@ -324,11 +328,27 @@ public class GameScreen implements Screen {
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
             GameUtils.updateVisibleSatisfactionScore();
+
+            // Increase the time in seconds since money and score have been added.
             timeSinceScoreUpdate += delta;
+            timeSinceMoneyAdded += delta;
+
+            // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
+            }
+
+            // Add money equal to the sum of the square roots of the costs of accommodations
+            // * 100.
+            if (timeSinceMoneyAdded >= 5) {
+                timeSinceMoneyAdded = 0;
+                gameState.money += (world.buildings.stream()
+                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                        .reduce(0f, Float::sum)
+                        * 100);
             }
             gameEventManager.tryForGameEvent();
         }

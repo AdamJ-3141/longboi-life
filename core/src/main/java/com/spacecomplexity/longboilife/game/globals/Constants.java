@@ -5,6 +5,8 @@ import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import com.badlogic.gdx.graphics.Color;
+
 /**
  * Class contain the constants used throughout the game.
  */
@@ -70,6 +72,19 @@ public class Constants {
     };
 
     /**
+     * Which colour each building category will be displayed as on the sidebar.
+     */
+    public static HashMap<BuildingCategory, Color> categoryColours = new HashMap<>() {
+        {
+            put(BuildingCategory.PATHWAY, Color.WHITE);
+            put(BuildingCategory.FOOD, Color.YELLOW);
+            put(BuildingCategory.ACCOMMODATION, Color.RED);
+            put(BuildingCategory.EDUCATIONAL, Color.CYAN);
+            put(BuildingCategory.RECREATIONAL, Color.GREEN);
+        }
+    };
+
+    /**
      * The satisfactory distances from accommodation to a specific category of
      * building
      * <p>
@@ -83,7 +98,14 @@ public class Constants {
         }
     };
 
-    public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<BuildingCategory, Float>() {
+    /**
+     * The distances from accommodation to a specific category of building
+     * where the accommodation will ignore the building in satisfaction
+     * calculations.
+     * <p>
+     * Used for calculating satisfaction score
+     */
+    public static HashMap<BuildingCategory, Float> ignoreDistance = new HashMap<>() {
         {
             put(BuildingCategory.FOOD, 25f);
             put(BuildingCategory.RECREATIONAL, 30f);
