@@ -2,7 +2,6 @@ package com.spacecomplexity.longboilife.headless;
 
 import com.badlogic.gdx.Screen;
 import com.spacecomplexity.longboilife.Main;
-import com.spacecomplexity.longboilife.leaderboards.LeaderboardScreen;
 
 import java.util.HashMap;
 
@@ -14,7 +13,6 @@ public class HeadlessMain extends Main {
 
     public enum ScreenType {
         GAME(HeadlessGameScreen.class),
-        LEADERBOARD(LeaderboardScreen.class)
         ;
 
         private final Class<? extends Screen> screenClass;
