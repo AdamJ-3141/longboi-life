@@ -16,7 +16,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.MusicPlaylist;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
+import com.spacecomplexity.longboilife.game.ui.UIMusicInfo;
 import com.spacecomplexity.longboilife.menu.menuUI.AchievementUI;
 import com.spacecomplexity.longboilife.menu.menuUI.LeaderboardUI;
 
@@ -26,19 +29,23 @@ import com.spacecomplexity.longboilife.menu.menuUI.LeaderboardUI;
 public class MenuScreen implements Screen {
     private final Main game;
 
-    private Viewport viewport;
+    private final AudioController audio;
 
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
+    private final Viewport viewport;
 
-    private Stage stage;
-    private Skin skin;
+    private final Texture backgroundTexture;
+    private final SpriteBatch batch;
+
+    private final Stage stage;
+    private final Skin skin;
 
     private UIElement leaderboardUI;
     private UIElement achievementsUI;
+    private UIElement musicUI;
 
     public MenuScreen(Main game) {
         this.game = game;
+        this.audio = AudioController.getInstance();
 
         // Initialise viewport and drawing elements
         viewport = new FitViewport(640, 480);
@@ -57,6 +64,11 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
+
+        MenuState.inMenu = true;
+
+        audio.startMusicPlaylist(MusicPlaylist.MENU);
+
         // Table layout for menu alignment
         Table table = new Table();
         table.setFillParent(true);
@@ -69,6 +81,7 @@ public class MenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 // Switch to game screen
                 game.switchScreen(Main.ScreenType.GAME);
+                MenuState.inMenu = false;
             }
         });
 
@@ -118,6 +131,7 @@ public class MenuScreen implements Screen {
 
         leaderboardUI = new LeaderboardUI(viewport, table, skin);
         achievementsUI = new AchievementUI(viewport, table, skin);
+        musicUI = new UIMusicInfo(viewport, table, skin);
     }
 
     @Override
@@ -136,6 +150,7 @@ public class MenuScreen implements Screen {
 
         leaderboardUI.render();
         achievementsUI.render();
+        musicUI.render();
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
+import com.spacecomplexity.longboilife.game.audio.MusicPlaylist;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -20,7 +21,7 @@ import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
-import com.spacecomplexity.longboilife.game.sound.AudioController;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
 import com.spacecomplexity.longboilife.game.tile.InvalidSaveMapException;
 import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.ui.UIManager;
@@ -41,7 +42,7 @@ public class GameScreen implements Screen {
     private final ShapeRenderer shapeRenderer;
     private UIManager ui;
     private InputManager inputManager;
-    private AudioController audio = new AudioController();
+    private final AudioController audio = AudioController.getInstance();
 
     private Viewport viewport;
 
@@ -69,6 +70,8 @@ public class GameScreen implements Screen {
     public void show() {
         gameState.reset();
 
+        audio.startMusicPlaylist(MusicPlaylist.GAME);
+
         // Creates a new World object from "map.json" file
         try {
             world = new World(Gdx.files.internal("map.json"));
@@ -79,9 +82,8 @@ public class GameScreen implements Screen {
 
         // Create a new timer for 5 minutes
         MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
-        MainTimer.getTimerManager().getTimer().setEvent(() -> {
-            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
-        });
+        MainTimer.getTimerManager().getTimer().setEvent(
+            () -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -396,6 +398,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         shapeRenderer.dispose();
+        audio.dispose();
         ui.dispose();
     }
 }
