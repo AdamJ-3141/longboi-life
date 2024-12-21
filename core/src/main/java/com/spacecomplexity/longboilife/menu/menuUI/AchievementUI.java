@@ -1,6 +1,5 @@
 package com.spacecomplexity.longboilife.menu.menuUI;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -10,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.menu.MenuState;
 
@@ -44,6 +45,7 @@ public class AchievementUI extends UIElement {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 // Close the achievement pop-up
                 MenuState.achievement = false;
             }

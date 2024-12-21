@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.menu.MenuState;
 import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
@@ -18,8 +20,8 @@ import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
  * Class that uses UIElement abstract class to create a display for the leaderboard
  */
 public class LeaderboardUI extends UIElement {
-    private Label nameLabel;
-    private Label scoreLabel;
+    private final Label nameLabel;
+    private final Label scoreLabel;
 
     /**
      * Initialise Leaderboard window.
@@ -49,6 +51,7 @@ public class LeaderboardUI extends UIElement {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Close the leaderboard
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 MenuState.leaderboard = false;
             }
         });
@@ -78,18 +81,18 @@ public class LeaderboardUI extends UIElement {
             LeaderboardElement[] leaderboard = LeaderboardUtils.loadScore();
 
             // puts the names in a column
-            String leaderboardName = "Name:\r\n\n";
+            StringBuilder leaderboardName = new StringBuilder("Name:\r\n\n");
             for (LeaderboardElement element : leaderboard) {
-                leaderboardName += element.getName() + "\r\n\n";
+                leaderboardName.append(element.getName()).append("\r\n\n");
             }
-            nameLabel.setText(leaderboardName);
+            nameLabel.setText(leaderboardName.toString());
 
             // puts the scores in a column
-            String leaderboardScore = "Score:\r\n\n";
+            StringBuilder leaderboardScore = new StringBuilder("Score:\r\n\n");
             for (LeaderboardElement leaderboardElement : leaderboard) {
-                leaderboardScore += leaderboardElement.getScore() + "\r\n\n";
+                leaderboardScore.append(leaderboardElement.getScore()).append("\r\n\n");
             }
-            scoreLabel.setText(leaderboardScore);
+            scoreLabel.setText(leaderboardScore.toString());
         }
         placeTable();
     }

@@ -18,6 +18,7 @@ import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.audio.AudioController;
 import com.spacecomplexity.longboilife.game.audio.MusicPlaylist;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.ui.UIMusicInfo;
 import com.spacecomplexity.longboilife.menu.menuUI.AchievementUI;
@@ -79,8 +80,10 @@ public class MenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audio.playSound(SoundEffect.BUTTON_CLICK);
                 // Switch to game screen
                 game.switchScreen(Main.ScreenType.GAME);
+                audio.playSound(SoundEffect.GAME_BEGIN);
                 MenuState.inMenu = false;
             }
         });
@@ -90,6 +93,7 @@ public class MenuScreen implements Screen {
         leaderboardButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audio.playSound(SoundEffect.BUTTON_CLICK);
                 // Open leaderboard pop-up
                 MenuState.leaderboard = true;
             }
@@ -100,6 +104,7 @@ public class MenuScreen implements Screen {
         achievementButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audio.playSound(SoundEffect.BUTTON_CLICK);
                 // Open achievements pop-up
                 MenuState.achievement = true;
             }
@@ -110,6 +115,7 @@ public class MenuScreen implements Screen {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                audio.playSound(SoundEffect.BUTTON_CLICK);
                 // Exit the application
                 Gdx.app.exit();
             }

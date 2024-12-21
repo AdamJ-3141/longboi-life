@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.audio.MusicPlaylist;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -82,8 +83,11 @@ public class GameScreen implements Screen {
 
         // Create a new timer for 5 minutes
         MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
-        MainTimer.getTimerManager().getTimer().setEvent(
-            () -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
+        MainTimer.getTimerManager().getTimer().setEvent(() -> {
+            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
+            audio.getCurrentPlaylist().stop();
+            audio.playSound(SoundEffect.GAME_OVER);
+        });
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -148,6 +152,13 @@ public class GameScreen implements Screen {
                 // Build the building at the mouse location and charge the player accordingly
                 world.build(toBuild, mouse);
                 gameState.money -= cost;
+
+                if (toBuild.getCategory() == BuildingCategory.PATHWAY) {
+                    audio.playSound(SoundEffect.BUILD_PATHWAY);
+                }
+                else{
+                    // audio.playSound(SoundEffect.BUILD_BUILDING);
+                }
 
                 // Remove the selected building if it is wanted to do so
                 if (Arrays.stream(Constants.dontRemoveSelection)
@@ -214,6 +225,7 @@ public class GameScreen implements Screen {
 
         // Sell the selected building
         eventHandler.createEvent(EventHandler.Event.SELL_BUILDING, (params) -> {
+            audio.playSound(SoundEffect.DESTROY);
             // Delete the building
             world.demolish(gameState.selectedBuilding);
             // Refund the specified amount

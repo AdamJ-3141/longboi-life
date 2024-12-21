@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.GameState;
@@ -82,6 +84,7 @@ public class UIBuildMenu extends UIElement {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                     EventHandler.getEventHandler().callEvent(EventHandler.Event.CANCEL_OPERATIONS);
 
                     GameState.getState().placingBuilding = building;
