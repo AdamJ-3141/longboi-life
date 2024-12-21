@@ -20,6 +20,7 @@ import com.spacecomplexity.longboilife.game.tile.InvalidSaveMapException;
 import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.utils.*;
 import com.spacecomplexity.longboilife.game.world.World;
+import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -234,8 +235,7 @@ public class HeadlessGameScreen implements Screen {
 
         // Event to change screen to the Leaderboard
         eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
-            game.switchScreen(Main.ScreenType.LEADERBOARD);
-
+            MenuState.leaderboard = true;
             return null;
         });
 
