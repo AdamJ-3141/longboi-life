@@ -8,7 +8,7 @@ import  static org.junit.jupiter.api.Assertions.assertTrue;
 public class AssetTests extends AbstractHeadlessGdxTest{
     // have to use direct file addresses as original group input data into methods and classes directly instead of using variables
     @Test
-    public void buildingAsset() {
+    public void buildingAssetTest() {
         assertTrue(Gdx.files.internal("buildings/greggs.png").exists(),
             "Greggs texture exists");
         assertTrue(Gdx.files.internal("buildings/nandos.png").exists(),
