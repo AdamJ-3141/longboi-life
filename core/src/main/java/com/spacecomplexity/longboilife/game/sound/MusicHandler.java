@@ -14,13 +14,17 @@ public class MusicHandler {
         System.arraycopy(GameMusic.values(), 0, playlist, 0, GameMusic.values().length);
     }
 
-    public void nextSong() {
+    public void start() {
+        nextSong();
+    }
+
+    private void nextSong() {
         currentSongIndex = (currentSongIndex + 1) % playlist.length;
         currentSong = playlist[currentSongIndex];
         playMusic();
     }
 
-    public void playMusic() {
+    private void playMusic() {
         currentSong.play();
         currentSong.music.setOnCompletionListener(music -> {
             nextSong();
