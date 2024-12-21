@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class LeaderboardUtils {
     private static Json json = new Json();
+    private static  String jsonAddress = "leaderboard.json";
     private static final int maxLeaderboardSize = 5; // size of leaderboard
 
     /**
@@ -20,7 +21,8 @@ public class LeaderboardUtils {
      * @return  Array of type LeaderboardElements which represents the leaderboard
      */
     public static LeaderboardElement[] loadScore(){
-        FileHandle leaderboard = Gdx.files.local("leaderboard.json");
+        // uses getJsonAddress to allow for easier testing
+        FileHandle leaderboard = Gdx.files.local(getJsonAddress());
         // ensures the leaderboard exists
         if(leaderboard.exists()){
             // converts from json to array of LeaderboardElement objects
@@ -34,9 +36,9 @@ public class LeaderboardUtils {
      * Adds the score passed to the method to the correct place on the leaderboard
      * @param score LeaderboardElement object to be added
      */
-    public static void addScore(LeaderboardElement score){
+    public static void addScore(LeaderboardElement score, LeaderboardElement[] currentBoard){
         // Gets the leaderboard Array and makes it an ArrayList for manipulation
-        List<LeaderboardElement> scores = Arrays.asList(loadScore());
+        List<LeaderboardElement> scores = Arrays.asList(currentBoard);
         List<LeaderboardElement> scoresList = new ArrayList<>(scores);
 
         // inserts the LeaderboardElement in the correct location in the list
@@ -69,7 +71,14 @@ public class LeaderboardUtils {
      */
     private static void scoreSave(LeaderboardElement[] scores) {
         String scoreStr = json.toJson(scores);
-        FileHandle leaderboard = Gdx.files.local("leaderboard.json");
+        FileHandle leaderboard = Gdx.files.local(jsonAddress);
         leaderboard.writeString(scoreStr ,false,"UTF-8");
+    }
+
+    /**
+     * @return jsonAddress attribute
+     */
+    public static String getJsonAddress() {
+        return jsonAddress;
     }
 }

@@ -52,7 +52,9 @@ public class UIOverview extends UIElement {
                 }
 
                 // add score to the leaderboard
-                LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore));
+                LeaderboardElement[] scores = LeaderboardUtils.loadScore();
+                LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore), scores);
+
 
                 // Call the event to change screen to leaderboard
                 EventHandler.getEventHandler().callEvent(EventHandler.Event.LEADERBOARD);
