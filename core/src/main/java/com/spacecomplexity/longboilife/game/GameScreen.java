@@ -19,6 +19,7 @@ import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
+import com.spacecomplexity.longboilife.game.sound.AudioController;
 import com.spacecomplexity.longboilife.game.tile.InvalidSaveMapException;
 import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.ui.UIManager;
@@ -39,6 +40,7 @@ public class GameScreen implements Screen {
     private final ShapeRenderer shapeRenderer;
     private UIManager ui;
     private InputManager inputManager;
+    private AudioController audio = new AudioController();
 
     private Viewport viewport;
 
