@@ -31,4 +31,9 @@ public class Building {
     public void setPosition(Vector2Int position) {
         this.position = position;
     }
+
+    @Override
+    public String toString() {
+        return getType().getDisplayName() + " " + getPosition();
+    }
 }

@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
+import com.spacecomplexity.longboilife.game.ui.UIElement;
+import com.spacecomplexity.longboilife.menu.menuUI.AchievementUI;
+import com.spacecomplexity.longboilife.menu.menuUI.LeaderboardUI;
 
 /**
  * Main class to control the menu screen.
@@ -31,6 +34,9 @@ public class MenuScreen implements Screen {
     private Stage stage;
     private Skin skin;
 
+    private UIElement leaderboardUI;
+    private UIElement achievementsUI;
+
     public MenuScreen(Main game) {
         this.game = game;
 
@@ -44,6 +50,9 @@ public class MenuScreen implements Screen {
 
         // Load UI skin for buttons
         skin = new Skin(Gdx.files.internal("ui/skin/uiskin.json"));
+
+        //sets the size of the window
+        Gdx.graphics.setWindowedMode(740, 555);
     }
 
     @Override
@@ -68,8 +77,18 @@ public class MenuScreen implements Screen {
         leaderboardButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Switch to leaderboard screen
-                game.switchScreen(Main.ScreenType.LEADERBOARD);
+                // Open leaderboard pop-up
+                MenuState.leaderboard = true;
+            }
+        });
+
+        // Initialise leaderboard button
+        TextButton achievementButton = new TextButton("Achievements", skin, "round");
+        achievementButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Open achievements pop-up
+                MenuState.achievement = true;
             }
         });
 
@@ -89,11 +108,16 @@ public class MenuScreen implements Screen {
         table.row();
         table.add(leaderboardButton).padTop(10);
         table.row();
+        table.add(achievementButton).padTop(10);
+        table.row();
         table.add(exitButton).padTop(10);
 
         // Allows UI to capture touch events
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager(), stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        leaderboardUI = new LeaderboardUI(viewport, table, skin);
+        achievementsUI = new AchievementUI(viewport, table, skin);
     }
 
     @Override
@@ -109,6 +133,9 @@ public class MenuScreen implements Screen {
         // Draw and apply ui
         stage.act(delta);
         stage.draw();
+
+        leaderboardUI.render();
+        achievementsUI.render();
     }
 
     @Override

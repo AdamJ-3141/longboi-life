@@ -16,7 +16,6 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.game.*;
 import com.spacecomplexity.longboilife.game.ui.gameover.UIOverview;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.game.world.World;
 
 /**
  * Class to manage the UI in the game.
@@ -34,7 +33,7 @@ public class UIManager {
      *
      * @param inputMultiplexer to add the UI events to the input processing
      */
-    public UIManager(InputMultiplexer inputMultiplexer, World world) {
+    public UIManager(InputMultiplexer inputMultiplexer) {
         // Initialise viewport for rescaling
         viewport = new ScalingViewport(Scaling.fit, 640, 480);
 
@@ -53,32 +52,36 @@ public class UIManager {
         // Load external font
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ui/fonts/Roboto-Medium.ttf"));
         // Generate a bitmap font for size 12
-        BitmapFont ourFont12 = generator.generateFont(new FreeTypeFontGenerator.FreeTypeFontParameter() {{
-            size = 12;
-        }});
+        BitmapFont ourFont12 = generator.generateFont(new FreeTypeFontGenerator.FreeTypeFontParameter() {
+            {
+                size = 12;
+            }
+        });
         // Generate a bitmap font for size 14
-        BitmapFont ourFont16 = generator.generateFont(new FreeTypeFontGenerator.FreeTypeFontParameter() {{
-            size = 14;
-        }});
+        BitmapFont ourFont16 = generator.generateFont(new FreeTypeFontGenerator.FreeTypeFontParameter() {
+            {
+                size = 14;
+            }
+        });
         generator.dispose();
 
         // Set skins font to our font
         skin.get("default", Label.LabelStyle.class).font = ourFont12;
         skin.get("default", TextButton.TextButtonStyle.class).font = ourFont16;
 
-
         // Create our UI elements
         // Note: The order of these is the order that they will be rendered
-        uiElements = new UIElement[]{
-            new UIBuildingSelectedMenu(viewport, table, skin),
-            new UIBottomMenu(viewport, table, skin),
-            new UIClockMenu(viewport, table, skin),
-            new UISatisfactionMenu(viewport, table, skin),
-            new UIMoneyMenu(viewport, table, skin),
-            new UIScoreMenu(viewport, table, skin),
-            new UIBuildingCounter(viewport, table, skin),
-            new UIAchievementPopup(viewport, table, skin),
-            new UIAccomSatisfactionTooltip(viewport, table, skin, world),
+        uiElements = new UIElement[] {
+                new UIBuildingSelectedMenu(viewport, table, skin),
+                new UIBottomMenu(viewport, table, skin),
+                new UIClockMenu(viewport, table, skin),
+                new UISatisfactionMenu(viewport, table, skin),
+                new UIMoneyMenu(viewport, table, skin),
+                new UIScoreMenu(viewport, table, skin),
+                new UIBuildingCounter(viewport, table, skin),
+                new UIAchievementPopup(viewport, table, skin),
+                new UIAccomSatisfactionTooltip(viewport, table, skin),
+                new UIGameEventPopup(viewport, table, skin)
         };
 
         // Hide game UI and show end UI
@@ -93,8 +96,8 @@ public class UIManager {
             table.clear();
 
             // Create the new end elements
-            uiElements = new UIElement[]{
-                new UIOverview(viewport, table, skin),
+            uiElements = new UIElement[] {
+                    new UIOverview(viewport, table, skin),
             };
 
             return null;
@@ -125,9 +128,8 @@ public class UIManager {
     public void resize(int width, int height) {
         // Update world size to match scaling of uiScaleFactor
         viewport.setWorldSize(
-            (float) width / GameState.getState().uiScaleFactor,
-            (float) height / GameState.getState().uiScaleFactor
-        );
+                (float) width / GameState.getState().uiScaleFactor,
+                (float) height / GameState.getState().uiScaleFactor);
 
         // Updates viewport to match new window size
         viewport.update(width, height, true);

@@ -3,6 +3,8 @@ package com.spacecomplexity.longboilife.game.globals;
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
+import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.HashMap;
 
@@ -38,6 +40,11 @@ public class GameState {
     public float cameraScrollZoomSpeed;
 
     /**
+     * Points the current game world object.
+     */
+    public World gameWorld;
+
+    /**
      * The amount of money the player currently has.
      */
     public float money;
@@ -47,10 +54,20 @@ public class GameState {
      */
     public float satisfactionScore;
 
+    /**
+     * The actual average satisfaction score that {@link GameState#satisfactionScore}
+     * will tend towards.
+     */
     public float targetSatisfaction;
 
-    public HashMap<Building, Float> accomSatisfaction;
+    /**
+     * A map from each accommodation building to its satisfaction rating.
+     */
+    public HashMap<Building, AccomSatisfactionDetail> accomSatisfaction;
 
+    /**
+     * The main total score of the current game.
+     */
     public int totalScore;
 
     /**
@@ -73,6 +90,13 @@ public class GameState {
      * If {@code null} then nothing is selected.
      */
     public Building movingBuilding;
+
+    /**
+     * Whether the game should deselect a building once placed.
+     * <p>
+     * Handled by {@link Keybindings#KEEP_PLACING}
+     */
+    public boolean continuousPlacingBuilding;
 
     /**
      * If the game is currently paused.
@@ -170,11 +194,13 @@ public class GameState {
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
 //        fullscreen = false;
+        gameWorld = null;
         money = 50000;
         satisfactionScore = 0f;
         targetSatisfaction = 0f;
         accomSatisfaction = new HashMap<>();
         placingBuilding = null;
+        continuousPlacingBuilding = false;
         selectedBuilding = null;
         movingBuilding = null;
         paused = false;

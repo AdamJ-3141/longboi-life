@@ -1,11 +1,8 @@
-package com.spacecomplexity.longboilife.game;
+package com.spacecomplexity.longboilife.headless;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -16,16 +13,13 @@ import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.Constants;
-import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import com.spacecomplexity.longboilife.game.tile.InvalidSaveMapException;
 import com.spacecomplexity.longboilife.game.tile.Tile;
-import com.spacecomplexity.longboilife.game.ui.UIManager;
 import com.spacecomplexity.longboilife.game.utils.*;
 import com.spacecomplexity.longboilife.game.world.World;
-import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -33,12 +27,9 @@ import java.util.Arrays;
 /**
  * Main class to control the game logic.
  */
-public class GameScreen implements Screen {
+public class HeadlessGameScreen implements Screen {
     private final Main game;
 
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
-    private UIManager ui;
     private InputManager inputManager;
 
     private Viewport viewport;
@@ -46,17 +37,13 @@ public class GameScreen implements Screen {
     private World world;
 
     private final GameState gameState = GameState.getState();
-    private final GameEventManager gameEventManager = GameEventManager.getGameEventManager();
 
     private float timeSinceScoreUpdate = 0f;
     private float timeSinceMoneyAdded = 0f;
 
-    public GameScreen(Main game) {
+    public HeadlessGameScreen(Main game) {
         this.game = game;
 
-        // Initialise SpriteBatch and ShapeRender for rendering
-        batch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
     }
 
     /**
@@ -65,6 +52,7 @@ public class GameScreen implements Screen {
      */
     @Override
     public void show() {
+
         gameState.reset();
 
         // Creates a new World object from "map.json" file
@@ -76,10 +64,8 @@ public class GameScreen implements Screen {
         }
 
         // Create a new timer for 5 minutes
-        MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
-        MainTimer.getTimerManager().getTimer().setEvent(() -> {
-            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
-        });
+        MainTimer.getTimerManager().getTimer().setTimer(5 * 60 * 1000);
+        MainTimer.getTimerManager().getTimer().setEvent(() -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -94,14 +80,12 @@ public class GameScreen implements Screen {
         // Calculates the scaling factor based initial screen height
         GameUtils.calculateScaling();
 
-        // Initialise UI elements with UIManager
-        ui = new UIManager(inputMultiplexer);
-
         // Position camera in the center of the world map
         MainCamera.camera().position.set(new Vector3(
-                world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-                world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
-                0));
+            world.getWidth() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+            world.getHeight() * Constants.TILE_SIZE * gameState.scaleFactor / 2,
+            0
+        ));
 
         // Set up an InputManager to handle user inputs
         inputManager = new InputManager(inputMultiplexer);
@@ -146,8 +130,7 @@ public class GameScreen implements Screen {
                 gameState.money -= cost;
 
                 // Remove the selected building if it is wanted to do so
-                if (Arrays.stream(Constants.dontRemoveSelection)
-                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
+                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category) && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -251,8 +234,7 @@ public class GameScreen implements Screen {
 
         // Event to change screen to the Leaderboard
         eventHandler.createEvent(EventHandler.Event.LEADERBOARD, (params) -> {
-            MenuState.leaderboard = true;
-            game.switchScreen(Main.ScreenType.MENU);
+            game.switchScreen(Main.ScreenType.LEADERBOARD);
 
             return null;
         });
@@ -285,43 +267,10 @@ public class GameScreen implements Screen {
         // Applies viewport transformations and updates camera ready for rendering
         viewport.apply();
         MainCamera.camera().update();
-        // Update the SpriteBatch and ShapeRenderer to match the updates camera
-        batch.setProjectionMatrix(MainCamera.camera().getCombinedMatrix());
-        shapeRenderer.setProjectionMatrix(MainCamera.camera().getCombinedMatrix());
 
-        // Darkened the world when paused
-        Color worldTint = gameState.paused ? Color.LIGHT_GRAY : Color.WHITE;
-
-        // Draw the world tiles
-        RenderUtils.drawWorld(batch, world, worldTint);
-        // Draw the worlds buildings
-        RenderUtils.drawBuildings(batch, world, worldTint);
-        // If there is a building to be placed draw it as a ghost building
-        if (gameState.placingBuilding != null) {
-            RenderUtils.drawPlacingBuilding(batch, world, gameState.placingBuilding, new Color(1f, 1f, 1f, 0.75f),
-                    new Color(1f, 0f, 0f, 0.75f));
-        }
-        // If we are placing a building or there is a building selected then draw
-        // gridlines
-        if (gameState.placingBuilding != null || gameState.selectedBuilding != null) {
-            RenderUtils.drawWorldGridlines(shapeRenderer, world, Color.BLACK);
-        }
-        // If there is a building selected then outline it
-        if (gameState.selectedBuilding != null) {
-            RenderUtils.outlineBuilding(shapeRenderer, gameState.selectedBuilding, Color.RED, 2);
-        }
-        // If there is a moving selected then outline where it was previously
-        if (gameState.movingBuilding != null) {
-            RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
-        }
-
-        // calls the achievement handler to check for achievements and to ensure the
-        // popup is removed
+        // calls the achievement handler to check for achievements and to ensure the popup is removed
         AchievementHandler.checkAchievements();
         AchievementHandler.updateAchievements();
-
-        // Render the UI
-        ui.render();
 
         // Poll the timer to run the event if the timer has expired
         // Do not update satisfaction score if the game is paused or has ended
@@ -336,21 +285,20 @@ public class GameScreen implements Screen {
             // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
+                System.out.println(satisfactionSum);
                 gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
             }
 
-            // Add money equal to the sum of the square roots of the costs of accommodations
-            // * 100.
+            // Add money equal to the sum of the square roots of the costs of accommodations * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
                 gameState.money += (world.buildings.stream()
-                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                        .reduce(0f, Float::sum)
-                        * 100);
+                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                    .reduce(0f, Float::sum)
+                    * 100);
             }
-            gameEventManager.tryForGameEvent();
         }
     }
 
@@ -362,38 +310,21 @@ public class GameScreen implements Screen {
      * @param height the new height in pixels.
      */
     @Override
-    public void resize(int width, int height) {
-        // Updates viewport to match new window size
-        viewport.update(width, height, false);
-
-        // Recalculate scaling factors with new height
-        GameUtils.calculateScaling();
-
-        // Rescale UI
-        ui.resize(width, height);
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-        ui.dispose();
-    }
+    public void hide() {}
 
     /**
      * Release all resources held by the game.
      * Called when the game is being closed.
      */
     @Override
-    public void dispose() {
-        batch.dispose();
-        shapeRenderer.dispose();
-        ui.dispose();
-    }
+    public void dispose() {}
 }
