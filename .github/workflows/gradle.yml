@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v4.3.1
       with:
         name: Package
-        path: build/libs
+        path: core/build/libs/lib.jar
     - name: Upload Checkstyle report
       uses: actions/upload-artifact@v4.3.1
       if: startsWith(matrix.os, 'ubuntu')
