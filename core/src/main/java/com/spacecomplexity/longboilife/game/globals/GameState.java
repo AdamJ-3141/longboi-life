@@ -57,7 +57,7 @@ public class GameState {
     public float satisfactionScore;
 
     /**
-     * The actual average satisfaction score that the {@link GameState#satisfactionScore}
+     * The actual average satisfaction score that {@link GameState#satisfactionScore}
      * will tend towards.
      */
     public float targetSatisfaction;
