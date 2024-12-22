@@ -1,5 +1,8 @@
 package com.spacecomplexity.longboilife.game.audio;
 
+/**
+ * Static class which controls all audio events in the game.
+ */
 public class AudioController {
 
     private static final AudioController instance = new AudioController();
@@ -23,6 +26,9 @@ public class AudioController {
         return MusicHandler.currentPlaylist;
     }
 
+    /**
+     * Dispose of all sound effects and music.
+     */
     public void dispose() {
         musicHandler.dispose();
         for (SoundEffect sound : SoundEffect.values()) {
