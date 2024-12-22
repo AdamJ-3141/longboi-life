@@ -38,8 +38,8 @@ jobs:
     - name: Upload library JAR
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: lib-${{ matrix.os }}.jar
-        path: build/libs/lib.jar
+        name: Package
+        path: build/libs
     - name: Upload Checkstyle report
       uses: actions/upload-artifact@v4.3.1
       if: startsWith(matrix.os, 'ubuntu')
