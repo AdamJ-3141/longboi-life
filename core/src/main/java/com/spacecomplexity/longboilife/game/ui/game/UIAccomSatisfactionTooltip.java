@@ -80,6 +80,7 @@ public class UIAccomSatisfactionTooltip extends UIElement {
      */
     @Override
     public void render() {
+        // Removes high detail labels.
         for (BuildingCategory category : Constants.satisfactoryDistance.keySet()) {
             table.removeActor(categoryTitles.get(category));
             table.removeActor(categorySatisfaction.get(category));
@@ -128,6 +129,11 @@ public class UIAccomSatisfactionTooltip extends UIElement {
         placeTable();
     }
 
+    /**
+     * Set the colour of a label based on the value given.
+     * @param label the Label to colour.
+     * @param value the value to colour based on.
+     */
     private static void colourLabel(Label label, float value) {
         label.setColor(value >= 1 ? Color.GREEN :
             value >= 0.7 ? Color.YELLOW :

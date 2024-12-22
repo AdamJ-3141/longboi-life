@@ -45,6 +45,11 @@ public class GameState {
     public World gameWorld;
 
     /**
+     * Flag for when the game is fully loaded.
+     */
+    public boolean isLoaded = false;
+
+    /**
      * The amount of money the player currently has.
      */
     public float money;
@@ -190,6 +195,7 @@ public class GameState {
     public void reset() {
 //        scaleFactor = 1;
 //        uiScaleFactor = 1;
+        isLoaded = false;
         cameraSpeed = 1400;
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
