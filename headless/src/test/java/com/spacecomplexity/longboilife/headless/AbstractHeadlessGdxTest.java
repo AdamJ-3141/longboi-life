@@ -10,6 +10,8 @@ import static org.mockito.Mockito.mock;
 
 import com.spacecomplexity.longboilife.game.globals.GameState;
 
+import java.util.concurrent.TimeoutException;
+
 public abstract class AbstractHeadlessGdxTest {
 
     public GameState gameState = GameState.getState();
@@ -25,5 +27,17 @@ public abstract class AbstractHeadlessGdxTest {
         if (game.getScreen() instanceof HeadlessGameScreen) {
             game.getScreen().show();
         }
+    }
+
+    public void waitForLoad(float seconds) throws InterruptedException, TimeoutException {
+        int delta = 10;
+        for (int i = 0; i < seconds * 1000; ) {
+            i += delta;
+            Thread.sleep(delta);
+            if (gameState.isLoaded) {
+                return;
+            }
+        }
+        throw new TimeoutException();
     }
 }

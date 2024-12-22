@@ -44,6 +44,8 @@ public class GameState {
      */
     public World gameWorld;
 
+    public boolean isLoaded = false;
+
     /**
      * The amount of money the player currently has.
      */
@@ -190,6 +192,7 @@ public class GameState {
     public void reset() {
 //        scaleFactor = 1;
 //        uiScaleFactor = 1;
+        isLoaded = false;
         cameraSpeed = 1400;
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
