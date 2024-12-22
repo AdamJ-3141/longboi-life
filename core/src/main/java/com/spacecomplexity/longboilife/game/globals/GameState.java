@@ -44,6 +44,9 @@ public class GameState {
      */
     public World gameWorld;
 
+    /**
+     * Flag for when the game is fully loaded.
+     */
     public boolean isLoaded = false;
 
     /**
