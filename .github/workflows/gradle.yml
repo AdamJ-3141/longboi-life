@@ -71,4 +71,4 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
       with:
-        files: longboi-life*.jar
+        files: longboi-life-windows.jar
