@@ -33,12 +33,12 @@ jobs:
     - name: Upload JaCoCo coverage report as a workflow artifact
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: jacoco-report-${{ matrix.os }}.jar
+        name: jacoco-report-${{ matrix.os }}
         path: headless/build/reports/tests/test/
     - name: Upload library JAR
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: longboi-life-${{ matrix.os }}
+        name: longboi-life-${{ matrix.os }}.jar
         path: lwjgl3/build/libs/longboi-life-1.0.0.jar
 
   release:
