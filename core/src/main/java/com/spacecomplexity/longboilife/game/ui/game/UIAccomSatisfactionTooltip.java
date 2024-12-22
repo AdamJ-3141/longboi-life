@@ -80,7 +80,7 @@ public class UIAccomSatisfactionTooltip extends UIElement {
      */
     @Override
     public void render() {
-        // Removes high detail
+        // Removes high detail labels.
         for (BuildingCategory category : Constants.satisfactoryDistance.keySet()) {
             table.removeActor(categoryTitles.get(category));
             table.removeActor(categorySatisfaction.get(category));
