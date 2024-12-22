@@ -58,7 +58,7 @@ jobs:
       - run: ls -R
 
       - name: Rename Ubuntu Build Artifact
-        run: mv longboi-life-1.0.0.jar longboi-life-ubuntu
+        run: mv longboi-life-1.0.0.jar longboi-life-ubuntu.jar
       - run: ls -R
 
       - name: Download MacOS Build Artifact
@@ -68,7 +68,7 @@ jobs:
       - run: ls -R
 
       - name: Rename MacOS Build Artifact
-        run: mv longboi-life-1.0.0.jar longboi-life-macos
+        run: mv longboi-life-1.0.0.jar longboi-life-macos.jar
       - run: ls -R
 
       - name: Download Windows Build Artifact
@@ -78,7 +78,7 @@ jobs:
       - run: ls -R
 
       - name: Rename Windows Build Artifact
-        run: mv longboi-life-1.0.0.jar longboi-life-windows
+        run: mv longboi-life-1.0.0.jar longboi-life-windows.jar
       - run: ls -R
 
       - name: Release
