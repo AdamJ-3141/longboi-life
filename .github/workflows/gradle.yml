@@ -3,7 +3,6 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
-    tags: [ "v[0-9]+.[0-9]+.[0-9]+" ]
   pull_request:
     branches: [ "main" ]
 
@@ -18,34 +17,28 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build jacocoTestReport
-    - name: Upload JaCoCo coverage report as a workflow artifact
-      uses: actions/upload-artifact@v4.3.1
-      with:
-        name: jacoco-report-${{ matrix.os }}
-        path: core/build/reports/jacoco/test/html/
-    - name: Upload library JAR
-      uses: actions/upload-artifact@v4.3.1
-      with:
-        name: lib-${{ matrix.os }}.jar
-        path: core/build/libs/lib.jar
-    - name: Upload Checkstyle report
-      uses: actions/upload-artifact@v4.3.1
-      if: startsWith(matrix.os, 'ubuntu')
-      with:
-        name: checkstyle-report
-        path: core/build/reports/checkstyle
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build jacocoTestReport
+      - name: Upload JaCoCo coverage report as a workflow artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: jacoco-report-${{ matrix.os }}
+          path: headless/build/reports/tests/test/
+      - name: Upload library JAR
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: longboi-life-${{ matrix.os }}
+          path: lwjgl3/build/libs/longboi-life-1.0.0.jar
 
   release:
     runs-on: ubuntu-22.04
@@ -56,25 +49,25 @@ jobs:
       contents: write
 
     steps:
-    - name: Download Ubuntu Build Artifact
-      uses: actions/download-artifact@v4.1.4
-      with:
-        name: lib-ubuntu-22.04.jar
-    - name: Rename Ubuntu Build Artifact
-      run: mv lib.jar lib-ubuntu.jar
-    - name: Download MacOS Build Artifact
-      uses: actions/download-artifact@v4.1.4
-      with:
-        name: lib-macos-12.jar
-    - name: Rename MacOS Build Artifact
-      run: mv lib.jar lib-macos.jar
-    - name: Download Windows Build Artifact
-      uses: actions/download-artifact@v4.1.4
-      with:
-        name: lib-windows-2022.jar
-    - name: Rename Windows Build Artifact
-      run: mv lib.jar lib-windows.jar
-    - name: Release
-      uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
-      with:
-        files: lib*.jar
+      - name: Download Ubuntu Build Artifact
+        uses: actions/download-artifact@v4.1.4
+        with:
+          name: longboi-life-ubuntu-latest.jar
+      - name: Rename Ubuntu Build Artifact
+        run: mv longboi-life.jar longboi-life-ubuntu.jar
+      - name: Download MacOS Build Artifact
+        uses: actions/download-artifact@v4.1.4
+        with:
+          name: longboi-life-macos-latest.jar
+      - name: Rename MacOS Build Artifact
+        run: mv longboi-life.jar longboi-life-macos.jar
+      - name: Download Windows Build Artifact
+        uses: actions/download-artifact@v4.1.4
+        with:
+          name: longboi-life-windows-latest.jar
+      - name: Rename Windows Build Artifact
+        run: mv longboi-life.jar longboi-life-windows.jar
+      - name: Release
+        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
+        with:
+          files: lib*.jar
