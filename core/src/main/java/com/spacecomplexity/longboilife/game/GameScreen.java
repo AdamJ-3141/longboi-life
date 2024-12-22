@@ -3,6 +3,7 @@ package com.spacecomplexity.longboilife.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -31,6 +32,7 @@ import com.spacecomplexity.longboilife.game.world.World;
 import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -41,6 +43,7 @@ public class GameScreen implements Screen {
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
+    private final ArrayList<ParticleSpawner> particles;
     private UIManager ui;
     private InputManager inputManager;
     private final AudioController audio = AudioController.getInstance();
@@ -61,6 +64,7 @@ public class GameScreen implements Screen {
         // Initialise SpriteBatch and ShapeRender for rendering
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        particles = new ArrayList<>();
     }
 
     /**
@@ -153,16 +157,10 @@ public class GameScreen implements Screen {
                 world.build(toBuild, mouse);
                 gameState.money -= cost;
 
-                if (toBuild.getCategory() == BuildingCategory.PATHWAY) {
-                    audio.playSound(SoundEffect.BUILD_PATHWAY);
-                }
-                else{
-                    // audio.playSound(SoundEffect.BUILD_BUILDING);
-                }
-
                 // Remove the selected building if it is wanted to do so
                 if (Arrays.stream(Constants.dontRemoveSelection)
-                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
+                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)
+                    && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -225,7 +223,6 @@ public class GameScreen implements Screen {
 
         // Sell the selected building
         eventHandler.createEvent(EventHandler.Event.SELL_BUILDING, (params) -> {
-            audio.playSound(SoundEffect.DESTROY);
             // Delete the building
             world.demolish(gameState.selectedBuilding);
             // Refund the specified amount
@@ -284,6 +281,15 @@ public class GameScreen implements Screen {
             }
             return false;
         });
+
+        eventHandler.createEvent(EventHandler.Event.SPAWN_PARTICLE, (params) -> {
+            FileHandle effectFile = (FileHandle) params[0];
+            FileHandle imageFile = (FileHandle) params[1];
+            float x = (float) params[2];
+            float y = (float) params[3];
+            particles.add(new ParticleSpawner(effectFile, imageFile, x, y));
+            return null;
+        });
     }
 
     /**
@@ -331,6 +337,12 @@ public class GameScreen implements Screen {
             RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
         }
 
+        // Draw any current particles
+        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles, delta);
+        for (ParticleSpawner pe: completedParticles) {
+            particles.remove(pe);
+        }
+
         // calls the achievement handler to check for achievements and to ensure the
         // popup is removed
         AchievementHandler.checkAchievements();
@@ -360,11 +372,25 @@ public class GameScreen implements Screen {
             // * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
-                gameState.money += (world.buildings.stream()
-                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                        .reduce(0f, Float::sum)
-                        * 100);
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                for (Building building : world.buildings) {
+                    if (building.getType().getCategory() == BuildingCategory.ACCOMMODATION) {
+                        EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                            Gdx.files.internal("particles/effects/money.p"),
+                            Gdx.files.internal("particles/images"),
+                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                    }
+                }
+                float moneyAdded = world.buildings.stream()
+                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                    .reduce(0f, Float::sum)
+                    * 100;
+                gameState.money += moneyAdded;
+                if (moneyAdded > 0) {
+                    audio.playSound(SoundEffect.MONEY_UP);
+                }
             }
             gameEventManager.tryForGameEvent();
         }

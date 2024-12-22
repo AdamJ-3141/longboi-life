@@ -22,7 +22,8 @@ public class EventHandler {
         LEADERBOARD,
         ISBUILDABLE,
         OPEN_GAMEEVENT_POPUP,
-        CLOSE_GAMEEVENT_POPUP;
+        CLOSE_GAMEEVENT_POPUP,
+        SPAWN_PARTICLE;
 
         private Function<Object[], Object> callback;
 

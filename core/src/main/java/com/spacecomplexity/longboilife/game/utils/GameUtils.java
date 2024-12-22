@@ -3,6 +3,8 @@ package com.spacecomplexity.longboilife.game.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -147,11 +149,37 @@ public class GameUtils {
             float newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
             GameState gameState = GameState.getState();
             gameState.targetSatisfaction = newSatisfactionScore;
+            HashMap<Building, AccomSatisfactionDetail> oldSatisfactions = gameState.accomSatisfaction;
             gameState.accomSatisfaction = accomSatisfactionDetails;
+            checkAccomSatisfaction(oldSatisfactions);
         }
 
         // To be used to add onto the score.
         return newSatisfactionSum;
+    }
+
+    public static void checkAccomSatisfaction(HashMap<Building, AccomSatisfactionDetail> oldSatisfactions) {
+        HashMap<Building, AccomSatisfactionDetail> newSatisfactions = GameState.getState().accomSatisfaction;
+        for (Building building : newSatisfactions.keySet()) {
+            if (!oldSatisfactions.containsKey(building) || newSatisfactions.get(building).totalSatisfaction > oldSatisfactions.get(building).totalSatisfaction) {
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                        Gdx.files.internal("particles/effects/heart.p"),
+                        Gdx.files.internal("particles/images"),
+                        (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                        (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                AudioController.getInstance().playSound(SoundEffect.SATISFACTION_UP);
+            }
+            else if (newSatisfactions.get(building).totalSatisfaction < oldSatisfactions.get(building).totalSatisfaction) {
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                    Gdx.files.internal("particles/effects/broken_heart.p"),
+                    Gdx.files.internal("particles/images"),
+                    (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                    (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                AudioController.getInstance().playSound(SoundEffect.SATISFACTION_DOWN);
+            }
+        }
     }
 
     /**
@@ -197,7 +225,7 @@ public class GameUtils {
             for (int j = i + 1; j < nodes.length; j++) {
                 GraphNode endNode = nodes[j];
                 int dist = world.getBuildingDistance(startNode.getBuildingRef(), endNode.getBuildingRef());
-                if (dist != Integer.MAX_VALUE) {
+                if (dist != -1) {
                     startNode.connectNode(endNode, dist);
                 }
             }

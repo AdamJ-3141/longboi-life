@@ -3,6 +3,8 @@ package com.spacecomplexity.longboilife.game.world;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.SerializationException;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -22,6 +24,7 @@ public class World {
     private final Tile[][] world;
     public Vector<Building> buildings;
     private final PathwayPositions[][] pathways;
+    private final AudioController audio;
 
     /**
      * Creates a new world loaded from a map JSON file.
@@ -31,6 +34,7 @@ public class World {
      * @throws InvalidSaveMapException if the map contains invalid tile names.
      */
     public World(FileHandle mapFile) throws FileNotFoundException, InvalidSaveMapException {
+        this.audio = AudioController.getInstance();
         // If the file does not exist throw an exception
         if (!mapFile.exists()) {
             throw new FileNotFoundException("File does not exist: \"" + mapFile.name() + "\"");
@@ -173,6 +177,10 @@ public class World {
         // If building is a pathway then calculate and add the type to the pathways grid
         if (building.getType().getCategory() == BuildingCategory.PATHWAY) {
             updatePathwayPosition(buildingPosition);
+            audio.playSound(SoundEffect.BUILD_PATHWAY);
+        }
+        else{
+            audio.playSound(SoundEffect.BUILD_BUILDING);
         }
 
         // Update the game state counter with the new building
@@ -217,7 +225,7 @@ public class World {
                 }
             }
         }
-
+        audio.playSound(SoundEffect.DESTROY);
         // Update the game state counter with the removal of the building
         GameState.getState().changeBuildingCount(building.getType(), -1);
     }
@@ -358,10 +366,10 @@ public class World {
      */
     public int getPathDistance(Vector2Int from, Vector2Int to) {
         if (pathways[from.x][from.y] == null) {
-            return -1;
+            return -2;
         }
         if (pathways[to.x][to.y] == null) {
-            return -1;
+            return -2;
         }
 
         Queue<Vector2Int> queue = new LinkedList<>() {{
@@ -420,8 +428,8 @@ public class World {
             distance++;
         }
 
-        // Return MAX_VALUE if there is no path
-        return Integer.MAX_VALUE;
+        // Return -2 if there is no path
+        return -2;
     }
 
     public Vector<Building> getBuildings() {
@@ -468,12 +476,18 @@ public class World {
     public int getBuildingDistance(Building from, Building to) {
         ArrayList<Vector2Int> fromPathways = getBuildingPathways(from);
         ArrayList<Vector2Int> toPathways = getBuildingPathways(to);
-        int minDistance = Integer.MAX_VALUE;
-
+        int minDistance = -2;
         // Finds the minimum distance between all outer pathways from and to.
         for (Vector2Int fromPathway : fromPathways) {
             for (Vector2Int toPathway : toPathways) {
-                minDistance = Math.min(minDistance, getPathDistance(fromPathway, toPathway));
+                int dist = getPathDistance(fromPathway, toPathway);
+                if (dist != -2) {
+                    if (minDistance == -2){
+                        minDistance = dist;
+                    } else if (dist < minDistance) {
+                        minDistance = dist;
+                    }
+                }
             }
         }
         return minDistance + 1;
