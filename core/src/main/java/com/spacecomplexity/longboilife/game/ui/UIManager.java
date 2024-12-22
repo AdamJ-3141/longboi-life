@@ -81,7 +81,8 @@ public class UIManager {
                 new UIBuildingCounter(viewport, table, skin),
                 new UIAchievementPopup(viewport, table, skin),
                 new UIAccomSatisfactionTooltip(viewport, table, skin),
-                new UIGameEventPopup(viewport, table, skin)
+                new UIGameEventPopup(viewport, table, skin),
+                new UIMusicInfo(viewport, table, skin),
         };
 
         // Hide game UI and show end UI
@@ -98,6 +99,7 @@ public class UIManager {
             // Create the new end elements
             uiElements = new UIElement[] {
                     new UIOverview(viewport, table, skin),
+                    new UIMusicInfo(viewport, table, skin),
             };
 
             return null;

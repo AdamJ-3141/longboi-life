@@ -15,6 +15,11 @@ import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.pathways.PathwayTextures;
 import com.spacecomplexity.longboilife.game.world.World;
 
+import java.util.ArrayList;
+
+import static com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA;
+import static com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA;
+
 /**
  * A class used for rendering utilities.
  */
@@ -213,5 +218,26 @@ public class RenderUtils {
     private static float getCellSize() {
         GameState gameState = GameState.getState();
         return Constants.TILE_SIZE * gameState.scaleFactor;
+    }
+
+    public static ArrayList<ParticleSpawner> drawParticles(SpriteBatch batch, ArrayList<ParticleSpawner> particles, float delta) {
+        ArrayList<ParticleSpawner> completedParticles = new ArrayList<>();
+        for (ParticleSpawner pe : particles) {
+            pe.setEmittersCleanUpBlendFunction(false);
+            if (!pe.scaled) {
+                pe.scaleEffect(0.5f);
+                pe.scaled = true;
+            }
+            pe.update(delta);
+            batch.begin();
+            pe.draw(batch);
+            batch.end();
+            if (pe.isComplete()) {
+                pe.dispose();
+                completedParticles.add(pe);
+            }
+        }
+        batch.setBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        return completedParticles;
     }
 }

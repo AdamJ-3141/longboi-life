@@ -10,14 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.game.utils.GameUtils;
 import com.spacecomplexity.longboilife.game.utils.UIUtils;
-import com.spacecomplexity.longboilife.game.world.World;
 
 /**
  * Class to represent the Bottom Menu UI.
@@ -28,8 +28,8 @@ public class UIBottomMenu extends UIElement {
     private final Texture playTexture;
     private final TextureRegionDrawable playDrawable;
 
-    private UIBuildMenu buildMenu;
-    private UIPauseScreen pauseScreen;
+    private final UIBuildMenu buildMenu;
+    private final UIPauseScreen pauseScreen;
 
     /**
      * Initialise bottom menu elements.
@@ -56,6 +56,7 @@ public class UIBottomMenu extends UIElement {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                     buildMenu.openMenu(category);
                 }
             });
@@ -85,6 +86,7 @@ public class UIBottomMenu extends UIElement {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Call the events to pause/resume the game based on the current pause state
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 eventHandler.callEvent(GameState.getState().paused ? EventHandler.Event.RESUME_GAME : EventHandler.Event.PAUSE_GAME);
             }
         });
