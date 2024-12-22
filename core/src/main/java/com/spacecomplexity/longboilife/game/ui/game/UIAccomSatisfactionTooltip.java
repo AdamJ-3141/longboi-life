@@ -128,6 +128,11 @@ public class UIAccomSatisfactionTooltip extends UIElement {
         placeTable();
     }
 
+    /**
+     * Set the colour of a label based on the value given.
+     * @param label the Label to colour.
+     * @param value the value to colour based on.
+     */
     private static void colourLabel(Label label, float value) {
         label.setColor(value >= 1 ? Color.GREEN :
             value >= 0.7 ? Color.YELLOW :
