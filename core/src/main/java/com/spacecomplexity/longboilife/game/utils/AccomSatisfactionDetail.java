@@ -4,6 +4,9 @@ import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 
 import java.util.HashMap;
 
+/**
+ * Helper class to collect all details about accommodation satisfaction.
+ */
 public class AccomSatisfactionDetail {
 
     public float qualityMultiplier;

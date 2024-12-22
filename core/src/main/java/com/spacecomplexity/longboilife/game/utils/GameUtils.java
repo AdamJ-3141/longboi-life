@@ -117,7 +117,7 @@ public class GameUtils {
 
                         // Adds the building satisfaction to the current category score for that accommodation.
                         categoryScore.compute(category,
-                            (k, v) -> MathUtils.clamp(v + buildingSatisfaction, 0, 1));
+                            (k, v) -> MathUtils.clamp(((v != null) ? v : 0) + buildingSatisfaction, 0, 1));
                     }
                 }
                 // Calculates a multiplier relating to the relative "quality" (price) of the accommodation.
@@ -158,25 +158,42 @@ public class GameUtils {
         return newSatisfactionSum;
     }
 
+    /**
+     * Checks any differences between old and current accommodation satisfactions,
+     * and then spawns particles in each case.
+     * @param oldSatisfactions a HashMap from accommodation buildings to {@link AccomSatisfactionDetail}.
+     */
     public static void checkAccomSatisfaction(HashMap<Building, AccomSatisfactionDetail> oldSatisfactions) {
         HashMap<Building, AccomSatisfactionDetail> newSatisfactions = GameState.getState().accomSatisfaction;
+
+        // Checks each accommodation building in the current world for changes
         for (Building building : newSatisfactions.keySet()) {
-            if (!oldSatisfactions.containsKey(building) || newSatisfactions.get(building).totalSatisfaction > oldSatisfactions.get(building).totalSatisfaction) {
+
+            // If the building is new or the satisfaction has increased
+            if (!oldSatisfactions.containsKey(building) ||
+                newSatisfactions.get(building).totalSatisfaction > oldSatisfactions.get(building).totalSatisfaction) {
+
+                // Spawns hearts at the correct position
                 float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
                 EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
                         Gdx.files.internal("particles/effects/heart.p"),
                         Gdx.files.internal("particles/images"),
                         (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
                         (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+
                 AudioController.getInstance().playSound(SoundEffect.SATISFACTION_UP);
             }
+            // If the satisfaction has decreased
             else if (newSatisfactions.get(building).totalSatisfaction < oldSatisfactions.get(building).totalSatisfaction) {
+
+                // Spawn broken hearts at the correct position
                 float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
                 EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
                     Gdx.files.internal("particles/effects/broken_heart.p"),
                     Gdx.files.internal("particles/images"),
                     (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
                     (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+
                 AudioController.getInstance().playSound(SoundEffect.SATISFACTION_DOWN);
             }
         }

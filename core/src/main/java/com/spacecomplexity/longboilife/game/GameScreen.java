@@ -339,7 +339,7 @@ public class GameScreen implements Screen {
         }
 
         // Draw any current particles
-        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles, delta);
+        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles);
         for (ParticleSpawner pe: completedParticles) {
             particles.remove(pe);
         }

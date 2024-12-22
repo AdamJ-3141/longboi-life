@@ -102,9 +102,13 @@ public class UIAccomSatisfactionTooltip extends UIElement {
             // Sets the satisfaction label's text and colour based on the building's satisfaction.
             satisfactionLabel.setText(String.format("%.2f%%", satisfaction * 100));
             colourLabel(satisfactionLabel, satisfaction);
+
+            // Checks whether the show detail key is pressed.
             if (Gdx.input.isKeyPressed(Keybindings.SHOW_DETAIL.getKey())) {
                 table.removeActor(hintLabel);
                 table.setSize(150, 100);
+
+                // Adds all the category satisfactions to the table, coloured appropriately.
                 for (BuildingCategory cat : categorySatisfaction.keySet()) {
                     table.row();
                     Label catSat = categorySatisfaction.get(cat);
@@ -116,6 +120,8 @@ public class UIAccomSatisfactionTooltip extends UIElement {
                     table.add(catSat);
                 }
                 table.row();
+
+                // Adds accommodation quality multiplier.
                 table.add(multTitle);
                 multLabel.setText(String.format("%.2fx",
                     gameState.accomSatisfaction.get(building).qualityMultiplier));

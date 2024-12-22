@@ -14,6 +14,10 @@ public enum MusicPlaylist {
     private int currentIndex;
     private GameMusic currentMusic;
 
+    /**
+     * Initialize the playlist.
+     * @param playlist an array of GameMusic which makes up the playlist.
+     */
     MusicPlaylist(GameMusic[] playlist) {
         this.playlist = playlist;
         playlistSize = playlist.length;
