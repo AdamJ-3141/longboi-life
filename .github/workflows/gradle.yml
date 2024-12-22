@@ -55,19 +55,19 @@ jobs:
       with:
         name: longboi-life-ubuntu-latest.jar
     - name: Rename Ubuntu Build Artifact
-      run: mv longboi-life.jar longboi-life-ubuntu.jar
+      run: mv longboi-life-ubuntu-latest.jar longboi-life-ubuntu
     - name: Download MacOS Build Artifact
       uses: actions/download-artifact@v4.1.4
       with:
         name: longboi-life-macos-latest.jar
     - name: Rename MacOS Build Artifact
-      run: mv longboi-life.jar longboi-life-macos.jar
+      run: mv longboi-life-macos-latest.jar longboi-life-macos
     - name: Download Windows Build Artifact
       uses: actions/download-artifact@v4.1.4
       with:
         name: longboi-life-windows-latest.jar
     - name: Rename Windows Build Artifact
-      run: mv longboi-life.jar longboi-life-windows.jar
+      run: mv longboi-life-windows-latest.jar longboi-life-windows
     - name: Release
       uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
       with:
