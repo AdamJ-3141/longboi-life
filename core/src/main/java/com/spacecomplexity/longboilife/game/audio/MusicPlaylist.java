@@ -24,7 +24,7 @@ public enum MusicPlaylist {
     }
 
     /**
-     * Start playing the playlist.
+     * Start playing the current playlist.
      */
     public void start() {
         currentMusic = playlist[currentIndex];
