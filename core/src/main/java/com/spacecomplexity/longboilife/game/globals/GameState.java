@@ -40,7 +40,7 @@ public class GameState {
     public float cameraScrollZoomSpeed;
 
     /**
-     * Points the current game world object.
+     * Points to the current game world object.
      */
     public World gameWorld;
 
