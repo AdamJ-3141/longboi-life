@@ -1,18 +1,12 @@
 apply plugin: 'application'
-
-// CHANGED: added jacoco plugin to produce test coverage report (for CI)
 apply plugin: 'jacoco'
 
 java.sourceCompatibility = 17
 java.targetCompatibility = 17
 if (JavaVersion.current().isJava9Compatible()) {
-        compileJava.options.release.set(17)
+  compileJava.options.release.set(17)
 }
 
-/*
- * CHANGED: for the asset tests, we need to add assets as a source
- * directory during testing, similarly to the lwjgl3 project.
- */
 sourceSets.test.resources.srcDirs += [ rootProject.file('assets').path ]
 
 mainClassName = 'com.spacecomplexity.longboilife.headless.HeadlessLauncher'
@@ -42,15 +36,37 @@ jar {
   }
 }
 
-// Equivalent to the jar task; here for compatibility with gdx-setup.
 tasks.register('dist') {
   dependsOn 'jar'
 }
 
-// CHANGED: need to tell Gradle about our use of JUnit and have JaCoCo look at core sources
 jacocoTestReport {
+  dependsOn test
   sourceSets project(':core').sourceSets.main
+  reports {
+    xml.required = true
+    html.required = true
+  }
 }
+
 test {
   useJUnitPlatform()
+  testLogging {
+    events "PASSED", "FAILED", "SKIPPED"
+    exceptionFormat "full"
+  }
+  outputs.upToDateWhen { false }
+  doFirst {
+    println "Starting tests..."
+  }
+  doLast {
+    println "Finished tests."
+  }
+}
+
+tasks.register("cleanTest") {
+  doLast {
+    delete fileTree(dir: "$layout.buildDirectory/test-results").files
+    delete fileTree(dir: "$layout.buildDirectory/test").files
+  }
 }
