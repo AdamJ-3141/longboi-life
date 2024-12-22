@@ -20,6 +20,9 @@ public enum SoundEffect {
     public final FileHandle file;
     public final Sound sound;
 
+    /**
+     * Play the sound effect.
+     */
     public void play() {
         sound.play();
     }

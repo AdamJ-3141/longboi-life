@@ -1,7 +1,7 @@
 package com.spacecomplexity.longboilife.game.audio;
 
 /**
- * A class for handling the music.
+ * A class to handle all the music.
  */
 public class MusicHandler {
 
@@ -10,8 +10,8 @@ public class MusicHandler {
     public MusicHandler() { }
 
     /**
-     *
-     * @param playlist
+     * Set the current playlist and start it;
+     * @param playlist the desired MusicPlaylist.
      */
     public void setCurrentPlaylist(MusicPlaylist playlist) {
         if (currentPlaylist != null) {
@@ -21,10 +21,16 @@ public class MusicHandler {
         startPlaylist();
     }
 
+    /**
+     * Start the current playlist.
+     */
     public void startPlaylist() {
         currentPlaylist.start();
     }
 
+    /**
+     * Stop the current playlist.
+     */
     public void stopPlaylist() {
         currentPlaylist.stop();
     }

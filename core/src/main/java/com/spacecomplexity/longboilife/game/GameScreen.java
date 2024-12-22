@@ -282,6 +282,7 @@ public class GameScreen implements Screen {
             return false;
         });
 
+        // Spawns a particle at the desired coordinates on the game screen.
         eventHandler.createEvent(EventHandler.Event.SPAWN_PARTICLE, (params) -> {
             FileHandle effectFile = (FileHandle) params[0];
             FileHandle imageFile = (FileHandle) params[1];
