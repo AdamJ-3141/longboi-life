@@ -24,15 +24,15 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
     - name: Clear Gradle Cache
       run: rm -rf ~/.gradle/caches/
 
     - name: Build with Gradle
       run: ./gradlew clean build --refresh-dependencies
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
       run: ./gradlew build jacocoTestReport
     - name: Upload JaCoCo coverage report as a workflow artifact
