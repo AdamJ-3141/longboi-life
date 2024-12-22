@@ -23,26 +23,13 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:5.11.0'
 }
 
-jar {
-  archiveBaseName.set(appName)
-  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-  dependsOn configurations.runtimeClasspath
-  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-  manifest {
-    attributes 'Main-Class': project.mainClassName
-  }
-  doLast {
-    file(archiveFile).setExecutable(true, false)
-  }
-}
-
 tasks.register('dist') {
   dependsOn 'jar'
 }
 
 jacocoTestReport {
   dependsOn test
-  sourceSets project(':core').sourceSets.main
+  sourceSets sourceSets.test
   reports {
     xml.required = true
     html.required = true
