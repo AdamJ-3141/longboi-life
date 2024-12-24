@@ -20,7 +20,7 @@ public class LeaderboardUtils {
      * @return  Array of type LeaderboardElements which represents the leaderboard
      */
     public static LeaderboardElement[] loadScore(){
-        FileHandle leaderboard = Gdx.files.local("leaderboard.json");
+        FileHandle leaderboard = Gdx.files.internal("leaderboard.json");
         // ensures the leaderboard exists
         if(leaderboard.exists()){
             // converts from json to array of LeaderboardElement objects
@@ -69,7 +69,7 @@ public class LeaderboardUtils {
      */
     private static void scoreSave(LeaderboardElement[] scores) {
         String scoreStr = json.toJson(scores);
-        FileHandle leaderboard = Gdx.files.local("leaderboard.json");
+        FileHandle leaderboard = Gdx.files.internal("leaderboard.json");
         leaderboard.writeString(scoreStr ,false,"UTF-8");
     }
 }
