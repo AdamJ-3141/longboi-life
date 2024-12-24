@@ -10,14 +10,17 @@ import java.util.HashMap;
 public class AccomSatisfactionDetail {
 
     public float qualityMultiplier;
-    public HashMap<BuildingCategory, Float> CategoryScores;
+    public HashMap<BuildingCategory, Float> categoryScores;
     public float totalSatisfaction;
+    public SatisfactionModifier satisfactionModifier;
 
     public AccomSatisfactionDetail(float qualityMultiplier,
                                    HashMap<BuildingCategory, Float> categoryScores,
-                                   float totalSatisfaction) {
+                                   float totalSatisfaction,
+                                   SatisfactionModifier satisfactionModifier) {
         this.qualityMultiplier = qualityMultiplier;
-        this.CategoryScores = categoryScores;
+        this.categoryScores = categoryScores;
         this.totalSatisfaction = totalSatisfaction;
+        this.satisfactionModifier = satisfactionModifier;
     }
 }

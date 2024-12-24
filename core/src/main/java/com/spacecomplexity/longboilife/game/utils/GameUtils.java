@@ -130,10 +130,18 @@ public class GameUtils {
                 // Multiplier is normalized to be closer to 1 for balancing.
                 float accomSatisfactionMult = (float) (2 * Math.atan(accomPrice / avgAccomPrice) / Math.PI) + 0.5f;
 
-                float totalAccomSatisfaction = Math.min(1f, (categoryScore.values()
+                // Get specific modifier from GameState
+                SatisfactionModifier localMod = GameState.getState().accommSatisfactionModifiers
+                    .getOrDefault(node.getBuildingRef(),
+                                  new SatisfactionModifier());
+
+                SatisfactionModifier globalMod = GameState.getState().globalSatisfactionModifier;
+
+                float totalAccomSatisfaction = MathUtils.clamp((categoryScore.values()
                     .stream().reduce(0f, Float::sum) / categoryScore.size())
-                    * accomSatisfactionMult);
-                AccomSatisfactionDetail details = new AccomSatisfactionDetail(accomSatisfactionMult, categoryScore, totalAccomSatisfaction);
+                    * accomSatisfactionMult * localMod.relative * globalMod.relative + localMod.absolute + globalMod.absolute, 0f, 1f);
+
+                AccomSatisfactionDetail details = new AccomSatisfactionDetail(accomSatisfactionMult, categoryScore, totalAccomSatisfaction, localMod);
 
                 // The accommodation's satisfaction score is the average of the category scores, multiplied by the multiplier.
                 accomSatisfactionDetails.put(node.getBuildingRef(), details);
@@ -144,15 +152,23 @@ public class GameUtils {
             .map(d->d.totalSatisfaction)
             .reduce(0f, Float::sum);
 
-        // Checks whether there are accommodation buildings placed.
+        float newSatisfactionScore;
+        GameState gameState = GameState.getState();
+        // Check whether there are accommodation buildings placed.
         if (!accomSatisfactionDetails.isEmpty()) {
-            float newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
-            GameState gameState = GameState.getState();
-            gameState.targetSatisfaction = newSatisfactionScore;
+            newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
+
+            // Check for changes in accommodation satisfaction.
             HashMap<Building, AccomSatisfactionDetail> oldSatisfactions = gameState.accomSatisfaction;
             gameState.accomSatisfaction = accomSatisfactionDetails;
             checkAccomSatisfaction(oldSatisfactions);
+        } else {
+            newSatisfactionScore = 0f;
+
+            // Apply the absolute modifier only.
+            newSatisfactionScore += gameState.globalSatisfactionModifier.absolute;
         }
+        gameState.targetSatisfaction = MathUtils.clamp(newSatisfactionScore, 0f, 1f);
 
         // To be used to add onto the score.
         return newSatisfactionSum;
@@ -248,5 +264,30 @@ public class GameUtils {
             }
         }
         return nodes;
+    }
+
+    /**
+     * Gets the money that a building generates per money generation.
+     * @param b the building queried, only {@link BuildingCategory#ACCOMMODATION}
+     *          can generate money.
+     * @return  the amount of money that building generates.
+     */
+    public static float getMoneyGenerated(Building b) {
+        return getMoneyGenerated(b.getType());
+    }
+
+
+    /**
+     * Gets the money that a building type generates per money generation.
+     * @param type the building type queried, only {@link BuildingCategory#ACCOMMODATION}
+     *             can generate money.
+     * @return     the amount of money that building generates.
+     */
+    public static float getMoneyGenerated(BuildingType type) {
+        if (type.getCategory() != BuildingCategory.ACCOMMODATION) { return 0; }
+        else {
+            // cbrt used to create slower return on investment for higher cost
+            return Math.round(Math.cbrt(type.getCost())) * 100;
+        }
     }
 }

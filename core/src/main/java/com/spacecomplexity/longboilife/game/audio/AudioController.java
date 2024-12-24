@@ -7,16 +7,18 @@ public class AudioController {
 
     private static final AudioController instance = new AudioController();
 
+    // Globals for audio volume
+    public static float musicVolume = 0.5f;
+    public static float soundVolume = 0.5f;
+
     public static AudioController getInstance() { return instance; }
 
-    private final MusicHandler musicHandler;
+    private final MusicHandler musicHandler = new MusicHandler();
 
     /**
      * Initialize the AudioController instance.
      */
-    public AudioController() {
-        musicHandler = new MusicHandler();
-    }
+    public AudioController() {}
 
     /**
      * Play a sound effect.
@@ -28,7 +30,7 @@ public class AudioController {
 
     /**
      * End the current playlist if it exists and start a new playlist.
-     * @param musicPlaylist
+     * @param musicPlaylist the playlist to be played.
      */
     public void startMusicPlaylist(MusicPlaylist musicPlaylist) {
         musicHandler.setCurrentPlaylist(musicPlaylist);
@@ -38,6 +40,14 @@ public class AudioController {
         return MusicHandler.currentPlaylist;
     }
 
+    /**
+     * Sets the currently playing music to the global music volume.
+     * <p>
+     * Called every frame.
+     */
+    public void updateMusicVolume() {
+        MusicHandler.currentPlaylist.getCurrentMusic().setVolume(musicVolume);
+    }
     /**
      * Dispose of all audio objects.
      */

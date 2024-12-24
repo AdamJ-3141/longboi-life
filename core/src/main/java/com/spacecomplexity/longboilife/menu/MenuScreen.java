@@ -23,6 +23,7 @@ import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.ui.UIMusicInfo;
 import com.spacecomplexity.longboilife.menu.menuUI.AchievementUI;
 import com.spacecomplexity.longboilife.menu.menuUI.LeaderboardUI;
+import com.spacecomplexity.longboilife.menu.menuUI.SettingsUI;
 
 /**
  * Main class to control the menu screen.
@@ -43,6 +44,7 @@ public class MenuScreen implements Screen {
     private UIElement leaderboardUI;
     private UIElement achievementsUI;
     private UIElement musicUI;
+    private UIElement settingsUI;
 
     public MenuScreen(Main game) {
         this.game = game;
@@ -110,6 +112,17 @@ public class MenuScreen implements Screen {
             }
         });
 
+        // Initialise settings button
+        TextButton settingsButton = new TextButton("Settings", skin, "round");
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                audio.playSound(SoundEffect.BUTTON_CLICK);
+                // Open settings UI
+                SettingsUI.settingsVisible = true;
+            }
+        });
+
         // Initialise exit button
         TextButton exitButton = new TextButton("Exit", skin, "round");
         exitButton.addListener(new ClickListener() {
@@ -129,6 +142,8 @@ public class MenuScreen implements Screen {
         table.row();
         table.add(achievementButton).padTop(10);
         table.row();
+        table.add(settingsButton).padTop(10);
+        table.row();
         table.add(exitButton).padTop(10);
 
         // Allows UI to capture touch events
@@ -138,6 +153,7 @@ public class MenuScreen implements Screen {
         leaderboardUI = new LeaderboardUI(viewport, table, skin);
         achievementsUI = new AchievementUI(viewport, table, skin);
         musicUI = new UIMusicInfo(viewport, table, skin);
+        settingsUI = new SettingsUI(viewport, table, skin);
     }
 
     @Override
@@ -157,6 +173,10 @@ public class MenuScreen implements Screen {
         leaderboardUI.render();
         achievementsUI.render();
         musicUI.render();
+        settingsUI.render();
+
+        // Update the music volume to match the setting
+        audio.updateMusicVolume();
     }
 
     @Override

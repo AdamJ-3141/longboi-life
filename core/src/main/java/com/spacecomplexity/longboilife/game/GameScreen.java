@@ -302,6 +302,9 @@ public class GameScreen implements Screen {
         // Call to handles any constant input
         inputManager.handleContinuousInput();
 
+        // Update the music volume to match the setting
+        audio.updateMusicVolume();
+
         // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1f);
 
@@ -384,10 +387,8 @@ public class GameScreen implements Screen {
                     }
                 }
                 float moneyAdded = world.buildings.stream()
-                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                    .reduce(0f, Float::sum)
-                    * 100;
+                    .map(GameUtils::getMoneyGenerated)
+                    .reduce(0f, Float::sum);
                 gameState.money += moneyAdded;
                 if (moneyAdded > 0) {
                     audio.playSound(SoundEffect.MONEY_UP);
