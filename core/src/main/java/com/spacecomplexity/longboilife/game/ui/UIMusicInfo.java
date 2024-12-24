@@ -9,6 +9,9 @@ import com.spacecomplexity.longboilife.game.audio.AudioController;
 import com.spacecomplexity.longboilife.game.audio.GameMusic;
 import com.spacecomplexity.longboilife.menu.MenuState;
 
+/**
+ * A class to display a UI element on the screen indicating current music.
+ */
 public class UIMusicInfo extends UIElement{
 
     private final Image coverImage;

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * An enumeration of all the music in the game.
+ * An enumerable containing all the music used.
  */
 public enum GameMusic {
 
@@ -35,16 +35,10 @@ public enum GameMusic {
         this.composer = composer;
     }
 
-    /**
-     * Play the music.
-     */
     public void play() {
         music.play();
     }
 
-    /**
-     * Stop the music.
-     */
     public void stop() {
         music.stop();
     }
