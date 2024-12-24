@@ -1,7 +1,7 @@
 package com.spacecomplexity.longboilife.menu.leaderboard;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
 
 import java.util.ArrayList;
@@ -13,21 +13,27 @@ import java.util.List;
  */
 public class LeaderboardUtils {
     private static Json json = new Json();
-    private static final int maxLeaderboardSize = 5; // size of leaderboard
+    private static Preferences preferences = Gdx.app.getPreferences("leaderboard");
+
+    private static final String LEADERBOARD_KEY = "LEADERBOARD_KEY";
+
+    private static final int MAXSIZE = 5; // size of leaderboard
 
     /**
      * This method loads the leaderboard from the json file
      * @return  Array of type LeaderboardElements which represents the leaderboard
      */
     public static LeaderboardElement[] loadScore(){
-        FileHandle leaderboard = Gdx.files.internal("leaderboard.json");
-        // ensures the leaderboard exists
-        if(leaderboard.exists()){
-            // converts from json to array of LeaderboardElement objects
-            String scoreStr = leaderboard.readString();
-            return json.fromJson(LeaderboardElement[].class, scoreStr);
+        // obtains the json string
+        String scoreStr = preferences.getString(LEADERBOARD_KEY, null);
+
+        // if empty then return an empty list
+        if (scoreStr == null) {
+            return new LeaderboardElement[0];
         }
-        throw new InvalidLeaderboardFileException("Couldn't load leaderboard");
+
+        //convert string into array of LeaderboardElements
+        return json.fromJson(LeaderboardElement[].class, scoreStr);
     }
 
     /**
@@ -55,7 +61,7 @@ public class LeaderboardUtils {
         }
 
         // if the size of the leaderboard exceeds the max then remove the lowest score
-        if (scoresList.size() > maxLeaderboardSize) {
+        if (scoresList.size() > MAXSIZE) {
             scoresList.remove(scoresList.size() - 1);
         }
 
@@ -67,9 +73,11 @@ public class LeaderboardUtils {
      * private method that updates the json file containing the leaderboard
      * @param scores LeaderboardElements array to be added
      */
-    private static void scoreSave(LeaderboardElement[] scores) {
-        String scoreStr = json.toJson(scores);
-        FileHandle leaderboard = Gdx.files.internal("leaderboard.json");
-        leaderboard.writeString(scoreStr ,false,"UTF-8");
+    public static void scoreSave(LeaderboardElement[] scores) {
+        String jsonString = json.toJson(scores);
+
+        // saves the json file in the preferences part of libgdx
+        preferences.putString(LEADERBOARD_KEY, jsonString);
+        preferences.flush();
     }
 }
