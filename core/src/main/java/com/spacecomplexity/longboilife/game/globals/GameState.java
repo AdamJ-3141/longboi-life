@@ -83,7 +83,7 @@ public class GameState {
      * <p>
      * Influenced mainly by events. Satisfaction is between 0 and 1.
      */
-    public HashMap<Building, SatisfactionModifier> accommSatisfactionModifiers;
+    public HashMap<Building, SatisfactionModifier> accomSatisfactionModifiers;
 
     /**
      * The main total score of the current game.
@@ -221,7 +221,7 @@ public class GameState {
         targetSatisfaction = 0f;
         accomSatisfaction = new HashMap<>();
         globalSatisfactionModifier = new SatisfactionModifier();
-        accommSatisfactionModifiers = new HashMap<>();
+        accomSatisfactionModifiers = new HashMap<>();
         placingBuilding = null;
         continuousPlacingBuilding = false;
         selectedBuilding = null;

@@ -131,7 +131,7 @@ public class GameUtils {
                 float accomSatisfactionMult = (float) (2 * Math.atan(accomPrice / avgAccomPrice) / Math.PI) + 0.5f;
 
                 // Get specific modifier from GameState
-                SatisfactionModifier localMod = GameState.getState().accommSatisfactionModifiers
+                SatisfactionModifier localMod = GameState.getState().accomSatisfactionModifiers
                     .getOrDefault(node.getBuildingRef(),
                                   new SatisfactionModifier());
 
