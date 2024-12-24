@@ -18,8 +18,8 @@ import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.gameevent.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.Constants;
-import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
@@ -160,7 +160,7 @@ public class GameScreen implements Screen {
                 // Remove the selected building if it is wanted to do so
                 if (Arrays.stream(Constants.dontRemoveSelection)
                         .noneMatch(category -> gameState.placingBuilding.getCategory() == category)
-                    && !gameState.continuousPlacingBuilding) {
+                        && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -339,7 +339,7 @@ public class GameScreen implements Screen {
 
         // Draw any current particles
         ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles, delta);
-        for (ParticleSpawner pe: completedParticles) {
+        for (ParticleSpawner pe : completedParticles) {
             particles.remove(pe);
         }
 
@@ -353,6 +353,7 @@ public class GameScreen implements Screen {
 
         // Poll the timer to run the event if the timer has expired
         // Do not update satisfaction score if the game is paused or has ended
+        // Do not let game events occur if the game is paused or has ended
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
             GameUtils.updateVisibleSatisfactionScore();
@@ -364,7 +365,7 @@ public class GameScreen implements Screen {
             // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
-                gameState.totalScore += Math.round(satisfactionSum * 100);
+                gameState.totalScore += Math.round(satisfactionSum * 100 * gameEventManager.getSatisfactionModifier());
                 timeSinceScoreUpdate = 0;
             }
 
@@ -376,23 +377,24 @@ public class GameScreen implements Screen {
                 for (Building building : world.buildings) {
                     if (building.getType().getCategory() == BuildingCategory.ACCOMMODATION) {
                         EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
-                            Gdx.files.internal("particles/effects/money.p"),
-                            Gdx.files.internal("particles/images"),
-                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
-                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                                Gdx.files.internal("particles/effects/money.p"),
+                                Gdx.files.internal("particles/images"),
+                                (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                                (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
                     }
                 }
                 float moneyAdded = world.buildings.stream()
-                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                    .reduce(0f, Float::sum)
-                    * 100;
+                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
+                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
+                        .reduce(0f, Float::sum)
+                        * 100;
                 gameState.money += moneyAdded;
                 if (moneyAdded > 0) {
                     audio.playSound(SoundEffect.MONEY_UP);
                 }
             }
             gameEventManager.tryForGameEvent();
+
         }
     }
 
