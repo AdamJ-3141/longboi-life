@@ -4,6 +4,7 @@ import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
+import com.spacecomplexity.longboilife.game.utils.SatisfactionModifier;
 import com.spacecomplexity.longboilife.game.world.World;
 
 import java.util.HashMap;
@@ -40,9 +41,14 @@ public class GameState {
     public float cameraScrollZoomSpeed;
 
     /**
-     * Points the current game world object.
+     * Points to the current game world object.
      */
     public World gameWorld;
+
+    /**
+     * Flag for when the game is fully loaded.
+     */
+    public boolean isLoaded = false;
 
     /**
      * The amount of money the player currently has.
@@ -64,6 +70,20 @@ public class GameState {
      * A map from each accommodation building to its satisfaction rating.
      */
     public HashMap<Building, AccomSatisfactionDetail> accomSatisfaction;
+
+    /**
+     * Modifier for the satisfaction score calculation.
+     * <p>
+     * Influenced mainly by events. Satisfaction is between 0 and 1.
+     */
+    public SatisfactionModifier globalSatisfactionModifier;
+
+    /**
+     * Map of modifiers for each accommodation.
+     * <p>
+     * Influenced mainly by events. Satisfaction is between 0 and 1.
+     */
+    public HashMap<Building, SatisfactionModifier> accomSatisfactionModifiers;
 
     /**
      * The main total score of the current game.
@@ -190,6 +210,7 @@ public class GameState {
     public void reset() {
 //        scaleFactor = 1;
 //        uiScaleFactor = 1;
+        isLoaded = false;
         cameraSpeed = 1400;
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
@@ -199,6 +220,8 @@ public class GameState {
         satisfactionScore = 0f;
         targetSatisfaction = 0f;
         accomSatisfaction = new HashMap<>();
+        globalSatisfactionModifier = new SatisfactionModifier();
+        accomSatisfactionModifiers = new HashMap<>();
         placingBuilding = null;
         continuousPlacingBuilding = false;
         selectedBuilding = null;

@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 
+/**
+ * An enumeration of all sound effects in the game.
+ */
 public enum SoundEffect {
 
     BUILD_BUILDING(Gdx.files.internal("audio/sound_effects/build_building.wav")),
@@ -20,12 +23,19 @@ public enum SoundEffect {
     public final FileHandle file;
     public final Sound sound;
 
+    /**
+     * Play the sound effect.
+     */
     public void play() {
-        sound.play();
+        sound.play(AudioController.soundVolume);
     }
 
     public void dispose() { sound.dispose(); }
 
+    /**
+     * Initialises the sound effect with an audio file.
+     * @param file must be wav-16, ogg, or mp3.
+     */
     SoundEffect(FileHandle file) {
         this.file = file;
         this.sound = Gdx.audio.newSound(file);

@@ -45,6 +45,9 @@ public class HeadlessGameScreen implements Screen {
     public HeadlessGameScreen(Main game) {
         this.game = game;
 
+        // Initialise the events performed from this script.
+        initialiseEvents();
+
     }
 
     /**
@@ -93,8 +96,7 @@ public class HeadlessGameScreen implements Screen {
         // Set the Gdx input processor to handle all our input processes
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-        // Initialise the events performed from this script.
-        initialiseEvents();
+        gameState.isLoaded = true;
     }
 
     /**
@@ -250,6 +252,8 @@ public class HeadlessGameScreen implements Screen {
             }
             return false;
         });
+
+        eventHandler.createEvent(EventHandler.Event.SPAWN_PARTICLE, (params) -> null);
     }
 
     /**

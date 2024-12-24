@@ -16,6 +16,7 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.game.*;
 import com.spacecomplexity.longboilife.game.ui.gameover.UIOverview;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.menu.menuUI.SettingsUI;
 
 /**
  * Class to manage the UI in the game.
@@ -83,6 +84,7 @@ public class UIManager {
                 new UIAccomSatisfactionTooltip(viewport, table, skin),
                 new UIGameEventPopup(viewport, table, skin),
                 new UIMusicInfo(viewport, table, skin),
+                new SettingsUI(viewport, table, skin),
         };
 
         // Hide game UI and show end UI

@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Class for utils relating to UI.
  */
-public class UIUtils {
+public class InterfaceUtils {
     /**
      * Enable the actor, recursively enabling its parents so it can be used.
      *
@@ -25,6 +25,19 @@ public class UIUtils {
         Actor parent = actor.getParent();
         if (parent != null) {
             enableActor(parent);
+        }
+    }
+
+    /**
+     * Enable an actor and all its children.
+     * @param actor the actor to enable.
+     */
+    static public void enableChildren(Actor actor) {
+        actorEnable(actor);
+        if (actor instanceof Group) {
+            for (Actor child : ((Group) actor).getChildren()) {
+                enableChildren(child);
+            }
         }
     }
 

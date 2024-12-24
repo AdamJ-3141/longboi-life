@@ -282,6 +282,7 @@ public class GameScreen implements Screen {
             return false;
         });
 
+        // Spawns a particle at the desired coordinates on the game screen.
         eventHandler.createEvent(EventHandler.Event.SPAWN_PARTICLE, (params) -> {
             FileHandle effectFile = (FileHandle) params[0];
             FileHandle imageFile = (FileHandle) params[1];
@@ -300,6 +301,9 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         // Call to handles any constant input
         inputManager.handleContinuousInput();
+
+        // Update the music volume to match the setting
+        audio.updateMusicVolume();
 
         // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1f);
@@ -338,7 +342,7 @@ public class GameScreen implements Screen {
         }
 
         // Draw any current particles
-        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles, delta);
+        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles);
         for (ParticleSpawner pe : completedParticles) {
             particles.remove(pe);
         }
@@ -384,10 +388,8 @@ public class GameScreen implements Screen {
                     }
                 }
                 float moneyAdded = world.buildings.stream()
-                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                        .reduce(0f, Float::sum)
-                        * 100;
+                        .map(GameUtils::getMoneyGenerated)
+                        .reduce(0f, Float::sum);
                 gameState.money += moneyAdded;
                 if (moneyAdded > 0) {
                     audio.playSound(SoundEffect.MONEY_UP);

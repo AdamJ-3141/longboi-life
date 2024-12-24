@@ -17,7 +17,8 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
-import com.spacecomplexity.longboilife.game.utils.UIUtils;
+import com.spacecomplexity.longboilife.game.utils.InterfaceUtils;
+import com.spacecomplexity.longboilife.menu.menuUI.SettingsUI;
 
 /**
  * Class to represent the Bottom Menu UI.
@@ -66,21 +67,31 @@ public class UIBottomMenu extends UIElement {
         // Add the buttons onto the main table
         table.add(buildingButtonsTable).expandX().left();
 
-        // Load play/pause textures as drawables
+        // Load play/pause/settings textures as drawables
         float textureSize = 25;
         pauseTexture = new Texture(Gdx.files.internal("ui/buttons/pause.png"));
         pauseDrawable = new TextureRegionDrawable(pauseTexture);
         pauseDrawable.setMinSize(textureSize, textureSize);
+
         playTexture = new Texture(Gdx.files.internal("ui/buttons/play.png"));
         playDrawable = new TextureRegionDrawable(playTexture);
         playDrawable.setMinSize(textureSize, textureSize);
 
+        Texture settingsTexture = new Texture(Gdx.files.internal("ui/buttons/settings.png"));
+        TextureRegionDrawable settingsDrawable = new TextureRegionDrawable(settingsTexture);
+        settingsDrawable.setMinSize(textureSize, textureSize);
+
         // Initialise pause button
         ImageButton pauseButton = new ImageButton(skin);
         pauseButton.setSize(textureSize, textureSize);
-        // Initially set background to ❚❚
         pauseButton.getStyle().up = pauseDrawable;
         pauseButton.getStyle().down = pauseDrawable;
+
+        // Initialise settings button
+        ImageButton settingsButton = new ImageButton(settingsDrawable);
+        settingsButton.setSize(textureSize, textureSize);
+        settingsButton.setVisible(GameState.getState().paused);
+
         // Pause/resume the game when clicked
         pauseButton.addListener(new ClickListener() {
             @Override
@@ -90,7 +101,15 @@ public class UIBottomMenu extends UIElement {
                 eventHandler.callEvent(GameState.getState().paused ? EventHandler.Event.RESUME_GAME : EventHandler.Event.PAUSE_GAME);
             }
         });
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
+                SettingsUI.settingsVisible = true;
+            }
+        });
         // Place pause button on the table
+        table.add(settingsButton).expandX().right().padRight(10);
         table.add(pauseButton).right().padRight(10);
 
         // Style and place the table
@@ -106,11 +125,13 @@ public class UIBottomMenu extends UIElement {
             // Cancel all actions
             eventHandler.callEvent(EventHandler.Event.CANCEL_OPERATIONS);
             // Disable all UI but the pause button
-            UIUtils.disableAllActors(parentTable.getStage());
-            UIUtils.enableActor(pauseButton);
+            InterfaceUtils.disableAllActors(parentTable.getStage());
+            InterfaceUtils.enableActor(pauseButton);
+            InterfaceUtils.enableActor(settingsButton);
             // Change background to ▶
             pauseButton.getStyle().up = playDrawable;
             pauseButton.getStyle().down = playDrawable;
+            settingsButton.setVisible(true);
             return null;
         });
         eventHandler.createEvent(EventHandler.Event.RESUME_GAME, (params) -> {
@@ -118,12 +139,13 @@ public class UIBottomMenu extends UIElement {
             GameState.getState().paused = false;
             // Resume the timer
             MainTimer.getTimerManager().getTimer().resumeTimer();
-            // Re enable all UI
-            UIUtils.enableAllActors(parentTable.getStage());
+            // Re-enable all UI
+            InterfaceUtils.enableAllActors(parentTable.getStage());
             // Change background to ❚❚
             pauseButton.getStyle().up = pauseDrawable;
             pauseButton.getStyle().down = pauseDrawable;
-
+            settingsButton.setVisible(false);
+            SettingsUI.settingsVisible = false;
             return null;
         });
     }

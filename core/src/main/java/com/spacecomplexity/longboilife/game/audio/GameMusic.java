@@ -5,6 +5,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/**
+ * An enumerable containing all the music used.
+ */
 public enum GameMusic {
 
     GAME_1("A New Day Begins", "One Man Symphony",
