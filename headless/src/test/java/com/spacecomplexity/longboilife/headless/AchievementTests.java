@@ -7,8 +7,6 @@ import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import com.spacecomplexity.longboilife.game.utils.AchievementManager;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import com.spacecomplexity.longboilife.game.world.World;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -191,7 +189,7 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
 
         assertEquals(1, AchievementManager.getCompleteAchievements().size(),
             "Completed Achievements should have a length of 1 as one achievement condition has been met");
-        assertEquals(AchievementType.values().length-1, AchievementManager.getPossibleAchievements().size(), "" +
+        assertEquals(AchievementType.values().length-1, AchievementManager.getPossibleAchievements().size(),
             "Possible Achievements should be decremented by 1 as one achievement condition has been met");
     }
 
