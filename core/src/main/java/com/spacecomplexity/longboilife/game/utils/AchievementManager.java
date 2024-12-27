@@ -7,8 +7,8 @@ import com.spacecomplexity.longboilife.game.globals.MainTimer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AchievementHandler {
-    private static ArrayList<AchievementType> possibleAchievements = new ArrayList<>(List.of(AchievementType.values()));
+public class AchievementManager {
+    private static ArrayList<AchievementType> possibleAchievements = new ArrayList<>();
     private static ArrayList<AchievementType> completeAchievements = new ArrayList<>();
     private static long lastAchievementTime;
     private final static int achievementLiveTime = 10; // in seconds
@@ -54,5 +54,10 @@ public class AchievementHandler {
 
     public static ArrayList<AchievementType> getPossibleAchievements() {
         return possibleAchievements;
+    }
+
+    public static void reset() {
+        possibleAchievements = new ArrayList<>(List.of(AchievementType.values()));
+        completeAchievements.clear();
     }
 }
