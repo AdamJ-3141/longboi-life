@@ -17,12 +17,6 @@ public class GameScreenEventTests extends AbstractHeadlessGdxTest {
     @BeforeEach
     public void getGameState() {
         gameState = GameState.getState();
-
-        try {
-            waitForLoad(10);
-        } catch (InterruptedException | TimeoutException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test

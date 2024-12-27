@@ -27,8 +27,21 @@ public abstract class AbstractHeadlessGdxTest {
         if (game.getScreen() instanceof HeadlessGameScreen) {
             game.getScreen().show();
         }
+
+        // waits for the game to load before running tests
+        try {
+            waitForLoad(10);
+        } catch (InterruptedException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * waits for the game to load
+     * @param seconds max time to wait for game to load
+     * @throws InterruptedException if interrupted
+     * @throws TimeoutException     if time limit is exceeded
+     */
     public void waitForLoad(float seconds) throws InterruptedException, TimeoutException {
         int delta = 10;
         for (int i = 0; i < seconds * 1000; ) {
