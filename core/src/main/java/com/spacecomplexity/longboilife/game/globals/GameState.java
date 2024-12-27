@@ -4,6 +4,7 @@ import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
+import com.spacecomplexity.longboilife.game.utils.AchievementManager;
 import com.spacecomplexity.longboilife.game.utils.SatisfactionModifier;
 import com.spacecomplexity.longboilife.game.world.World;
 
@@ -232,5 +233,7 @@ public class GameState {
         satisfactionChangePositive = false;
         gameOver = false;
         currentAchievement = null;
+        totalScore = 0;
+        AchievementManager.reset();
     }
 }

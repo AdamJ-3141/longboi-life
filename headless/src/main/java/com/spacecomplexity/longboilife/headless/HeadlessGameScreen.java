@@ -273,8 +273,8 @@ public class HeadlessGameScreen implements Screen {
         MainCamera.camera().update();
 
         // calls the achievement handler to check for achievements and to ensure the popup is removed
-        AchievementHandler.checkAchievements();
-        AchievementHandler.updateAchievements();
+        AchievementManager.checkAchievements();
+        AchievementManager.updateAchievements();
 
         // Poll the timer to run the event if the timer has expired
         // Do not update satisfaction score if the game is paused or has ended
