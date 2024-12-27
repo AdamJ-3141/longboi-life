@@ -209,7 +209,7 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
             "Current achievement should still be first building as no in-game time as passed");
 
         long currentTime = MainTimer.getTimerManager().getTimer().getTimeLeft();
-        MainTimer.getTimerManager().getTimer().setTimer(currentTime - (AchievementManager.achievementLiveTime * 1000));
+        MainTimer.getTimerManager().getTimer().setTimer(currentTime - (AchievementManager.achievementLiveTime * 1000) - 1);
         AchievementManager.updateAchievements();
 
         assertNull(gameState.currentAchievement,
