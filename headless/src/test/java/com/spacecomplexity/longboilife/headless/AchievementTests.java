@@ -3,12 +3,14 @@ package com.spacecomplexity.longboilife.headless;
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.GameState;
+import com.spacecomplexity.longboilife.game.globals.MainTimer;
+import com.spacecomplexity.longboilife.game.utils.AchievementManager;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import com.spacecomplexity.longboilife.game.world.World;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,9 +27,11 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void firstBuilding() {
-        assertFalse(AchievementType.FIRSTBUILDING.isAchieved());
+        assertFalse(AchievementType.FIRSTBUILDING.isAchieved(),
+            "First building achievement expected to not be achieved as freshly created game");
         gameState.changeBuildingCount(BuildingType.GREGGS, 1);
-        assertTrue(AchievementType.FIRSTBUILDING.isAchieved());
+        assertTrue(AchievementType.FIRSTBUILDING.isAchieved(),
+            "First building achievement expected to be achieved as one building has been built");
     }
 
     /**
@@ -35,9 +39,11 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void tenBuilding() {
-        assertFalse(AchievementType.TENBUILDING.isAchieved());
+        assertFalse(AchievementType.TENBUILDING.isAchieved(),
+            "Ten building achievement expected to not be achieved as freshly created game");
         gameState.changeBuildingCount(BuildingType.GREGGS, 10);
-        assertTrue(AchievementType.TENBUILDING.isAchieved());
+        assertTrue(AchievementType.TENBUILDING.isAchieved(),
+            "Ten building achievement expected to be achieved as 10 buildings have been built");
     }
 
     /**
@@ -45,9 +51,11 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void fiftyBuilding() {
-        assertFalse(AchievementType.FIFTYBUILDING.isAchieved());
+        assertFalse(AchievementType.FIFTYBUILDING.isAchieved(),
+            "Fifty building achievement expected to not be achieved as freshly created game");
         gameState.changeBuildingCount(BuildingType.GREGGS, 50);
-        assertTrue(AchievementType.FIFTYBUILDING.isAchieved());
+        assertTrue(AchievementType.FIFTYBUILDING.isAchieved(),
+            "Fifty building achievement expected to be achieved as 50 buildings have been built");
     }
 
     /**
@@ -55,11 +63,14 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void fullMap() {
-        assertFalse(AchievementType.FULLMAP.isAchieved());
+        assertFalse(AchievementType.FULLMAP.isAchieved(),
+            "Full map achievement expected to not be achieved as freshly created game");
+
         World world = gameState.gameWorld;
         int worldWidth = world.getWidth();
         int worldHeight = world.getHeight();
 
+        // fills world with roads
         for (int i = 0; i < worldWidth; i++) {
             for (int j = 0; j < worldHeight; j++) {
                 try {
@@ -68,7 +79,8 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
             }
         }
 
-        assertTrue(AchievementType.FULLMAP.isAchieved());
+        assertTrue(AchievementType.FULLMAP.isAchieved(),
+            "Full map achievement expected to be achieved as the map no longer has any placeable tiles");
     }
 
     /**
@@ -76,9 +88,11 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void fiveGreggs() {
-        assertFalse(AchievementType.FIVEGREGGS.isAchieved());
+        assertFalse(AchievementType.FIVEGREGGS.isAchieved(),
+            "Five greggs achievement expected to not be achieved as freshly created game");
         gameState.changeBuildingCount(BuildingType.GREGGS, 5);
-        assertTrue(AchievementType.FIVEGREGGS.isAchieved());
+        assertTrue(AchievementType.FIVEGREGGS.isAchieved(),
+            "Five greggs achievement expected to be achieved as 5 Greggs have been built");
     }
 
     /**
@@ -86,9 +100,11 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void threeHundredRoads() {
-        assertFalse(AchievementType.THREEHUNDREDROAD.isAchieved());
+        assertFalse(AchievementType.THREEHUNDREDROAD.isAchieved(),
+            "Three hundred roads achievement expected to not be achieved as freshly created game");
         gameState.changeBuildingCount(BuildingType.ROAD, 300);
-        assertTrue(AchievementType.THREEHUNDREDROAD.isAchieved());
+        assertTrue(AchievementType.THREEHUNDREDROAD.isAchieved(),
+            "Three hundred roads achievement expected to be achieved as 300 Roads have been built");
     }
 
     /**
@@ -96,11 +112,13 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void oneOfEachBuilding() {
-        assertFalse(AchievementType.ONEOFEACH.isAchieved());
+        assertFalse(AchievementType.ONEOFEACH.isAchieved(),
+            "One-of-each building achievement expected to not be achieved as freshly created game");
         for (BuildingType buildingType : BuildingType.values()) {
             gameState.changeBuildingCount(buildingType, 1);
         }
-        assertTrue(AchievementType.ONEOFEACH.isAchieved());
+        assertTrue(AchievementType.ONEOFEACH.isAchieved(),
+            "One-of-each building achievement expected to be achieved as one of every building have been built");
     }
 
     /**
@@ -108,11 +126,13 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void fiveOfEachBuilding() {
-        assertFalse(AchievementType.FIVEOFEACH.isAchieved());
+        assertFalse(AchievementType.FIVEOFEACH.isAchieved(),
+            "Five-of-each building achievement expected to not be achieved as freshly created game");
         for (BuildingType buildingType : BuildingType.values()) {
             gameState.changeBuildingCount(buildingType, 5);
         }
-        assertTrue(AchievementType.FIVEOFEACH.isAchieved());
+        assertTrue(AchievementType.FIVEOFEACH.isAchieved(),
+            "Five-of-each building achievement expected to be achieved as 5 of each building have been built");
     }
 
     /**
@@ -120,9 +140,14 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void millionaire() {
-        assertFalse(AchievementType.MILLIONAIRE.isAchieved());
+        assertFalse(AchievementType.MILLIONAIRE.isAchieved(),
+            "Millionaire achievement expected to not be achieved as freshly created game");
         gameState.money = 1000000;
-        assertTrue(AchievementType.MILLIONAIRE.isAchieved());
+        assertTrue(AchievementType.MILLIONAIRE.isAchieved(),
+            "Millionaire achievement expected to be achieved as 1000000 money has been reached");
+        gameState.money = 1000001;
+        assertTrue(AchievementType.MILLIONAIRE.isAchieved(),
+            "Millionaire achievement expected to be achieved as more than 1000000 money has been reached");
     }
 
     /**
@@ -130,8 +155,66 @@ public class AchievementTests extends AbstractHeadlessGdxTest {
      */
     @Test
     public void perfection() {
-        assertFalse(AchievementType.PERFECTION.isAchieved());
+        assertFalse(AchievementType.PERFECTION.isAchieved(),
+            "Perfection achievement expected to not be achieved as freshly created game");
         gameState.targetSatisfaction = 100;
-        assertTrue(AchievementType.PERFECTION.isAchieved());
+        assertTrue(AchievementType.PERFECTION.isAchieved(),
+            "Perfection achievement expected to be achieved as 100 satisfaction has been reached");
+    }
+
+    /**
+     * Causes the firstBuilding achievement to be complete
+     */
+    public void triggerFirstAchievement() {
+        gameState.changeBuildingCount(BuildingType.GREGGS, 1);
+        AchievementManager.checkAchievements();
+    }
+
+    /**
+     * Tests if the possibleAchievements and completedAchievement arrays are updated correctly
+     */
+    @Test
+    public void arrayAchievements() {
+        assertEquals(0, AchievementManager.getCompleteAchievements().size(),
+            "Completed achievements should be empty at creation");
+        assertEquals(AchievementType.values().length, AchievementManager.getPossibleAchievements().size(),
+            "Possible achievements should be full at creation");
+
+        AchievementManager.checkAchievements();
+
+        assertEquals(0, AchievementManager.getCompleteAchievements().size(),
+            "Completed achievements should be empty as no achievement conditions met");
+        assertEquals(AchievementType.values().length, AchievementManager.getPossibleAchievements().size(),
+            "Possible achievements should be full as no achievement conditions met");
+
+        triggerFirstAchievement();
+
+        assertEquals(1, AchievementManager.getCompleteAchievements().size(),
+            "Completed Achievements should have a length of 1 as one achievement condition has been met");
+        assertEquals(AchievementType.values().length-1, AchievementManager.getPossibleAchievements().size(), "" +
+            "Possible Achievements should be decremented by 1 as one achievement condition has been met");
+    }
+
+    /**
+     * Tests if the current achievement global variable is updated correctly
+     */
+    @Test
+    public void currentAchievementUpdated() {
+        assertNull(gameState.currentAchievement, "Current achievement should be null initially");
+        triggerFirstAchievement();
+        assertEquals(AchievementType.FIRSTBUILDING, gameState.currentAchievement,
+            "Current achievement should be first building as that achievement has been reached");
+
+        AchievementManager.updateAchievements();
+
+        assertEquals(AchievementType.FIRSTBUILDING, gameState.currentAchievement,
+            "Current achievement should still be first building as no in-game time as passed");
+
+        long currentTime = MainTimer.getTimerManager().getTimer().getTimeLeft();
+        MainTimer.getTimerManager().getTimer().setTimer(currentTime - (AchievementManager.achievementLiveTime * 1000));
+        AchievementManager.updateAchievements();
+
+        assertNull(gameState.currentAchievement,
+            "Current achievement should be null as time for achievement to live has expired");
     }
 }

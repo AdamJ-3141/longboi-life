@@ -11,7 +11,7 @@ public class AchievementManager {
     private static ArrayList<AchievementType> possibleAchievements = new ArrayList<>();
     private static ArrayList<AchievementType> completeAchievements = new ArrayList<>();
     private static long lastAchievementTime;
-    private final static int achievementLiveTime = 10; // in seconds
+    public final static int achievementLiveTime = 10; // in seconds
 
     /**
      * checks if the achievements yet to be completed have been forfilled. If they are they are moved to the completeAchievements Array
