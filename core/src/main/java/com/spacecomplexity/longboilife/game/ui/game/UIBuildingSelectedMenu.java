@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
@@ -21,8 +23,8 @@ import java.util.Locale;
  * Class to represent the pop-up menu after selecting a placed building.
  */
 public class UIBuildingSelectedMenu extends UIElement {
-    private TextButton moveButton;
-    private TextButton sellButton;
+    private final TextButton moveButton;
+    private final TextButton sellButton;
 
     private Vector3 worldSpaceOpened;
 
@@ -47,6 +49,7 @@ public class UIBuildingSelectedMenu extends UIElement {
         moveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 // Call the events to sell the selected building
                 eventHandler.callEvent(EventHandler.Event.MOVE_BUILDING);
             }
@@ -59,6 +62,7 @@ public class UIBuildingSelectedMenu extends UIElement {
         sellButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 // Call the events to sell the selected building
                 eventHandler.callEvent(EventHandler.Event.SELL_BUILDING);
 

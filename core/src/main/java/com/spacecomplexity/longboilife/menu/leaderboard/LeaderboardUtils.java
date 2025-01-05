@@ -1,11 +1,10 @@
 package com.spacecomplexity.longboilife.menu.leaderboard;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,32 +12,35 @@ import java.util.List;
  */
 public class LeaderboardUtils {
     private static Json json = new Json();
-    private static  String jsonAddress = "leaderboard.json";
-    private static final int maxLeaderboardSize = 5; // size of leaderboard
+    private static Preferences preferences = Gdx.app.getPreferences("leaderboard");
+
+    private static final String LEADERBOARD_KEY = "LEADERBOARD_KEY";
+
+    private static final int MAXSIZE = 5; // size of leaderboard
 
     /**
      * This method loads the leaderboard from the json file
      * @return  Array of type LeaderboardElements which represents the leaderboard
      */
-    public static LeaderboardElement[] loadScore(){
-        // uses getJsonAddress to allow for easier testing
-        FileHandle leaderboard = Gdx.files.local(getJsonAddress());
-        // ensures the leaderboard exists
-        if(leaderboard.exists()){
-            // converts from json to array of LeaderboardElement objects
-            String scoreStr = leaderboard.readString();
-            return json.fromJson(LeaderboardElement[].class, scoreStr);
+    public static LeaderboardElement[] loadScore() {
+        // obtains the json string
+        String scoreStr = preferences.getString(LEADERBOARD_KEY, null);
+
+        // if empty then return an empty list
+        if (scoreStr == null) {
+            return new LeaderboardElement[0];
         }
-        throw new InvalidLeaderboardFileException("Couldn't load leaderboard");
+
+        //convert string into array of LeaderboardElements
+        return json.fromJson(LeaderboardElement[].class, scoreStr);
     }
 
     /**
      * Adds the score passed to the method to the correct place on the leaderboard
      * @param score LeaderboardElement object to be added
      */
-    public static void addScore(LeaderboardElement score, LeaderboardElement[] currentBoard){
+    public static LeaderboardElement[] addScore(LeaderboardElement score, List<LeaderboardElement> scores) {
         // Gets the leaderboard Array and makes it an ArrayList for manipulation
-        List<LeaderboardElement> scores = Arrays.asList(currentBoard);
         List<LeaderboardElement> scoresList = new ArrayList<>(scores);
 
         // inserts the LeaderboardElement in the correct location in the list
@@ -57,28 +59,24 @@ public class LeaderboardUtils {
         }
 
         // if the size of the leaderboard exceeds the max then remove the lowest score
-        if (scoresList.size() > maxLeaderboardSize) {
+        if (scoresList.size() > MAXSIZE) {
             scoresList.remove(scoresList.size() - 1);
         }
 
         // update the json file
-        scoreSave(scoresList.toArray(new LeaderboardElement[scores.size()]));
+        return scoresList.toArray(new LeaderboardElement[scores.size()]);
+        // scoreSave(scoresList.toArray(new LeaderboardElement[scores.size()]));
     }
 
     /**
      * private method that updates the json file containing the leaderboard
      * @param scores LeaderboardElements array to be added
      */
-    private static void scoreSave(LeaderboardElement[] scores) {
-        String scoreStr = json.toJson(scores);
-        FileHandle leaderboard = Gdx.files.local(jsonAddress);
-        leaderboard.writeString(scoreStr ,false,"UTF-8");
-    }
+    public static void saveScore(LeaderboardElement[] scores) {
+        String jsonString = json.toJson(scores);
 
-    /**
-     * @return jsonAddress attribute
-     */
-    public static String getJsonAddress() {
-        return jsonAddress;
+        // saves the json file in the preferences part of libgdx
+        preferences.putString(LEADERBOARD_KEY, jsonString);
+        preferences.flush();
     }
 }

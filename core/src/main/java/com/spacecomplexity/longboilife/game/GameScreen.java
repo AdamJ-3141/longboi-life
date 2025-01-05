@@ -3,6 +3,7 @@ package com.spacecomplexity.longboilife.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -12,6 +13,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.spacecomplexity.longboilife.Main;
 import com.spacecomplexity.longboilife.MainInputManager;
+import com.spacecomplexity.longboilife.game.audio.MusicPlaylist;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -20,6 +23,7 @@ import com.spacecomplexity.longboilife.game.globals.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
 import com.spacecomplexity.longboilife.game.tile.InvalidSaveMapException;
 import com.spacecomplexity.longboilife.game.tile.Tile;
 import com.spacecomplexity.longboilife.game.ui.UIManager;
@@ -28,6 +32,7 @@ import com.spacecomplexity.longboilife.game.world.World;
 import com.spacecomplexity.longboilife.menu.MenuState;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -38,8 +43,10 @@ public class GameScreen implements Screen {
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
+    private final ArrayList<ParticleSpawner> particles;
     private UIManager ui;
     private InputManager inputManager;
+    private final AudioController audio = AudioController.getInstance();
 
     private Viewport viewport;
 
@@ -57,6 +64,7 @@ public class GameScreen implements Screen {
         // Initialise SpriteBatch and ShapeRender for rendering
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        particles = new ArrayList<>();
     }
 
     /**
@@ -66,6 +74,8 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         gameState.reset();
+
+        audio.startMusicPlaylist(MusicPlaylist.GAME);
 
         // Creates a new World object from "map.json" file
         try {
@@ -79,6 +89,8 @@ public class GameScreen implements Screen {
         MainTimer.getTimerManager().getTimer().setTimer(Constants.GAME_DURATION);
         MainTimer.getTimerManager().getTimer().setEvent(() -> {
             EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END);
+            audio.getCurrentPlaylist().stop();
+            audio.playSound(SoundEffect.GAME_OVER);
         });
 
         // Create an input multiplexer to handle input from all sources
@@ -147,7 +159,8 @@ public class GameScreen implements Screen {
 
                 // Remove the selected building if it is wanted to do so
                 if (Arrays.stream(Constants.dontRemoveSelection)
-                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)) {
+                        .noneMatch(category -> gameState.placingBuilding.getCategory() == category)
+                    && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -268,6 +281,16 @@ public class GameScreen implements Screen {
             }
             return false;
         });
+
+        // Spawns a particle at the desired coordinates on the game screen.
+        eventHandler.createEvent(EventHandler.Event.SPAWN_PARTICLE, (params) -> {
+            FileHandle effectFile = (FileHandle) params[0];
+            FileHandle imageFile = (FileHandle) params[1];
+            float x = (float) params[2];
+            float y = (float) params[3];
+            particles.add(new ParticleSpawner(effectFile, imageFile, x, y));
+            return null;
+        });
     }
 
     /**
@@ -278,6 +301,9 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         // Call to handles any constant input
         inputManager.handleContinuousInput();
+
+        // Update the music volume to match the setting
+        audio.updateMusicVolume();
 
         // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1f);
@@ -315,10 +341,16 @@ public class GameScreen implements Screen {
             RenderUtils.outlineBuilding(shapeRenderer, gameState.movingBuilding, Color.PURPLE, 2);
         }
 
+        // Draw any current particles
+        ArrayList<ParticleSpawner> completedParticles = RenderUtils.drawParticles(batch, particles);
+        for (ParticleSpawner pe: completedParticles) {
+            particles.remove(pe);
+        }
+
         // calls the achievement handler to check for achievements and to ensure the
         // popup is removed
-        AchievementHandler.checkAchievements();
-        AchievementHandler.updateAchievements();
+        AchievementManager.checkAchievements();
+        AchievementManager.updateAchievements();
 
         // Render the UI
         ui.render();
@@ -344,11 +376,23 @@ public class GameScreen implements Screen {
             // * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
-                gameState.money += (world.buildings.stream()
-                        .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                        .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                        .reduce(0f, Float::sum)
-                        * 100);
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                for (Building building : world.buildings) {
+                    if (building.getType().getCategory() == BuildingCategory.ACCOMMODATION) {
+                        EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                            Gdx.files.internal("particles/effects/money.p"),
+                            Gdx.files.internal("particles/images"),
+                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                    }
+                }
+                float moneyAdded = world.buildings.stream()
+                    .map(GameUtils::getMoneyGenerated)
+                    .reduce(0f, Float::sum);
+                gameState.money += moneyAdded;
+                if (moneyAdded > 0) {
+                    audio.playSound(SoundEffect.MONEY_UP);
+                }
             }
             gameEventManager.tryForGameEvent();
         }
@@ -394,6 +438,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         shapeRenderer.dispose();
+        audio.dispose();
         ui.dispose();
     }
 }

@@ -19,6 +19,7 @@ public class GameScreenEventTests extends AbstractHeadlessGdxTest {
 
     @Test
     public void testBuildEvent() {
+
         // Set up the game state for building
         gameState.placingBuilding = BuildingType.ROAD;
         gameState.money = 100; // Ensure sufficient money

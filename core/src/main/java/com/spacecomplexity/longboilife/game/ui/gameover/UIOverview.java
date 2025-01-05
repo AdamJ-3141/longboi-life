@@ -6,12 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
 import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
 import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,6 +49,7 @@ public class UIOverview extends UIElement {
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                 // value is obtained from text box
                 String name = textField.getText();
                 if (Objects.equals(name, "")){
@@ -52,8 +57,9 @@ public class UIOverview extends UIElement {
                 }
 
                 // add score to the leaderboard
-                LeaderboardElement[] scores = LeaderboardUtils.loadScore();
-                LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore), scores);
+                List<LeaderboardElement> scores = Arrays.asList(LeaderboardUtils.loadScore());
+                LeaderboardElement[] newScores = LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore), scores);
+                LeaderboardUtils.saveScore(newScores);
 
 
                 // Call the event to change screen to leaderboard

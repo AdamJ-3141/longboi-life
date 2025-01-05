@@ -266,7 +266,6 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
         expected.add(0.322f);
         expected.add(0.085f);
         satisfactionSum = GameUtils.updateSatisfactionScore(empty_world);
-        System.out.println(satisfactionSum);
         assertEquals(2, gameState.accomSatisfaction.size(), "Verify 2 accommodations.");
         assertClose(0.407f, satisfactionSum, 0.001f, "Sum should be close to 0.441");
         assertClose(expected, new HashSet<>(gameState.accomSatisfaction.values().stream()
@@ -283,7 +282,6 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
         gameState.gameWorld.build(BuildingType.LIBRARY, new Vector2Int(4, 0));
         gameState.gameWorld.build(BuildingType.ROAD, new Vector2Int(3, 0));
         satisfactionSum = GameUtils.updateSatisfactionScore(gameState.gameWorld);
-        System.out.println(satisfactionSum);
         float totalTime = 0f;
         float waitTime = 10f; // Wait for 10 seconds
         float deltaTime = 1 / 60f; // Assume 60 FPS for each frame
@@ -292,7 +290,6 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
             game.getScreen().render(deltaTime); // This triggers the render() method
             totalTime += deltaTime; // Increment the total time by delta
         }
-        System.out.println(gameState.totalScore);
         assertEquals(100 + Math.round(satisfactionSum * 100), gameState.totalScore);
     }
 }

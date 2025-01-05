@@ -15,6 +15,8 @@ import com.spacecomplexity.longboilife.game.pathways.PathwayPositions;
 import com.spacecomplexity.longboilife.game.pathways.PathwayTextures;
 import com.spacecomplexity.longboilife.game.world.World;
 
+import java.util.ArrayList;
+
 /**
  * A class used for rendering utilities.
  */
@@ -213,5 +215,40 @@ public class RenderUtils {
     private static float getCellSize() {
         GameState gameState = GameState.getState();
         return Constants.TILE_SIZE * gameState.scaleFactor;
+    }
+
+    /**
+     * Updates the particle emitters and draws the particles onto the world.
+     * @param batch current sprite batch
+     * @param particles a list of particle spawners
+     * @return a list of completed spawners
+     */
+    public static ArrayList<ParticleSpawner> drawParticles(SpriteBatch batch, ArrayList<ParticleSpawner> particles) {
+
+        // Get time between frames
+        float delta = Gdx.graphics.getDeltaTime();
+        ArrayList<ParticleSpawner> completedParticles = new ArrayList<>();
+
+        // Update each particle and draw it
+        for (ParticleSpawner pe : particles) {
+            pe.setEmittersCleanUpBlendFunction(false);
+
+            // Scales each particle if it hasn't been already
+            if (!pe.scaled) {
+                pe.scaleEffect(0.5f);
+                pe.scaled = true;
+            }
+            pe.update(delta);
+            batch.begin();
+            pe.draw(batch);
+            batch.end();
+
+            // Sets particle to be removed if it has finished playing.
+            if (pe.isComplete()) {
+                pe.dispose();
+                completedParticles.add(pe);
+            }
+        }
+        return completedParticles;
     }
 }

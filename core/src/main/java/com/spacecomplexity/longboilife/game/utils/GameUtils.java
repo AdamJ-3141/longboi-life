@@ -3,6 +3,8 @@ package com.spacecomplexity.longboilife.game.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
@@ -115,7 +117,7 @@ public class GameUtils {
 
                         // Adds the building satisfaction to the current category score for that accommodation.
                         categoryScore.compute(category,
-                            (k, v) -> MathUtils.clamp(v + buildingSatisfaction, 0, 1));
+                            (k, v) -> MathUtils.clamp(((v != null) ? v : 0) + buildingSatisfaction, 0, 1));
                     }
                 }
                 // Calculates a multiplier relating to the relative "quality" (price) of the accommodation.
@@ -128,10 +130,18 @@ public class GameUtils {
                 // Multiplier is normalized to be closer to 1 for balancing.
                 float accomSatisfactionMult = (float) (2 * Math.atan(accomPrice / avgAccomPrice) / Math.PI) + 0.5f;
 
-                float totalAccomSatisfaction = Math.min(1f, (categoryScore.values()
+                // Get specific modifier from GameState
+                SatisfactionModifier localMod = GameState.getState().accomSatisfactionModifiers
+                    .getOrDefault(node.getBuildingRef(),
+                                  new SatisfactionModifier());
+
+                SatisfactionModifier globalMod = GameState.getState().globalSatisfactionModifier;
+
+                float totalAccomSatisfaction = MathUtils.clamp((categoryScore.values()
                     .stream().reduce(0f, Float::sum) / categoryScore.size())
-                    * accomSatisfactionMult);
-                AccomSatisfactionDetail details = new AccomSatisfactionDetail(accomSatisfactionMult, categoryScore, totalAccomSatisfaction);
+                    * accomSatisfactionMult * localMod.relative * globalMod.relative + localMod.absolute + globalMod.absolute, 0f, 1f);
+
+                AccomSatisfactionDetail details = new AccomSatisfactionDetail(accomSatisfactionMult, categoryScore, totalAccomSatisfaction, localMod);
 
                 // The accommodation's satisfaction score is the average of the category scores, multiplied by the multiplier.
                 accomSatisfactionDetails.put(node.getBuildingRef(), details);
@@ -142,16 +152,67 @@ public class GameUtils {
             .map(d->d.totalSatisfaction)
             .reduce(0f, Float::sum);
 
-        // Checks whether there are accommodation buildings placed.
+        float newSatisfactionScore;
+        GameState gameState = GameState.getState();
+        // Check whether there are accommodation buildings placed.
         if (!accomSatisfactionDetails.isEmpty()) {
-            float newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
-            GameState gameState = GameState.getState();
-            gameState.targetSatisfaction = newSatisfactionScore;
+            newSatisfactionScore = newSatisfactionSum / accomSatisfactionDetails.size();
+
+            // Check for changes in accommodation satisfaction.
+            HashMap<Building, AccomSatisfactionDetail> oldSatisfactions = gameState.accomSatisfaction;
             gameState.accomSatisfaction = accomSatisfactionDetails;
+            checkAccomSatisfaction(oldSatisfactions);
+        } else {
+            newSatisfactionScore = 0f;
+
+            // Apply the absolute modifier only.
+            newSatisfactionScore += gameState.globalSatisfactionModifier.absolute;
         }
+        gameState.targetSatisfaction = MathUtils.clamp(newSatisfactionScore, 0f, 1f);
 
         // To be used to add onto the score.
         return newSatisfactionSum;
+    }
+
+    /**
+     * Checks any differences between old and current accommodation satisfactions,
+     * and then spawns particles in each case.
+     * @param oldSatisfactions a HashMap from accommodation buildings to {@link AccomSatisfactionDetail}.
+     */
+    public static void checkAccomSatisfaction(HashMap<Building, AccomSatisfactionDetail> oldSatisfactions) {
+        HashMap<Building, AccomSatisfactionDetail> newSatisfactions = GameState.getState().accomSatisfaction;
+
+        // Checks each accommodation building in the current world for changes
+        for (Building building : newSatisfactions.keySet()) {
+
+            // If the building is new or the satisfaction has increased
+            if (!oldSatisfactions.containsKey(building) ||
+                newSatisfactions.get(building).totalSatisfaction > oldSatisfactions.get(building).totalSatisfaction) {
+
+                // Spawns hearts at the correct position
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                        Gdx.files.internal("particles/effects/heart.p"),
+                        Gdx.files.internal("particles/images"),
+                        (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                        (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+
+                AudioController.getInstance().playSound(SoundEffect.SATISFACTION_UP);
+            }
+            // If the satisfaction has decreased
+            else if (newSatisfactions.get(building).totalSatisfaction < oldSatisfactions.get(building).totalSatisfaction) {
+
+                // Spawn broken hearts at the correct position
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                    Gdx.files.internal("particles/effects/broken_heart.p"),
+                    Gdx.files.internal("particles/images"),
+                    (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                    (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+
+                AudioController.getInstance().playSound(SoundEffect.SATISFACTION_DOWN);
+            }
+        }
     }
 
     /**
@@ -197,11 +258,36 @@ public class GameUtils {
             for (int j = i + 1; j < nodes.length; j++) {
                 GraphNode endNode = nodes[j];
                 int dist = world.getBuildingDistance(startNode.getBuildingRef(), endNode.getBuildingRef());
-                if (dist != Integer.MAX_VALUE) {
+                if (dist != -1) {
                     startNode.connectNode(endNode, dist);
                 }
             }
         }
         return nodes;
+    }
+
+    /**
+     * Gets the money that a building generates per money generation.
+     * @param b the building queried, only {@link BuildingCategory#ACCOMMODATION}
+     *          can generate money.
+     * @return  the amount of money that building generates.
+     */
+    public static float getMoneyGenerated(Building b) {
+        return getMoneyGenerated(b.getType());
+    }
+
+
+    /**
+     * Gets the money that a building type generates per money generation.
+     * @param type the building type queried, only {@link BuildingCategory#ACCOMMODATION}
+     *             can generate money.
+     * @return     the amount of money that building generates.
+     */
+    public static float getMoneyGenerated(BuildingType type) {
+        if (type.getCategory() != BuildingCategory.ACCOMMODATION) { return 0; }
+        else {
+            // cbrt used to create slower return on investment for higher cost
+            return Math.round(Math.cbrt(type.getCost())) * 100;
+        }
     }
 }

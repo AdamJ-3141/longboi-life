@@ -1,18 +1,22 @@
 package com.spacecomplexity.longboilife.game.ui.game;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.spacecomplexity.longboilife.game.audio.AudioController;
+import com.spacecomplexity.longboilife.game.audio.SoundEffect;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.game.utils.GameUtils;
+import com.spacecomplexity.longboilife.game.utils.InterfaceUtils;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 
 import java.text.NumberFormat;
@@ -23,6 +27,7 @@ import java.util.Locale;
  */
 public class UIBuildMenu extends UIElement {
     private final Skin skin;
+    private final MoneyGenTooltip tooltip;
 
     /**
      * Initialise build menu elements.
@@ -35,6 +40,8 @@ public class UIBuildMenu extends UIElement {
         super(uiViewport, parentTable, skin);
 
         this.skin = skin;
+
+        this.tooltip = new MoneyGenTooltip(uiViewport, parentTable, skin);
 
         // Style and place the table
         table.setBackground(skin.getDrawable("panel1"));
@@ -50,8 +57,63 @@ public class UIBuildMenu extends UIElement {
         });
     }
 
-    public void render() {
+    /**
+     * Private class for the tooltip
+     */
+    private static class MoneyGenTooltip extends UIElement {
+        Label moneyLabel;
+        public BuildingType buildingType;
+        /**
+         * Initialise base UI elements
+         *
+         * @param uiViewport  the viewport used to render UI.
+         * @param parentTable the table to render this element onto.
+         * @param skin        the provided skin.
+         */
+        public MoneyGenTooltip(Viewport uiViewport, Table parentTable, Skin skin) {
+            super(uiViewport, parentTable, skin);
+
+            moneyLabel = new Label("", skin);
+            moneyLabel.setColor(Color.GREEN);
+
+            table.add(moneyLabel);
+            table.setSize(120, 30);
+            table.setBackground(skin.getDrawable("panel1"));
+        }
+
+        /**
+         * Render this UI element.
+         */
+        @Override
+        public void render() {
+            if (buildingType != null) {
+                moneyLabel.setText("+" +
+                    NumberFormat.getCurrencyInstance(Locale.UK)
+                    .format(GameUtils.getMoneyGenerated(buildingType)) + " / 5s");
+            }
+            placeTable();
+        }
+
+        /**
+         * Set the table position relative to the viewport.
+         */
+        @Override
+        protected void placeTable() {
+            if (buildingType != null) {
+                // Sets the position of the table to the current mouse position.
+                Vector2 mouse = InterfaceUtils.getMousePositionInViewport(uiViewport);
+                table.setPosition(mouse.x + 4, mouse.y + 4);
+            }
+            else {
+                table.setPosition(uiViewport.getWorldWidth(), uiViewport.getWorldHeight());
+            }
+        }
     }
+
+    public void render() {
+        tooltip.render();
+    }
+
 
     /**
      * Open the build menu ready for the user to place buildings from a specific {@link BuildingCategory}.
@@ -82,6 +144,7 @@ public class UIBuildMenu extends UIElement {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
                     EventHandler.getEventHandler().callEvent(EventHandler.Event.CANCEL_OPERATIONS);
 
                     GameState.getState().placingBuilding = building;
@@ -106,6 +169,19 @@ public class UIBuildMenu extends UIElement {
 
             // Add the container to the building table
             buildingButtonsTable.add(buildingTable).expandX().expandY().fillY().padLeft(2);
+            // Add event listeners for mouse moving into the button for tooltip
+            if (category == BuildingCategory.ACCOMMODATION) {
+                buildingTable.addListener(new ClickListener() {
+                    public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                        tooltip.buildingType = building;
+                    }
+                });
+                buildingTable.addListener(new ClickListener() {
+                    public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                        tooltip.buildingType = null;
+                    }
+                });
+            }
         }
         // Add the buildings table onto the main table
         table.add(buildingButtonsTable).expandX().left();
