@@ -40,12 +40,10 @@ public enum GameEventType {
         @Override
         public void startEffect() {
             // 10% satisfaction bonus
-            GameEventManager.getGameEventManager().alterSatisfactionModifier(MODIFIER);
         }
 
         @Override
         public void endEffect() {
-            GameEventManager.getGameEventManager().alterSatisfactionModifier(-MODIFIER);
         }
     },
     DEADBOI(

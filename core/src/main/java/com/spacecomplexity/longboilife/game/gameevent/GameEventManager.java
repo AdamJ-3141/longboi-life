@@ -20,7 +20,6 @@ public class GameEventManager {
     private static final long EVENTCOOLDOWN = 20 * 1000;
     private static final long EVENTPOPUPTTL = 10 * 1000;
     private static final long MAXOFFSET = 10 * 1000;
-    private float satisfactionModifier;
 
     private GameEventManager() {
         super();
@@ -28,8 +27,6 @@ public class GameEventManager {
         tracker = GameEventTracker.getTracker();
         eventCooldownOffset = 0;
         lastEventTime = Constants.GAME_DURATION;
-
-        satisfactionModifier = 1.0f;
     }
 
     /**
@@ -38,14 +35,6 @@ public class GameEventManager {
      */
     public static GameEventManager getGameEventManager() {
         return gameEventManager;
-    }
-
-    public void alterSatisfactionModifier(float offset) {
-        satisfactionModifier += offset;
-    }
-
-    public float getSatisfactionModifier() {
-        return satisfactionModifier;
     }
 
     /**

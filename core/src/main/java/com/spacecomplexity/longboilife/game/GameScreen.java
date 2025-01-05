@@ -369,7 +369,7 @@ public class GameScreen implements Screen {
             // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
                 float satisfactionSum = GameUtils.updateSatisfactionScore(world);
-                gameState.totalScore += Math.round(satisfactionSum * 100 * gameEventManager.getSatisfactionModifier());
+                gameState.totalScore += Math.round(satisfactionSum * 100);
                 timeSinceScoreUpdate = 0;
             }
 
