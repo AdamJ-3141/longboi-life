@@ -7,8 +7,6 @@ import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.TimeoutException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameScreenEventTests extends AbstractHeadlessGdxTest {
@@ -17,12 +15,6 @@ public class GameScreenEventTests extends AbstractHeadlessGdxTest {
     @BeforeEach
     public void getGameState() {
         gameState = GameState.getState();
-
-        try {
-            waitForLoad(10);
-        } catch (InterruptedException | TimeoutException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
