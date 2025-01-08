@@ -395,6 +395,7 @@ public class GameScreen implements Screen {
                     audio.playSound(SoundEffect.MONEY_UP);
                 }
             }
+            gameEventManager.tickOngoingEvents();
             gameEventManager.tryForGameEvent();
 
         }
