@@ -2,6 +2,7 @@ package com.spacecomplexity.longboilife.game.gameevent;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
@@ -17,6 +18,8 @@ public class GameEventManager {
     private Random random;
     private long lastEventTime;
     private long eventCooldownOffset;
+    private GameEventType nextEvent;
+    // The following are times in milliseconds
     private static final long EVENTCOOLDOWN = 20 * 1000;
     private static final long EVENTPOPUPTTL = 10 * 1000;
     private static final long MAXOFFSET = 10 * 1000;
@@ -30,11 +33,20 @@ public class GameEventManager {
     }
 
     /**
-     *
      * @return the singleton instance of the GameEventManager
      */
     public static GameEventManager getGameEventManager() {
         return gameEventManager;
+    }
+
+    /**
+     * Execute the logic for all ongoing events
+     */
+    public void tickOngoingEvents() {
+        GameEventType[] activeEvents = tracker.getActiveGameEvents().toArray(new GameEventType[0]);
+        for (GameEventType activeEvent : activeEvents) {
+            activeEvent.ongoingEffect();
+        }
     }
 
     /**
@@ -54,10 +66,23 @@ public class GameEventManager {
         }
 
         Set<GameEventType> validGameEvents = tracker.findValidEvents();
-        GameEventType randomEvent = (GameEventType) validGameEvents.toArray()[random.nextInt(validGameEvents.size())];
+        // If some events occur, they allow other events to occur, and some of these
+        // should happen immediately after
+        Set<GameEventType> urgentGameEvents = validGameEvents.stream()
+                .filter(s -> s.isUrgent())
+                .collect(Collectors.toSet());
 
-        tracker.startGameEvent(randomEvent);
-        EventHandler.getEventHandler().callEvent(Event.OPEN_GAMEEVENT_POPUP, randomEvent);
+        nextEvent = null;
+        if (!urgentGameEvents.isEmpty()) {
+            nextEvent = (GameEventType) urgentGameEvents.toArray()[random.nextInt(urgentGameEvents.size())];
+        } else if (!validGameEvents.isEmpty()) {
+            nextEvent = (GameEventType) validGameEvents.toArray()[random.nextInt(validGameEvents.size())];
+        } else {
+            return false;
+        }
+
+        tracker.startGameEvent(nextEvent);
+        EventHandler.getEventHandler().callEvent(Event.OPEN_GAMEEVENT_POPUP, nextEvent);
 
         lastEventTime = MainTimer.getTimerManager().getTimer().getTimeLeft();
         eventCooldownOffset = random.nextLong(MAXOFFSET);
