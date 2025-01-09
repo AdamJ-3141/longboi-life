@@ -3,8 +3,6 @@ package com.spacecomplexity.longboilife.headless;
 import com.spacecomplexity.longboilife.game.utils.Timer;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
