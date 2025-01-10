@@ -12,12 +12,14 @@ import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.ui.UIElement;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Class to represent the UI building counter.
  */
 public class UIBuildingCounter extends UIElement {
     private final Label[] counterLabels;
+    private final HashMap<BuildingCategory, Label> buildingLabels;
 
     /**
      * Initialise building counter menu elements.
@@ -35,7 +37,8 @@ public class UIBuildingCounter extends UIElement {
 
         // Initialise the lists of building category labels.
         String[] buildingList = new String[BuildingCategory.values().length];
-        Label[] buildingLabels = new Label[buildingList.length];
+        buildingLabels = new HashMap<>();
+        // buildingLabels = new Label[buildingList.length];
         counterLabels = new Label[buildingList.length];
 
         // For each category, create one of each kind of label.
@@ -52,15 +55,15 @@ public class UIBuildingCounter extends UIElement {
             );
 
             // Add the new building type and counter labels to the table.
-            buildingLabels[i] = new Label(buildingList[i], skin);
-            buildingLabels[i].setColor(Constants.categoryColours.get(category));
-            buildingLabels[i].setFontScale(1f);
+            buildingLabels.put(category, new Label(buildingList[i], skin));
+            buildingLabels.get(category).setColor(Constants.categoryColours.get(category));
+            buildingLabels.get(category).setFontScale(1f);
 
             counterLabels[i] = new Label(null, skin);
             counterLabels[i].setFontScale(1f);
             counterLabels[i].setColor(Color.WHITE);
 
-            table.left().padLeft(15).add(buildingLabels[i]).fillX();
+            table.left().padLeft(15).add(buildingLabels.get(category)).fillX();
             table.add(counterLabels[i]).padLeft(5);
             table.row();
         }
@@ -85,6 +88,12 @@ public class UIBuildingCounter extends UIElement {
             );
             // Update each category's building count label.
             counterLabels[i].setText(buildingCount);
+
+            if (!GameState.getState().paused) {
+                for (BuildingCategory category : buildingLabels.keySet()) {
+                    buildingLabels.get(category).setColor(Constants.categoryColours.get(category));
+                }
+            }
         }
     }
 
