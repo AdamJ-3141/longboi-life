@@ -92,7 +92,7 @@ public class Timer {
                 event.run();
                 eventCalled = true;
             }
-            
+
             return true;
         }
 
