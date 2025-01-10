@@ -5,7 +5,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +22,7 @@ public class LeaderboardUtils {
      * This method loads the leaderboard from the json file
      * @return  Array of type LeaderboardElements which represents the leaderboard
      */
-    public static LeaderboardElement[] loadScore(){
+    public static LeaderboardElement[] loadScore() {
         // obtains the json string
         String scoreStr = preferences.getString(LEADERBOARD_KEY, null);
 
@@ -40,9 +39,8 @@ public class LeaderboardUtils {
      * Adds the score passed to the method to the correct place on the leaderboard
      * @param score LeaderboardElement object to be added
      */
-    public static void addScore(LeaderboardElement score){
+    public static LeaderboardElement[] addScore(LeaderboardElement score, List<LeaderboardElement> scores) {
         // Gets the leaderboard Array and makes it an ArrayList for manipulation
-        List<LeaderboardElement> scores = Arrays.asList(loadScore());
         List<LeaderboardElement> scoresList = new ArrayList<>(scores);
 
         // inserts the LeaderboardElement in the correct location in the list
@@ -66,14 +64,15 @@ public class LeaderboardUtils {
         }
 
         // update the json file
-        scoreSave(scoresList.toArray(new LeaderboardElement[scores.size()]));
+        return scoresList.toArray(new LeaderboardElement[scores.size()]);
+        // scoreSave(scoresList.toArray(new LeaderboardElement[scores.size()]));
     }
 
     /**
      * private method that updates the json file containing the leaderboard
      * @param scores LeaderboardElements array to be added
      */
-    public static void scoreSave(LeaderboardElement[] scores) {
+    public static void saveScore(LeaderboardElement[] scores) {
         String jsonString = json.toJson(scores);
 
         // saves the json file in the preferences part of libgdx
