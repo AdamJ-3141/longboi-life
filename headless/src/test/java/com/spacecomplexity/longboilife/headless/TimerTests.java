@@ -11,21 +11,21 @@ public class TimerTests extends AbstractHeadlessGdxTest{
     @Test
     public void setTimerTest() {
         Timer timer = new Timer();
-        timer.setTimer(1000);
+        timer.setTimer(100000);
         try {
-            Thread.sleep(100);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        long expectedOut = 900;
+        long expectedOut = 90000;
         long actualOut = timer.getTimeLeft();
-        assertEquals(expectedOut, actualOut, 10, "Timer doesn't start or run correctly");
+        assertEquals(expectedOut, actualOut, 200, "Timer doesn't start or run correctly");
     }
 
     @Test
     public void pauseAndResumeTimerTest() {
         Timer timer = new Timer();
-        timer.setTimer(1000);
+        timer.setTimer(100000);
 
         assertThrows(IllegalStateException.class, timer::resumeTimer, "Timer attempts to resume when not paused");
 
@@ -39,14 +39,14 @@ public class TimerTests extends AbstractHeadlessGdxTest{
         long actualOut = timer.getTimeLeft();
         assertEquals(expectedOut, actualOut, 0.05, "Timer doesn't pause correctly");
 
-        expectedOut = timer.getTimeLeft() - 100;
+        expectedOut = timer.getTimeLeft() - 10000;
         timer.resumeTimer();
         try {
-            Thread.sleep(100);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         actualOut = timer.getTimeLeft();
-        assertEquals(expectedOut, actualOut, 10, "Timer doesn't start or run correctly");
+        assertEquals(expectedOut, actualOut, 200, "Timer doesn't start or run correctly");
     }
 }
