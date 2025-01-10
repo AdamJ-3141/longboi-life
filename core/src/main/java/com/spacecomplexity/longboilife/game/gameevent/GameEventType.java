@@ -2,12 +2,16 @@ package com.spacecomplexity.longboilife.game.gameevent;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainTimer;
+import com.spacecomplexity.longboilife.game.utils.EventHandler;
+import com.spacecomplexity.longboilife.game.utils.SatisfactionModifier;
 
 /**
  * Represents the different Game Events that can occur during gameplay.
@@ -162,7 +166,12 @@ public enum GameEventType {
                 GameEventTracker.getTracker().trackData(GameEventTrackable.NEXT_FIRE_INSURANCE, FIRE_INSURANCE_BAD);
             }
 
-            // TODO: Spawn particles
+            float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+            EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                    Gdx.files.internal("particles/effects/fire.p"),
+                    Gdx.files.internal("particles/images"),
+                    (buildingToDestroy.getPosition().x + buildingToDestroy.getType().getSize().x / 2) * cellSize,
+                    (buildingToDestroy.getPosition().y + buildingToDestroy.getType().getSize().x / 2) * cellSize);
             GameState.getState().gameWorld.demolish(buildingToDestroy);
 
         }
@@ -231,14 +240,22 @@ public enum GameEventType {
             Color.RED,
             false,
             1 * 60 * 1000) {
+        private final float DEBUFF = 0.2f;
+
         @Override
         public boolean isValid() {
-            return false;
+            return hasPassedCooldown(this) && GameState.getState().getBuildingCount(BuildingCategory.ACCOMMODATION) > 0;
         }
 
         @Override
         public void startEffect() {
-            // TODO Infect a building
+            // Infect an accomodation
+            Building[] buildings = GameState.getState().gameWorld.getBuildings().stream()
+                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION).toArray(Building[]::new);
+            Building buildingToInfect = buildings[random.nextInt(buildings.length)];
+            GameState.getState().accomSatisfactionModifiers.put(buildingToInfect,
+                    new SatisfactionModifier(-DEBUFF, false));
+            GameEventTracker.getTracker().endGameEvent(this);
         }
     },
     GOVERNMENT_GRANT(
@@ -303,7 +320,7 @@ public enum GameEventType {
 
         @Override
         public boolean isValid() {
-            return !isActive(this) && hasPassedCooldown(this);
+            return hasPassedCooldown(this);
         }
 
         @Override
@@ -311,24 +328,18 @@ public enum GameEventType {
             // A bonus amount of money is given per library up to a maximum
             float grant = Math.min(MAXBONUS, BONUS * GameState.getState().getBuildingCount(BuildingType.LIBRARY));
             GameState.getState().money += grant;
-            // TODO make a money particle spawn on all libraries
-            GameEventTracker.getTracker().endGameEvent(this);
-        }
-    },
-    FOOD_HYGEINE(
-            "Poor Hygeine Rating",
-            "A food shop has failed a hygeine inspection",
-            Color.RED,
-            false,
-            3 * 60 * 1000) {
-        @Override
-        public boolean isValid() {
-            return false;
-        }
 
-        @Override
-        public void startEffect() {
-            // TODO: Infect a building
+            float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+            for (Building building : GameState.getState().gameWorld.buildings) {
+                if (building.getType() == BuildingType.LIBRARY) {
+                    EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                            Gdx.files.internal("particles/effects/money.p"),
+                            Gdx.files.internal("particles/images"),
+                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                }
+            }
+            GameEventTracker.getTracker().endGameEvent(this);
         }
     },
     TRENDING(
@@ -366,41 +377,65 @@ public enum GameEventType {
     },
     WATER_FAIL(
             "Poisoned the Well",
-            "An accomodations water supply is contaminated",
+            "A building's water supply is contaminated",
             Color.RED,
             false,
             2 * 60 * 1000) {
+        private final float DEBUFF = 0.3f;
+
         @Override
         public boolean isValid() {
-            return false;
+            return hasPassedCooldown(this) && GameState.getState().getBuildingCount(BuildingCategory.ACCOMMODATION) > 0;
         }
 
         @Override
         public void startEffect() {
-            // TODO: infect a building
+            // Infect an accomodation
+            Building[] buildings = GameState.getState().gameWorld.getBuildings().stream()
+                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION).toArray(Building[]::new);
+            Building buildingToInfect = buildings[random.nextInt(buildings.length)];
+            GameState.getState().accomSatisfactionModifiers.put(buildingToInfect,
+                    new SatisfactionModifier(-DEBUFF, false));
+            GameEventTracker.getTracker().endGameEvent(this);
         }
     },
     FLAT_PARTY(
             "The Uni Life",
-            "Some students are having a wild flat party",
+            "A wild flat party has started",
             Color.GREEN,
             false,
-            30 * 1000) {
+            1 * 60 * 1000,
+            40 * 1000) {
+        private final float MULTIPLIER = 0.3f;
+        private final long MINDURATION = 10 * 1000;
+        private long startTime;
+        private long partyDuration;
+
         @Override
         public boolean isValid() {
-            return false;
+            if (GameState.getState().getBuildingCount(BuildingCategory.ACCOMMODATION) <= 0) {
+                return false;
+            }
+            return !isActive(this) && hasPassedCooldown(this);
         }
 
         @Override
         public void startEffect() {
-            // TODO: Increase satisfaction for a building
-            // TODO: Spawn particles on a building
+            GameState.getState().globalSatisfactionModifier.relative += MULTIPLIER;
+            partyDuration = random.nextLong(MINDURATION, duration);
+            startTime = MainTimer.getTimerManager().getTimer().getTimeLeft();
+        }
+
+        @Override
+        public void ongoingEffect() {
+            if (startTime - MainTimer.getTimerManager().getTimer().getTimeLeft() >= partyDuration) {
+                GameEventTracker.getTracker().endGameEvent(this);
+            }
         }
 
         @Override
         public void endEffect() {
-            // TODO: remove satisfaction
-
+            GameState.getState().globalSatisfactionModifier.relative -= MULTIPLIER;
         }
     },
     NOISE_COMPLAINT(
@@ -426,6 +461,12 @@ public enum GameEventType {
             Color.GREEN,
             false,
             1 * 60 * 1000) {
+
+        private final float MULTIPLIER = 0.05f;
+        private final float MAXMULTIPLIER = 0.20f;
+        private float multiplier;
+        private long startTime;
+
         @Override
         public boolean isValid() {
             return !isActive(this) && hasPassedCooldown(this);
@@ -433,7 +474,33 @@ public enum GameEventType {
 
         @Override
         public void startEffect() {
-            // TODO: Add value per sport type building
+            // A bonus amount of satisfaction is given per sports building up to a maximum
+            multiplier = Math.min(MAXMULTIPLIER,
+                    MULTIPLIER * GameState.getState().getBuildingCount(BuildingCategory.RECREATIONAL));
+            GameState.getState().globalSatisfactionModifier.relative += multiplier;
+            float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+
+            for (Building building : GameState.getState().gameWorld.buildings) {
+                if (building.getType().getCategory() == BuildingCategory.RECREATIONAL) {
+                    EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                            Gdx.files.internal("particles/effects/heart.p"),
+                            Gdx.files.internal("particles/images"),
+                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                }
+            }
+        }
+
+        @Override
+        public void ongoingEffect() {
+            if (startTime - MainTimer.getTimerManager().getTimer().getTimeLeft() >= duration) {
+                GameEventTracker.getTracker().endGameEvent(this);
+            }
+        }
+
+        @Override
+        public void endEffect() {
+            GameState.getState().globalSatisfactionModifier.relative -= multiplier;
         }
     },
     GOOD_PROTEST(
@@ -502,7 +569,7 @@ public enum GameEventType {
     },
     SCANDAL(
             "For Shame",
-            "A university member has been caught breaking the law",
+            "A professor has been caught breaking the law",
             Color.RED,
             false,
             3 * 60 * 1000,

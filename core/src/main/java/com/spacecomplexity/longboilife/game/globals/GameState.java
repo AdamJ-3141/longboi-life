@@ -2,7 +2,9 @@ package com.spacecomplexity.longboilife.game.globals;
 
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.gameevent.GameEventManager;
 import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
 import com.spacecomplexity.longboilife.game.utils.AchievementManager;
 import com.spacecomplexity.longboilife.game.utils.SatisfactionModifier;
@@ -163,6 +165,15 @@ public class GameState {
         return count;
     }
 
+    public Integer getBuildingCount(BuildingCategory buildingCategory) {
+        int count = 0;
+        for (BuildingType buildingType : BuildingType.values()) {
+            if (buildingType.getCategory() == buildingCategory)
+                count += getBuildingCount(buildingType);
+        }
+        return count;
+    }
+
     /**
      * Helper function to change the number of a specified building.
      *
@@ -237,5 +248,6 @@ public class GameState {
         currentAchievement = null;
         totalScore = 0;
         AchievementManager.reset();
+        GameEventManager.getGameEventManager().reset();
     }
 }
