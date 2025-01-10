@@ -88,4 +88,10 @@ public class GameEventManager {
         eventCooldownOffset = random.nextLong(MAXOFFSET);
         return true;
     }
+
+    public void reset() {
+        GameEventTracker.getTracker().reset();
+        eventCooldownOffset = 0;
+        lastEventTime = Constants.GAME_DURATION;
+    }
 }

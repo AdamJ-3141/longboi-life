@@ -26,7 +26,7 @@ public enum GameEventTrackable {
      *
      * @return the class expected by the GameEventTrackable
      */
-    public Class<?> getExpectedClass() {
+    public Class<? extends Object> getExpectedClass() {
         return expectedClass;
     }
 

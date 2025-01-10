@@ -100,8 +100,9 @@ public class GameEventTracker {
      * @return the previous value associated with this trackable tag, if it exists
      */
     public Object trackData(GameEventTrackable trackable, Object data) {
-        if (data.getClass() != trackable.getExpectedClass()) {
-            throw new InvalidTrackableClassException();
+        if (trackable.getExpectedClass().isInstance(data.getClass())) {
+            throw new InvalidTrackableClassException("Expected data of type " + trackable.getExpectedClass().toString()
+                    + " but got data of type " + data.toString());
         }
         return trackedData.put(trackable, data);
     }
@@ -115,5 +116,11 @@ public class GameEventTracker {
      */
     public Object retreiveData(GameEventTrackable trackable) {
         return trackedData.get(trackable);
+    }
+
+    public void reset() {
+        activeGameEvents.clear();
+        passedGameEvents.clear();
+        trackedData.clear();
     }
 }
