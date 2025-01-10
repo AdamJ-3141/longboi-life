@@ -1,9 +1,8 @@
 package com.spacecomplexity.longboilife.game.building;
 
-import java.util.HashMap;
-
 /**
- * Contains a list of all building category's for calculating student satisfaction.
+ * Contains a list of all building category's for calculating student
+ * satisfaction.
  */
 public enum BuildingCategory {
     PATHWAY("Pathway"),

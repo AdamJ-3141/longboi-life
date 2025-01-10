@@ -12,6 +12,7 @@ import com.spacecomplexity.longboilife.MainInputManager;
 import com.spacecomplexity.longboilife.game.building.Building;
 import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.gameevent.GameEventManager;
 import com.spacecomplexity.longboilife.game.globals.Constants;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.globals.MainCamera;
@@ -38,9 +39,11 @@ public class HeadlessGameScreen implements Screen {
     private World world;
 
     private final GameState gameState = GameState.getState();
+    private final GameEventManager gameEventManager = GameEventManager.getGameEventManager();
 
     private float timeSinceScoreUpdate = 0f;
     private float timeSinceMoneyAdded = 0f;
+    private float timeSinceDamagedBuilding = 0f;
 
     public HeadlessGameScreen(Main game) {
         this.game = game;
@@ -69,7 +72,8 @@ public class HeadlessGameScreen implements Screen {
 
         // Create a new timer for 5 minutes
         MainTimer.getTimerManager().getTimer().setTimer(5 * 60 * 1000);
-        MainTimer.getTimerManager().getTimer().setEvent(() -> EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
+        MainTimer.getTimerManager().getTimer().setEvent(() ->
+            EventHandler.getEventHandler().callEvent(EventHandler.Event.GAME_END));
 
         // Create an input multiplexer to handle input from all sources
         InputMultiplexer inputMultiplexer = new InputMultiplexer(new MainInputManager());
@@ -133,7 +137,8 @@ public class HeadlessGameScreen implements Screen {
                 gameState.money -= cost;
 
                 // Remove the selected building if it is wanted to do so
-                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category -> gameState.placingBuilding.getCategory() == category) && !gameState.continuousPlacingBuilding) {
+                if (Arrays.stream(Constants.dontRemoveSelection).noneMatch(category ->
+                    gameState.placingBuilding.getCategory() == category) && !gameState.continuousPlacingBuilding) {
                     gameState.placingBuilding = null;
                 }
             }
@@ -228,6 +233,15 @@ public class HeadlessGameScreen implements Screen {
             return null;
         });
 
+        // Remove the debuff from the selected building
+        eventHandler.createEvent(EventHandler.Event.FIX_BUILDING, (params) -> {
+            gameState.accomSatisfactionModifiers.remove(gameState.selectedBuilding);
+            gameState.selectedBuilding = null;
+            eventHandler.callEvent(EventHandler.Event.CLOSE_SELECTED_MENU);
+
+            return null;
+        });
+
         // Return to the menu
         eventHandler.createEvent(EventHandler.Event.RETURN_MENU, (params) -> {
             game.switchScreen(Main.ScreenType.MENU);
@@ -272,12 +286,14 @@ public class HeadlessGameScreen implements Screen {
         viewport.apply();
         MainCamera.camera().update();
 
-        // calls the achievement handler to check for achievements and to ensure the popup is removed
+        // calls the achievement handler to check for achievements and to ensure the
+        // popup is removed
         AchievementManager.checkAchievements();
         AchievementManager.updateAchievements();
 
         // Poll the timer to run the event if the timer has expired
         // Do not update satisfaction score if the game is paused or has ended
+        // Do not let game events occur if the game is paused or has ended
         if (!gameState.paused && !MainTimer.getTimerManager().getTimer().poll()) {
             // Update the satisfaction score
             GameUtils.updateVisibleSatisfactionScore();
@@ -285,6 +301,7 @@ public class HeadlessGameScreen implements Screen {
             // Increase the time in seconds since money and score have been added.
             timeSinceScoreUpdate += delta;
             timeSinceMoneyAdded += delta;
+            timeSinceDamagedBuilding += delta;
 
             // Update score to the sum of all accommodation satisfactions.
             if (timeSinceScoreUpdate >= 10) {
@@ -293,16 +310,45 @@ public class HeadlessGameScreen implements Screen {
                 timeSinceScoreUpdate = 0;
             }
 
-            // Add money equal to the sum of the square roots of the costs of accommodations * 100.
+            // Add money equal to the sum of the square roots of the costs of accommodations
+            // * 100.
             if (timeSinceMoneyAdded >= 5) {
                 timeSinceMoneyAdded = 0;
-                gameState.money += (world.buildings.stream()
-                    .filter(b -> b.getType().getCategory() == BuildingCategory.ACCOMMODATION)
-                    .map(building -> ((float) Math.round(Math.sqrt(building.getType().getCost()))))
-                    .reduce(0f, Float::sum)
-                    * 100);
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                for (Building building : world.buildings) {
+                    if (building.getType().getCategory() == BuildingCategory.ACCOMMODATION) {
+                        EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                            Gdx.files.internal("particles/effects/money.p"),
+                            Gdx.files.internal("particles/images"),
+                            (building.getPosition().x + building.getType().getSize().x / 2) * cellSize,
+                            (building.getPosition().y + building.getType().getSize().x / 2) * cellSize);
+                    }
+                }
+                float moneyAdded = world.buildings.stream()
+                    .map(GameUtils::getMoneyGenerated)
+                    .reduce(0f, Float::sum);
+                gameState.money += moneyAdded;
             }
+
+            // Show particles at buildings that need fixing
+            if (timeSinceDamagedBuilding >= 1) {
+                timeSinceDamagedBuilding = 0;
+                float cellSize = Constants.TILE_SIZE * GameState.getState().scaleFactor;
+                for (Building damagedBuilding : GameState.getState().accomSatisfactionModifiers.keySet()) {
+                    EventHandler.getEventHandler().callEvent(EventHandler.Event.SPAWN_PARTICLE,
+                        Gdx.files.internal("particles/effects/thunder.p"),
+                        Gdx.files.internal("particles/images"),
+                        (damagedBuilding.getPosition().x + damagedBuilding.getType().getSize().x / 2) * cellSize,
+                        (damagedBuilding.getPosition().y + damagedBuilding.getType().getSize().x / 2) * cellSize);
+                }
+            }
+            gameEventManager.tickOngoingEvents();
+            if (gameEventManager.tryForGameEvent()) {
+                GameUtils.updateSatisfactionScore(world);
+            }
+
         }
+
     }
 
     /**
