@@ -12,6 +12,7 @@ public class EventHandler {
         CANCEL_OPERATIONS,
         SELL_BUILDING,
         MOVE_BUILDING,
+        FIX_BUILDING,
         PAUSE_GAME,
         RESUME_GAME,
         OPEN_SELECTED_MENU,

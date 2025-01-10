@@ -2,7 +2,9 @@ package com.spacecomplexity.longboilife.game.globals;
 
 import com.spacecomplexity.longboilife.game.achievement.AchievementType;
 import com.spacecomplexity.longboilife.game.building.Building;
+import com.spacecomplexity.longboilife.game.building.BuildingCategory;
 import com.spacecomplexity.longboilife.game.building.BuildingType;
+import com.spacecomplexity.longboilife.game.gameevent.GameEventManager;
 import com.spacecomplexity.longboilife.game.utils.AccomSatisfactionDetail;
 import com.spacecomplexity.longboilife.game.utils.AchievementManager;
 import com.spacecomplexity.longboilife.game.utils.SatisfactionModifier;
@@ -62,7 +64,8 @@ public class GameState {
     public float satisfactionScore;
 
     /**
-     * The actual average satisfaction score that {@link GameState#satisfactionScore}
+     * The actual average satisfaction score that
+     * {@link GameState#satisfactionScore}
      * will tend towards.
      */
     public float targetSatisfaction;
@@ -127,7 +130,8 @@ public class GameState {
     /**
      * The current count of buildings.
      * <p>
-     * This should be modified by {@link GameState#getBuildingCount(BuildingType)} and {@link GameState#changeBuildingCount(BuildingType, int)} not directly.
+     * This should be modified by {@link GameState#getBuildingCount(BuildingType)}
+     * and {@link GameState#changeBuildingCount(BuildingType, int)} not directly.
      * <p>
      * This is initialised in the constructor.
      */
@@ -156,6 +160,15 @@ public class GameState {
         int count = 0;
         for (BuildingType buildingType : BuildingType.values()) {
             if (buildingType != BuildingType.ROAD)
+                count += getBuildingCount(buildingType);
+        }
+        return count;
+    }
+
+    public Integer getBuildingCount(BuildingCategory buildingCategory) {
+        int count = 0;
+        for (BuildingType buildingType : BuildingType.values()) {
+            if (buildingType.getCategory() == buildingCategory)
                 count += getBuildingCount(buildingType);
         }
         return count;
@@ -209,13 +222,13 @@ public class GameState {
      * Reset all values to default.
      */
     public void reset() {
-//        scaleFactor = 1;
-//        uiScaleFactor = 1;
+        // scaleFactor = 1;
+        // uiScaleFactor = 1;
         isLoaded = false;
         cameraSpeed = 1400;
         cameraKeyZoomSpeed = 3;
         cameraScrollZoomSpeed = 32;
-//        fullscreen = false;
+        // fullscreen = false;
         gameWorld = null;
         money = 50000;
         satisfactionScore = 0f;
@@ -235,5 +248,6 @@ public class GameState {
         currentAchievement = null;
         totalScore = 0;
         AchievementManager.reset();
+        GameEventManager.getGameEventManager().reset();
     }
 }

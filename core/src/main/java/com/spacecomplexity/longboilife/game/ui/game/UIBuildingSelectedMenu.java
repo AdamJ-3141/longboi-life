@@ -25,6 +25,7 @@ import java.util.Locale;
 public class UIBuildingSelectedMenu extends UIElement {
     private final TextButton moveButton;
     private final TextButton sellButton;
+    private final TextButton fixButton;
 
     private Vector3 worldSpaceOpened;
 
@@ -70,9 +71,28 @@ public class UIBuildingSelectedMenu extends UIElement {
             }
         });
 
+        // Initialise fix button
+        fixButton = new TextButton("Fix", skin);
+        fixButton.pad(10);
+        // Sell the selected building when clicked
+        fixButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (fixButton.isDisabled()) {
+                    return;
+                }
+                AudioController.getInstance().playSound(SoundEffect.BUTTON_CLICK);
+                // Call the events to sell the selected building
+                eventHandler.callEvent(EventHandler.Event.FIX_BUILDING);
+
+                closeMenu();
+            }
+        });
+
         // Place buttons onto table
         table.add(moveButton);
         table.add(sellButton).padLeft(2);
+        table.add(fixButton).padLeft(2);
 
         // Style and place the table
         table.setSize(175, 75);
@@ -111,26 +131,42 @@ public class UIBuildingSelectedMenu extends UIElement {
     }
 
     private void openMenu() {
-        // Get the world space of current mouse position so that we can keep it positioned relatively
+        // Get the world space of current mouse position so that we can keep it
+        // positioned relatively
         Vector3 mouse = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         MainCamera.camera().getCamera().unproject(mouse);
         worldSpaceOpened = new Vector3(mouse);
 
-        // Set the prices of each of these actions based on the price of the building and constants
+        // Set the prices of each of these actions based on the price of the building
+        // and constants
         float buildingCost = GameState.getState().selectedBuilding.getType().getCost();
-        moveButton.setText("Move\r\n" + NumberFormat.getCurrencyInstance(Locale.UK).format(buildingCost * Constants.moveCostRecovery));
+        moveButton.setText("Move\r\n"
+                + NumberFormat.getCurrencyInstance(Locale.UK).format(buildingCost * Constants.moveCostRecovery));
         moveButton.pack();
-        sellButton.setText("Sell\r\n+" + NumberFormat.getCurrencyInstance(Locale.UK).format(buildingCost * Constants.sellCostRecovery));
+        sellButton.setText("Sell\r\n+"
+                + NumberFormat.getCurrencyInstance(Locale.UK).format(buildingCost * Constants.sellCostRecovery));
         sellButton.pack();
 
+        // Only show the fix button when the building has a modifier
+        if (GameState.getState().accomSatisfactionModifiers.containsKey(GameState.getState().selectedBuilding)) {
+            fixButton.setText("Fix\r\nBuilding");
+            fixButton.setDisabled(false);
+        } else {
+            fixButton.setText("Building\r\nOK");
+            fixButton.setDisabled(true);
+        }
+        fixButton.pack();
+
         // Set the table size to match the size of the buttons
-        table.setSize(moveButton.getWidth() + sellButton.getWidth() + 25, table.getHeight());
+        table.setSize(moveButton.getWidth() + sellButton.getWidth() + fixButton.getWidth() + 25,
+                table.getHeight());
 
         table.setVisible(true);
     }
 
     private void closeMenu() {
-        // Remove the open coordinates so we don't calculate the menus position every frame
+        // Remove the open coordinates so we don't calculate the menus position every
+        // frame
         worldSpaceOpened = null;
 
         table.setVisible(false);
