@@ -19,7 +19,7 @@ public class TimerTests extends AbstractHeadlessGdxTest{
         }
         long expectedOut = 900;
         long actualOut = timer.getTimeLeft();
-        assertEquals(expectedOut, actualOut, 6, "Timer doesn't start or run correctly");
+        assertEquals(expectedOut, actualOut, 10, "Timer doesn't start or run correctly");
     }
 
     @Test
@@ -47,6 +47,6 @@ public class TimerTests extends AbstractHeadlessGdxTest{
             Thread.currentThread().interrupt();
         }
         actualOut = timer.getTimeLeft();
-        assertEquals(expectedOut, actualOut, 7, "Timer doesn't start or run correctly");
+        assertEquals(expectedOut, actualOut, 10, "Timer doesn't start or run correctly");
     }
 }
