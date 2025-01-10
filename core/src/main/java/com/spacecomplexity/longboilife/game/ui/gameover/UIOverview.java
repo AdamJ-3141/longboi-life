@@ -14,6 +14,8 @@ import com.spacecomplexity.longboilife.game.utils.EventHandler;
 import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardElement;
 import com.spacecomplexity.longboilife.menu.leaderboard.LeaderboardUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -55,7 +57,10 @@ public class UIOverview extends UIElement {
                 }
 
                 // add score to the leaderboard
-                LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore));
+                List<LeaderboardElement> scores = Arrays.asList(LeaderboardUtils.loadScore());
+                LeaderboardElement[] newScores = LeaderboardUtils.addScore(new LeaderboardElement(name, GameState.getState().totalScore), scores);
+                LeaderboardUtils.saveScore(newScores);
+
 
                 // Call the event to change screen to leaderboard
                 EventHandler.getEventHandler().callEvent(EventHandler.Event.LEADERBOARD);
