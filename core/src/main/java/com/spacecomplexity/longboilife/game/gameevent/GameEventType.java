@@ -264,6 +264,8 @@ public enum GameEventType {
             Color.GREEN,
             false,
             2 * 60 * 1000) {
+        private final float GRANT = 50000;
+
         @Override
         public boolean isValid() {
             return hasPassedCooldown(this);
@@ -272,7 +274,7 @@ public enum GameEventType {
         @Override
         public void startEffect() {
             super.startEffect();
-            GameState.getState().money += 10000f;
+            GameState.getState().money += GRANT;
             GameEventTracker.getTracker().endGameEvent(this);
         }
     },
