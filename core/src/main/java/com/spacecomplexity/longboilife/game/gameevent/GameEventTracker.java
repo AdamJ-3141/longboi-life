@@ -101,6 +101,7 @@ public class GameEventTracker {
      */
     public Object trackData(GameEventTrackable trackable, Object data) {
         if (!trackable.getExpectedClass().isInstance(data)) {
+
             throw new InvalidTrackableClassException("Expected data of type " + trackable.getExpectedClass().toString()
                     + " but got data of type " + data.toString());
         }

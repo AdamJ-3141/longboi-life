@@ -29,7 +29,7 @@ tasks.register('dist') {
 
 jacocoTestReport {
   dependsOn test
-  sourceSets sourceSets.test
+  sourceSets project(":core").sourceSets.main
   reports {
     xml.required = true
     html.required = true
