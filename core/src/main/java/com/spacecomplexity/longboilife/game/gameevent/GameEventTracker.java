@@ -100,7 +100,8 @@ public class GameEventTracker {
      * @return the previous value associated with this trackable tag, if it exists
      */
     public Object trackData(GameEventTrackable trackable, Object data) {
-        if (trackable.getExpectedClass().isInstance(data.getClass())) {
+        if (!trackable.getExpectedClass().isInstance(data)) {
+
             throw new InvalidTrackableClassException("Expected data of type " + trackable.getExpectedClass().toString()
                     + " but got data of type " + data.toString());
         }

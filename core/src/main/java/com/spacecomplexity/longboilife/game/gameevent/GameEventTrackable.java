@@ -9,7 +9,8 @@ public enum GameEventTrackable {
     /**
      * The cost of the last building destroyed by fire. Expects {@code float}
      */
-    FIRE_BUILDING_COST(float.class),
+    FIRE_BUILDING_COST(Float.class),
+
     /**
      * The next fire insurance event that should occur, decided by the last fire.
      * Expects {@link GameEventType}
