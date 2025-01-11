@@ -156,14 +156,15 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
          *                     = 0.8377
          */
         empty_world.build(BuildingType.HALLS, new Vector2Int(0, 0));
-        empty_world.build(BuildingType.NANDOS, new Vector2Int(3,1));
+        empty_world.build(BuildingType.CHICKENSHOP, new Vector2Int(3,1));
         empty_world.build(BuildingType.LECTURETHEATRE, new Vector2Int(6,1));
         empty_world.build(BuildingType.FOOTBALLFIELD, new Vector2Int(9,1));
         for (int i = 3; i < 11; i++) {
             empty_world.build(BuildingType.ROAD, new Vector2Int(i, 0));
         }
         satisfactionSum = GameUtils.updateSatisfactionScore(empty_world);
-        assertClose(0.838f, gameState.targetSatisfaction, 0.001f, "Building too far from accommodation -> No satisfaction");
+        assertClose(0.838f, gameState.targetSatisfaction, 0.001f,
+            "Building too far from accommodation -> No satisfaction");
     }
 
     @Test
@@ -202,7 +203,7 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
         empty_world.build(BuildingType.ROAD, new Vector2Int(6,3));
         empty_world.build(BuildingType.ROAD, new Vector2Int(7,3));
 
-        empty_world.build(BuildingType.NANDOS, new Vector2Int(9, 0));
+        empty_world.build(BuildingType.CHICKENSHOP, new Vector2Int(9, 0));
         empty_world.build(BuildingType.KEBABVAN, new Vector2Int(3, 4));
         empty_world.build(BuildingType.GYM, new Vector2Int(0, 0));
         empty_world.build(BuildingType.BIKESTORE, new Vector2Int(8, 3));
@@ -233,7 +234,8 @@ public class SatisfactionTests extends AbstractHeadlessGdxTest{
 
         // Each satisfaction should be 0.322
         satisfactionSum = GameUtils.updateSatisfactionScore(empty_world);
-        HashSet<Float> accomSatisfactions = new HashSet<>(gameState.accomSatisfaction.values().stream().map(i -> i.totalSatisfaction).toList());
+        HashSet<Float> accomSatisfactions = new HashSet<>(
+            gameState.accomSatisfaction.values().stream().map(i -> i.totalSatisfaction).toList());
         assertEquals(2, gameState.accomSatisfaction.size(), "Verify 2 accommodations.");
         assertClose(0.644f, satisfactionSum, 0.001f, "Sum should be close to 0.644");
         assertTrue(accomSatisfactions.stream()

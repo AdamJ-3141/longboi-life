@@ -12,7 +12,7 @@ public class AssetTests extends AbstractHeadlessGdxTest {
     public void buildingAssetTest() {
         assertTrue(Gdx.files.internal("buildings/greggs.png").exists(),
                 "Greggs texture missing");
-        assertTrue(Gdx.files.internal("buildings/nandos.png").exists(),
+        assertTrue(Gdx.files.internal("buildings/chicken_shop.png").exists(),
                 "Nandos texture missing");
         assertTrue(Gdx.files.internal("buildings/library.png").exists(),
                 "Library texture missing");

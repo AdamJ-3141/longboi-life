@@ -17,7 +17,8 @@ public enum BuildingType {
     GREGGS("Greggs", new Texture("buildings/greggs.png"), new Vector2Int(2, 2), BuildingCategory.FOOD, 40000),
     SUPERMARKET("Supermarket", new Texture("buildings/supermarket.png"), new Vector2Int(4, 2), BuildingCategory.FOOD,
             60000),
-    NANDOS("Nandos", new Texture("buildings/nandos.png"), new Vector2Int(3, 2), BuildingCategory.FOOD, 100000),
+    CHICKENSHOP("Chicken Shop", new Texture("buildings/chicken_shop.png"), new Vector2Int(3, 2), BuildingCategory.FOOD,
+            100000),
 
     // Education Buildings
     CLASSROOMS("Classrooms", new Texture("buildings/classrooms.png"), new Vector2Int(3, 2),
