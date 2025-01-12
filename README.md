@@ -1,6 +1,6 @@
 # longboi-life
 
-*University of York ENG1 Project.*
+*University of York ENG1 Project, for Assessment Part 2.*
 
 Short single-player game that allows the player to build their own university
 campus trying to reach the highest student satisfaction possible.
