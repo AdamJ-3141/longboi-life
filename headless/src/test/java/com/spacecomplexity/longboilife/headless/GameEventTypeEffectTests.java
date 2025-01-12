@@ -18,7 +18,7 @@ import com.spacecomplexity.longboilife.game.gameevent.GameEventType;
 import com.spacecomplexity.longboilife.game.globals.GameState;
 import com.spacecomplexity.longboilife.game.utils.Vector2Int;
 
-public class GameEventTypeContentTests extends AbstractHeadlessGdxTest {
+public class GameEventTypeEffectTests extends AbstractHeadlessGdxTest {
     public GameEventTracker tracker;
     public GameState state;
     public float defaultMoney;
