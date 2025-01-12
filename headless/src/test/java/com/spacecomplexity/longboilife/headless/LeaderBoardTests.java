@@ -28,34 +28,6 @@ public class LeaderBoardTests extends AbstractHeadlessGdxTest{
             "The leaderboardElement's name should have changed correctly");
     }
 
-//    @Test
-//    public void loadScoreFailsTest() {
-//        String testAddress = "fakeLeaderboard.json";
-//
-//        try (MockedStatic mockedStatic = mockStatic(Gdx.app.getPreferences())) {
-//            mockedStatic.when(LeaderboardUtils::getJsonAddress).thenReturn(testAddress);
-//            mockedStatic.when(LeaderboardUtils::loadScore).thenCallRealMethod();
-//
-//            assertThrows(InvalidLeaderboardFileException.class, LeaderboardUtils::loadScore,
-//            "loadScore doesn't throw an exception when JSON doesn't exist");
-//        }
-//    }
-
-//    @Test
-//    public void loadScoreSuccessTest() {
-//        String testAddress = "src/test/java/com/spacecomplexity/longboilife/headless/leaderboardTestVer.json";
-//        LeaderboardElement[] expectedOut = {new LeaderboardElement("Player", 9591), new LeaderboardElement("Adam", 7493),
-//            new LeaderboardElement("AdamWooooo", 5303), new LeaderboardElement("test", 101),  new LeaderboardElement("Player", 100)};
-//        int expectedOutLength = expectedOut.length;
-//
-//        try (MockedStatic mockedStatic = mockStatic(LeaderboardUtils.class)) {
-//            mockedStatic.when(LeaderboardUtils::getJsonAddress).thenReturn(testAddress);
-//            mockedStatic.when(LeaderboardUtils::loadScore ).thenCallRealMethod();
-//
-//            assertTrue(new ReflectionEquals(expectedOut).matches(LeaderboardUtils.loadScore()), "loadScore loads json data incorrectly");
-//        }
-//    }
-
     @Test
     public void addScoreEmptyTest() {
         LeaderboardElement inputElement = new LeaderboardElement("Arthur", 42);
