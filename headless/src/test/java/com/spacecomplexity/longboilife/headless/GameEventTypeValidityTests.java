@@ -18,13 +18,24 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
     public GameEventTracker tracker;
 
     @BeforeEach
-    public void getManager() {
+    public void getTracker() {
         tracker = GameEventTracker.getTracker();
         tracker.reset();
     }
 
     @Test
-    public void CELEBRITYIsValidCooldownTest() {
+    public void GOVERNMENT_GRANTisValidTest() {
+        GameEventType typeUnderTest = GameEventType.GOVERNMENT_GRANT;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "GOVERNMENT_GRANT should be valid by default and was not");
+        // Make the event invalid, self-ending cooldown event
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void CELEBRITYIsValidTest() {
         GameEventType typeUnderTest = GameEventType.CELEBRITY;
         // Make the event valid
         // Event is valid by default
@@ -37,7 +48,59 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
     }
 
     @Test
-    public void DISEASEIsValidCooldownTest() {
+    public void COMMUNITYisValidTest() {
+        GameEventType typeUnderTest = GameEventType.COMMUNITY;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "COMMUNITY should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void TRENDINGisValidTest() {
+        GameEventType typeUnderTest = GameEventType.TRENDING;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "TRENDING should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void GOOD_PROTESTisValidTest() {
+        GameEventType typeUnderTest = GameEventType.PROTEST_GOOD;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "GOOD_PROTEST should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void BAD_PROTESTisValidTest() {
+        GameEventType typeUnderTest = GameEventType.PROTEST_BAD;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "BAD_PROTEST should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void DISEASEIsValidTest() {
         GameEventType typeUnderTest = GameEventType.DISEASE;
 
         // Make the event valid
@@ -51,7 +114,44 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
     }
 
     @Test
-    public void LONGBOIIsValidCooldownTest() {
+    public void SCANDALisValidTest() {
+        GameEventType typeUnderTest = GameEventType.SCANDAL;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "SCANDAL should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void LIBRARY_DONOisValidTest() {
+        GameEventType typeUnderTest = GameEventType.LIBRARY_DONO;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "LIBRARY_DONO should be valid by default and was not");
+        // Make the event invalid, self-ending cooldown event
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void VARSITYisValidTest() {
+        GameEventType typeUnderTest = GameEventType.VARSITY;
+        // Make the event valid
+        // Event is valid by default
+        assertTrue(typeUnderTest.isValid(), "VARSITY should be valid by default and was not");
+        // Make the event invalid
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void LONGBOIIsValidTest() {
         GameEventType typeUnderTest = GameEventType.LONGBOI;
 
         // Make the event valid
@@ -65,7 +165,7 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
     }
 
     @Test
-    public void DEADBOIIsValidCooldownTest() {
+    public void DEADBOIIsValidTest() {
         GameEventType typeUnderTest = GameEventType.DEADBOI;
         // Make the event valid
         // Event is invalid by default and requires LONGBOI to be active
@@ -75,6 +175,37 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
         // Make the event invalid
         tracker.endGameEvent(GameEventType.LONGBOI);
         assertFalse(typeUnderTest.isValid(), "DEADBOI should not be valid when LONGBOI is not active");
+    }
+
+    @Test
+    public void FLAT_PARTYisValidTest() {
+        GameEventType typeUnderTest = GameEventType.FLAT_PARTY;
+        Building testAccom = new Building(BuildingType.LUXURYFLATS, new Vector2Int(0, 0));
+        // Make the event valid
+        // Event is invalid by default and requires a building of category ACCOMODATION
+        // to exist
+        assertFalse(typeUnderTest.isValid(), "FLAT_PARTY should not be valid by default and was");
+        GameState.getState().gameWorld.build(testAccom);
+        assertTrue(typeUnderTest.isValid(),
+                "FLAT_PARTY should be valid when an accom exists and it is not on cooldown");
+
+        // Make the event invalid by starting it, invalid by cooldown
+        tracker.startGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
+        tracker.endGameEvent(typeUnderTest);
+        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
+    }
+
+    @Test
+    public void NOISE_COMPLAINTisValidTest() {
+        GameEventType typeUnderTest = GameEventType.NOISE_COMPLAINT;
+        // Inititally invalid
+        assertFalse(typeUnderTest.isValid(), "NOISE_COMPLIANT should not be valid by default and was");
+        // Valid when a fire is active and when the fire has selected this type of
+        // insurance, stored in the tracker
+        tracker.startGameEvent(GameEventType.FLAT_PARTY);
+        assertTrue(typeUnderTest.isValid(),
+                "NOISE_COMPLAINT should be valid when a party is active");
     }
 
     @Test
@@ -161,54 +292,6 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
     }
 
     @Test
-    public void GOVERNMENT_GRANTisValidTest() {
-        GameEventType typeUnderTest = GameEventType.GOVERNMENT_GRANT;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "GOVERNMENT_GRANT should be valid by default and was not");
-        // Make the event invalid, self-ending cooldown event
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void COMMUNITYisValidTest() {
-        GameEventType typeUnderTest = GameEventType.COMMUNITY;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "COMMUNITY should be valid by default and was not");
-        // Make the event invalid
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void LIBRARY_DONOisValidTest() {
-        GameEventType typeUnderTest = GameEventType.LIBRARY_DONO;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "LIBRARY_DONO should be valid by default and was not");
-        // Make the event invalid, self-ending cooldown event
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void TRENDINGisValidTest() {
-        GameEventType typeUnderTest = GameEventType.TRENDING;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "TRENDING should be valid by default and was not");
-        // Make the event invalid
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
     public void WATER_FAILisValidTest() {
         GameEventType typeUnderTest = GameEventType.WATER_FAIL;
         Building testAccom = new Building(BuildingType.LUXURYFLATS, new Vector2Int(0, 0));
@@ -221,89 +304,6 @@ public class GameEventTypeValidityTests extends AbstractHeadlessGdxTest {
                 "WATER_FAIL should be valid when an accom exists and it is not on cooldown");
 
         // Make the event invalid by starting it, invalid by cooldown
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void FLAT_PARTYisValidTest() {
-        GameEventType typeUnderTest = GameEventType.FLAT_PARTY;
-        Building testAccom = new Building(BuildingType.LUXURYFLATS, new Vector2Int(0, 0));
-        // Make the event valid
-        // Event is invalid by default and requires a building of category ACCOMODATION
-        // to exist
-        assertFalse(typeUnderTest.isValid(), "FLAT_PARTY should not be valid by default and was");
-        GameState.getState().gameWorld.build(testAccom);
-        assertTrue(typeUnderTest.isValid(),
-                "FLAT_PARTY should be valid when an accom exists and it is not on cooldown");
-
-        // Make the event invalid by starting it, invalid by cooldown
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void NOISE_COMPLAINTisValidTest() {
-        GameEventType typeUnderTest = GameEventType.NOISE_COMPLAINT;
-        // Inititally invalid
-        assertFalse(typeUnderTest.isValid(), "NOISE_COMPLIANT should not be valid by default and was");
-        // Valid when a fire is active and when the fire has selected this type of
-        // insurance, stored in the tracker
-        tracker.startGameEvent(GameEventType.FLAT_PARTY);
-        assertTrue(typeUnderTest.isValid(),
-                "NOISE_COMPLAINT should be valid when a party is active");
-    }
-
-    @Test
-    public void VARSITYisValidTest() {
-        GameEventType typeUnderTest = GameEventType.VARSITY;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "VARSITY should be valid by default and was not");
-        // Make the event invalid
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void GOOD_PROTESTisValidTest() {
-        GameEventType typeUnderTest = GameEventType.GOOD_PROTEST;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "GOOD_PROTEST should be valid by default and was not");
-        // Make the event invalid
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void BAD_PROTESTisValidTest() {
-        GameEventType typeUnderTest = GameEventType.BAD_PROTEST;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "BAD_PROTEST should be valid by default and was not");
-        // Make the event invalid
-        tracker.startGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
-        tracker.endGameEvent(typeUnderTest);
-        assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when on cooldown and was not");
-    }
-
-    @Test
-    public void SCANDALisValidTest() {
-        GameEventType typeUnderTest = GameEventType.SCANDAL;
-        // Make the event valid
-        // Event is valid by default
-        assertTrue(typeUnderTest.isValid(), "SCANDAL should be valid by default and was not");
-        // Make the event invalid
         tracker.startGameEvent(typeUnderTest);
         assertFalse(typeUnderTest.isValid(), "GameEvent should be invalid when active and was not");
         tracker.endGameEvent(typeUnderTest);
