@@ -16,9 +16,10 @@ Build, move and achievements test:
     4. click on building and press move
     5. move the building
 
-Leaderboard test:
-    1. go to %UserProfile%/.prefs on windows or ~/.prefs on windows and linux and delete "leaderboard.xml"
+Leaderboard and playability test:
+    1. go to %UserProfile%/.prefs on windows or ~/.prefs on windows and linux and delete "leaderboard.xml" and "My Preferences.xml"
     2. launch game and press play
-    3. place at least 1 building
-    4. wait for timer to run out
+    3. play one full game
+    4. note if the game feels relative play, enjoyable, simple, varied, intuitive and forgiving
     5. enter name and note name appears on new leaderboard
+    6. restart game and check leaderboard still has the score you added
